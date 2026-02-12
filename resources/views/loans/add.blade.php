@@ -22,19 +22,23 @@
                         <div class="panel panel-bordered">
                             <div class="panel-body">
                                 <div class="row">
-                                    <div class="form-group col-md-2">
-                                        <small>Fecha</small>
-                                        <input type="date" name="date" value="{{date('Y-m-d')}}" class="form-control text" required>
+                                    <div class="col-md-12">
+                                        <h4 class="text-primary"><i class="fa-solid fa-file-contract"></i> Datos Generales</h4>
+                                        <hr style="margin-top: 5px; margin-bottom: 15px">
+                                    </div>
+                                    <div class="form-group col-md-3">
+                                        <label class="control-label">Fecha</label>
+                                        <input type="date" name="date" value="{{date('Y-m-d')}}" class="form-control" required>
                                     </div>   
-                                    <div class="form-group col-md-2">
-                                        <small>Tipo</small>
-                                        <select name="optradio" id="optradio" required class="select2"  onchange="funtion_type()">
+                                    <div class="form-group col-md-3">
+                                        <label class="control-label">Tipo de Préstamo</label>
+                                        <select name="optradio" id="optradio" required class="form-control select2"  onchange="funtion_type()">
                                             <option value="diario" selected>Diario</option>
                                             <option value="diarioespecial">Diario Especial</option>
                                         </select>
                                     </div>   
-                                    <div class="form-group col-md-4">
-                                        <small>Asignar Ruta</small>
+                                    <div class="form-group col-md-3">
+                                        <label class="control-label">Asignar Ruta</label>
                                         <select name="route_id" id="route_id" class="form-control select2" required>
                                             <option value="" disabled selected>-- Selecciona una ruta --</option>
                                             @foreach ($routes as $item)
@@ -42,10 +46,10 @@
                                             @endforeach
                                         </select>
                                     </div>       
-                                    <div class="form-group col-md-4">
-                                        <small for="manager_id">Autorizado por</small>
+                                    <div class="form-group col-md-3">
+                                        <label class="control-label">Autorizado por</label>
                                         <select name="manager_id" class="form-control select2" required>
-                                            <option value="" selected disabled>Seleccione quien autoriza</option>
+                                            <option value="" selected disabled>-- Seleccione --</option>
                                             @foreach (App\Models\Manager::where('status', 1)->get() as $item)
                                                 <option value="{{ $item->id }}">{{ $item->name }}</option>
                                             @endforeach
@@ -54,51 +58,73 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-md-6">
-                                        <small for="customer_id">Beneficiario del Prestamo</small>
+                                        <label class="control-label">Beneficiario del Préstamo</label>
                                         <select name="people_id" class="form-control" id="select_people_id" required></select>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <small for="customer_id">Garante</small>
+                                        <label class="control-label">Garante</label>
                                         <select name="guarantor_id" class="form-control" id="select_guarantor_id"></select>
                                     </div>
                                 </div>
                                 {{-- <input type="hidden" name="type" id="text_type"> --}}
-                                <div class="row">
-                                    <div class="form-group col-md-2">
-                                        <small>Monto a Prestar (Bs.)</small>
-                                        <input type="number" name="amountLoan" id="amountLoan" style="text-align: right" value="0" min="1" step=".01" onkeypress="return filterFloat(event,this);" onchange="subTotal()" onkeyup="subTotal()" class="form-control text" required>
+                                <div class="row" style="margin-top: 15px">
+                                    <div class="col-md-12">
+                                        <h4 class="text-primary"><i class="fa-solid fa-calculator"></i> Cálculos del Préstamo</h4>
+                                        <hr style="margin-top: 5px; margin-bottom: 15px">
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <small>Dias Total A Pagar</small>
-                                        <input type="number" min="1" id="day1" value="24" style="text-align: right" disabled onkeypress="return filterFloat(event,this);" onchange="diasPagar()" onkeyup="diasPagar()" class="form-control text" required>
+                                        <label class="control-label">Monto</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Bs.</span>
+                                            <input type="number" name="amountLoan" id="amountLoan" style="text-align: right" value="0" min="1" step=".01" onkeypress="return filterFloat(event,this);" onchange="subTotal()" onkeyup="subTotal()" class="form-control" required>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-2">
+                                        <label class="control-label">Días</label>
+                                        <div class="input-group">
+                                            <input type="number" min="1" id="day1" value="24" style="text-align: right" disabled onkeypress="return filterFloat(event,this);" onchange="diasPagar()" onkeyup="diasPagar()" class="form-control" required>
+                                            <span class="input-group-addon">Días</span>
+                                        </div>
                                         <input type="hidden" min="1" name="day" id="day" onkeypress="return filterFloat(event,this);" value="24" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <small>Interes Prestamos (%)</small>
-                                        <input type="number" id="porcentage1" min="0" step="any" style="text-align: right" disabled value="20" onkeypress="return filterFloat(event,this);" onchange="porcentagePagar()" onkeyup="porcentagePagar()" onchange="subTotal()" onkeyup="subTotal()" class="form-control text" required>
+                                        <label class="control-label">Interés</label>
+                                        <div class="input-group">
+                                            <input type="number" id="porcentage1" min="0" step="any" style="text-align: right" disabled value="20" onkeypress="return filterFloat(event,this);" onchange="porcentagePagar()" onkeyup="porcentagePagar()" onchange="subTotal()" onkeyup="subTotal()" class="form-control" required>
+                                            <span class="input-group-addon">%</span>
+                                        </div>
                                         <input type="hidden" name="porcentage" id="porcentage" onkeypress="return filterFloat(event,this);" value="20" class="form-control" required>
                                     </div>    
                                     <div class="form-group col-md-2">
-                                        <small>Interes a Pagar (Bs.)</small>
-                                        <input type="number" id="amountPorcentage1" min="0" step="any" style="text-align: right" disabled value="0" onkeypress="return filterFloat(event,this);" onchange="porcentageAmount()" onkeyup="porcentageAmount()" onchange="subTotal()" onkeyup="subTotal()" class="form-control text" required>
+                                        <label class="control-label">Ganancia</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Bs.</span>
+                                            <input type="number" id="amountPorcentage1" min="0" step="any" style="text-align: right" disabled value="0" onkeypress="return filterFloat(event,this);" onchange="porcentageAmount()" onkeyup="porcentageAmount()" onchange="subTotal()" onkeyup="subTotal()" class="form-control" required>
+                                        </div>
                                         <input type="hidden" name="amountPorcentage" id="amountPorcentage" onkeypress="return filterFloat(event,this);" value="0" class="form-control" required>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <small>Pago Diario (Bs.)</small>
-                                        <input type="text" id="amountDay1" style="text-align: right" disabled value="0" class="form-control text">
+                                        <label class="control-label">Cuota Diaria</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Bs.</span>
+                                            <input type="text" id="amountDay1" style="text-align: right; background-color: #f0f0f0;" disabled value="0" class="form-control">
+                                        </div>
                                         <input type="hidden" name="amountDay" id="amountDay"onkeypress="return filterFloat(event,this);" value="0" class="form-control">
                                         <b class="text-danger" id="label-amount" style="display:none">Incorrecto..</b>
                                     </div>
                                     <div class="form-group col-md-2">
-                                        <small>Total a Pagar (Bs.)</small>
-                                        <input type="number" id="amountTotal1" style="text-align: right" disabled value="0" class="form-control text">
+                                        <label class="control-label">Total a Pagar</label>
+                                        <div class="input-group">
+                                            <span class="input-group-addon">Bs.</span>
+                                            <input type="number" id="amountTotal1" style="text-align: right; background-color: #e8f5e9; font-weight: bold;" disabled value="0" class="form-control">
+                                        </div>
                                         <input type="hidden" name="amountTotal" id="amountTotal" value="0" class="form-control">
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-md-12">
-                                        <small>Observación</small>
-                                        <textarea name="observation" id="observation" class="form-control text" cols="30" rows="5"></textarea>
+                                        <label class="control-label">Observaciones</label>
+                                        <textarea name="observation" id="observation" class="form-control" cols="30" rows="3" placeholder="Ingrese alguna observación si es necesario..."></textarea>
                                     </div>
                                     
                                 </div>
