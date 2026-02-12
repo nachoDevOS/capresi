@@ -508,6 +508,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
 
     // Para prestamos por rango de gention
     Route::get('reports/loans/loanrangegestions', [ReportLoanController::class, 'loanRangeGestions'])->name('reports-loans.loanRangeGestions');
+    Route::post('reports/loans/loanrangegestions/list', [ReportLoanController::class, 'loanRangeGestionsList'])->name('reports-loans.loanRangeGestions.list');
 
 
 

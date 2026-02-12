@@ -175,17 +175,25 @@ class ReportLoanController extends Controller
         $start = $request->start;
         $finish = $request->finish;
         $date = date('Y-m-d');
+        $groupBy = $request->group_by;
         // dump($request);
 
+        $selectDate = "MONTH(l.dateDelivered) as monthDate, YEAR(l.dateDelivered) as yearDate";
+        $subQueryCondition = "AND MONTH(ls.dateDelivered) = monthDate AND YEAR(ls.dateDelivered) = yearDate";
 
-        $datas = DB::table('loans as l')
+        if($groupBy == 'year'){
+            $selectDate = "YEAR(l.dateDelivered) as yearDate, 0 as monthDate";
+            $subQueryCondition = "AND YEAR(ls.dateDelivered) = yearDate";
+        }
+
+        $query = DB::table('loans as l')
             ->where('l.dateDelivered', '>=', $start)
             ->where('l.dateDelivered', '<=', $finish)
             ->where('l.deleted_at', null)
             ->where('l.status', 'entregado')
 
 
-            ->select(DB::raw('MONTH(l.dateDelivered) as monthDate'), DB::raw('YEAR(l.dateDelivered) as yearDate'), 
+            ->select(DB::raw($selectDate), 
                 DB::raw("SUM(l.amountLoan) as capital"),
                 DB::raw("SUM(l.amountPorcentage) as interest"),
                 DB::raw("SUM(l.amountLoan) + SUM(l.amountPorcentage) as amountLoan"),
@@ -195,8 +203,7 @@ class ReportLoanController extends Controller
                     WHERE 
                     ls.dateDelivered >= '$start'
                     AND ls.dateDelivered <= '$finish'
-                    AND YEAR(ls.dateDelivered) = yearDate
-                    AND MONTH(ls.dateDelivered) = monthDate
+                    $subQueryCondition
 
                     AND ld.status = 1 
                     AND ld.deleted_at IS NULL 
@@ -212,14 +219,13 @@ class ReportLoanController extends Controller
                      WHERE 
                         ls.dateDelivered >= '$start'
                         AND ls.dateDelivered <= '$finish'
-                        AND MONTH(ls.dateDelivered) = monthDate
-                        AND YEAR(ls.dateDelivered) = yearDate
+                        $subQueryCondition
                         AND ld.status = 1 
                         AND ld.deleted_at IS NULL 
                         AND ld.debt != 0
                         AND ls.status = 'entregado'
+                        AND ls.mora = 0
                         AND ls.deleted_at IS NULL
-                        AND (ls.mora = 0 OR (SELECT MAX(date) FROM loan_days WHERE loan_id = ls.id AND deleted_at IS NULL) >= '$date')
                     ), 0) as deuda"),
 
                 DB::raw("(SELECT SUM(ld.debt) 
@@ -227,18 +233,24 @@ class ReportLoanController extends Controller
                     WHERE
                     ls.dateDelivered >= '$start'
                     AND ls.dateDelivered <= '$finish'
-                    AND MONTH(ls.dateDelivered) = monthDate
-                    AND YEAR(ls.dateDelivered) = yearDate
+                    $subQueryCondition
                     AND ld.status = 1 
                     AND ld.deleted_at IS NULL 
                     AND ld.debt != 0
                     AND ls.status = 'entregado'
+                    AND ls.mora = 1
                     AND ls.deleted_at IS NULL
-                    AND (ls.mora = 1 AND (SELECT MAX(date) FROM loan_days WHERE loan_id = ls.id AND deleted_at IS NULL) < '$date')
                     ) as mora")
-            )
-            ->groupBy('yearDate', 'monthDate')
-            ->get();
+            );
+
+        if($groupBy == 'year'){
+            $query->groupBy('yearDate')->orderBy('yearDate', 'ASC');
+        } else {
+            $query->groupBy('yearDate', 'monthDate');
+        }
+
+        $datas = $query->get();
+
 
         if($request->print){
             return view('report.loanRangeGestions.print', compact('start', 'finish','datas'));
