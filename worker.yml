@@ -1,0 +1,9 @@
+apps:
+  - name: prestamos-work
+    script: artisan
+    exec_mode: fork
+    interpreter: php
+    instances: 1
+    args:
+      - queue:work
+      - --queue=high,default
