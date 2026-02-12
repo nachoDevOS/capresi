@@ -212,6 +212,36 @@ class ReportLoanController extends Controller
                     AND ls.deleted_at IS NULL) as pagado"),
 
 
+                // DB::raw("IFNULL(
+                //     (SELECT SUM(ld.debt) 
+                //      FROM loan_days ld 
+                //      INNER JOIN loans ls ON ld.loan_id = ls.id 
+                //      WHERE 
+                //         ls.dateDelivered >= '$start'
+                //         AND ls.dateDelivered <= '$finish'
+                //         $subQueryCondition
+                //         AND ld.status = 1 
+                //         AND ld.deleted_at IS NULL 
+                //         AND ld.debt != 0
+                //         AND ls.status = 'entregado'
+                //         AND (ls.mora = 0 OR (SELECT MAX(date) FROM loan_days WHERE loan_id = ls.id AND deleted_at IS NULL) >= '$date')
+                //     ), 0) as deuda"),
+
+                // DB::raw("(SELECT SUM(ld.debt) 
+                //     FROM loan_days ld inner join loans ls on ld.loan_id = ls.id 
+                //     WHERE
+                //     ls.dateDelivered >= '$start'
+                //     AND ls.dateDelivered <= '$finish'
+                //     $subQueryCondition
+                //     AND ld.status = 1 
+                //     AND ld.deleted_at IS NULL 
+                //     AND ld.debt != 0
+                //     AND ls.status = 'entregado'
+                //     AND ls.mora = 1
+                //     AND ls.deleted_at IS NULL
+                //     AND (ls.mora = 1 AND (SELECT MAX(date) FROM loan_days WHERE loan_id = ls.id AND deleted_at IS NULL) < '$date')
+                //     ) as mora")
+
                 DB::raw("IFNULL(
                     (SELECT SUM(ld.debt) 
                      FROM loan_days ld 
@@ -224,8 +254,8 @@ class ReportLoanController extends Controller
                         AND ld.deleted_at IS NULL 
                         AND ld.debt != 0
                         AND ls.status = 'entregado'
-                        AND ls.mora = 0
                         AND ls.deleted_at IS NULL
+                        AND (ls.mora = 0 OR (SELECT MAX(date) FROM loan_days WHERE loan_id = ls.id AND deleted_at IS NULL) >= '$date')
                     ), 0) as deuda"),
 
                 DB::raw("(SELECT SUM(ld.debt) 
@@ -238,8 +268,8 @@ class ReportLoanController extends Controller
                     AND ld.deleted_at IS NULL 
                     AND ld.debt != 0
                     AND ls.status = 'entregado'
-                    AND ls.mora = 1
                     AND ls.deleted_at IS NULL
+                    AND (ls.mora = 1 AND (SELECT MAX(date) FROM loan_days WHERE loan_id = ls.id AND deleted_at IS NULL) < '$date')
                     ) as mora")
             );
 
@@ -253,9 +283,9 @@ class ReportLoanController extends Controller
 
 
         if($request->print){
-            return view('report.loanRangeGestions.print', compact('start', 'finish','datas'));
+            return view('reports.loans.loanRangeGestions.print', compact('start', 'finish','datas'));
         }else{
-            return view('report.loanRangeGestions.list', compact('start', 'finish', 'datas'));
+            return view('reports.loans.loanRangeGestions.list', compact('start', 'finish', 'datas'));
         }
     }
 

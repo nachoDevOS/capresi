@@ -203,7 +203,7 @@
                         visible: true,
                         showInLegend: true,
                         yValueFormatString: "##.00",
-                        name: "MONTO PRESTADO",
+                        name: "CAPITAL + INTERES Bs",
                         dataPoints: incomeData.map(item => ({
                             label: m[item.monthDate],
                             y: parseFloat(item.amountLoan)
