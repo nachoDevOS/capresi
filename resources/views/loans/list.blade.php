@@ -8,9 +8,9 @@
                     @endif
                     <th>Codigo</th>
                     <th>Nombre Cliente</th>    
-                    <th style="text-align: center">Detalles</th>
-                    <th style="text-align: center">Detalle del Monto Prestado</th>             
-                    <th style="text-align: center">Detalle de Deuda</th>      
+                    <th>Detalles</th>
+                    <th class="text-right">Monto Prestado</th>             
+                    <th class="text-right">Deuda</th>      
                     <th class="text-right">Acciones</th>
                 </tr>
             </thead>
@@ -18,9 +18,9 @@
                 @forelse ($data as $item)
                 <tr>
                     @if (auth()->user()->hasRole('admin'))
-                        <th>{{$item->id}}</th>
+                        <td style="vertical-align: middle">{{$item->id}}</td>
                     @endif
-                    <td>
+                    <td style="vertical-align: middle">
                         <small>
                             {{ $item->code }}
                         </small>
@@ -36,88 +36,62 @@
                         @endif
                     </td>
                     
-                    <td>
-                        <table>                                                    
+                    <td style="vertical-align: middle">
+                        <div style="display: flex; align-items: center;">
                             @php
                                 $image = asset('images/icono-anonimato.png');
                                 if($item->people->image){
                                     $image = asset('storage/'.str_replace('.', '-cropped.', $item->people->image));
                                 }
                             @endphp
-                            <tr>
-                                <td>
-                                    <small>CI:</small> {{ $item->people->ci }} <br>
-                                    <small>{{strtoupper($item->people->first_name)}} {{strtoupper($item->people->last_name1)}} {{strtoupper($item->people->last_name2)}} </small>
-                                    @if ($item->manager)
-                                        <br>
-                                        <small class="text-primary" style="font-weight: bold">Aprobado por {{ $item->manager->name }}</small>
-                                    @endif
-                                </td>
-                            </tr>
-                            
-                        </table>
+                            <img src="{{ $image }}" alt="Avatar" style="width: 45px; height: 45px; border-radius: 50%; margin-right: 10px; object-fit: cover; border: 1px solid #ddd;">
+                            <div>
+                                <small>CI: {{ $item->people->ci }}</small><br>
+                                <span style="font-weight: 600; font-size: 13px;">{{strtoupper($item->people->first_name)}} {{strtoupper($item->people->last_name1)}} {{strtoupper($item->people->last_name2)}}</span>
+                                @if ($item->manager)
+                                    <br>
+                                    <small class="text-primary" style="font-weight: bold"><i class="fa-solid fa-user-check"></i> {{ $item->manager->name }}</small>
+                                @endif
+                            </div>
+                        </div>
                     </td>
-                    <td>
-                        
-                        <table style="width: 100%">
-                            <tr>
-                                <td><b>Tipo</b></td>
-                                <td class="text-right">
-                                    @if ($item->typeLoan == 'diario')
-                                        Diario {{ $item->payments_period_id }}
-                                    @endif
-                                    @if ($item->typeLoan == 'diarioespecial')
-                                        Diario Especial
-                                    @endif
-                                    @if ($item->payments_period_id)
-                                        <br>
-                                        <small style="color: {{ $item->payments_period->color }}">Paga {{ $item->payments_period->name }}</small>
-                                    @endif
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Fecha Sol.</b></td>
-                                <td class="text-right">
-                                    {{ date("d-m-Y", strtotime($item->date)) }}
-                                </td>
-                            </tr>
+                    <td style="vertical-align: middle">
+                        <div style="font-size: 12px;">
+                            <div style="margin-bottom: 4px;">
+                                <b>Tipo:</b>
+                                @if ($item->typeLoan == 'diario')
+                                    Diario {{ $item->payments_period_id }}
+                                @elseif ($item->typeLoan == 'diarioespecial')
+                                    Diario Especial
+                                @endif
+                                @if ($item->payments_period_id)
+                                    <span class="label label-default" style="background-color: {{ $item->payments_period->color }}; color: #fff;">{{ $item->payments_period->name }}</span>
+                                @endif
+                            </div>
+                            <div style="margin-bottom: 2px;">
+                                <i class="fa-regular fa-calendar" title="Fecha Solicitud"></i> <span class="text-muted">Sol:</span> {{ date("d-m-Y", strtotime($item->date)) }}
+                            </div>
                             @if($item->dateDelivered)
-                                <tr>
-                                    <td><b>Fecha Ent.</b></td>
-                                    <td class="text-right">
-                                        {{ date("d-m-Y", strtotime($item->dateDelivered)) }}                                        
-                                    </td>
-                                </tr>
-                            @endif                                    
-                        </table>
+                                <div>
+                                    <i class="fa-solid fa-calendar-check text-success" title="Fecha Entrega"></i> <span class="text-muted">Ent:</span> {{ date("d-m-Y", strtotime($item->dateDelivered)) }}
+                                </div>
+                            @endif
+                        </div>
                     </td>
-                    <td style="text-align: right">
-                        <table style="width: 100%">
-                            <tr>
-                                <td><b>Monto Prestado</b></td>
-                                <td class="text-right">
-                                    {{$item->amountLoan}}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Interes</b></td>
-                                <td class="text-right">
-                                    {{$item->amountPorcentage}}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td><b>Total a Pagar</b></td>
-                                <td class="text-right">
-                                    {{$item->amountTotal}}
-                                </td>
-                            </tr>
-                        </table>
+                    <td style="text-align: right; vertical-align: middle">
+                        <div style="font-size: 12px;">
+                            <div><small class="text-muted">Prestado:</small> <b>{{ number_format($item->amountLoan, 2) }}</b></div>
+                            <div><small class="text-muted">Interés:</small> <b>{{ number_format($item->amountPorcentage, 2) }}</b></div>
+                            <div style="border-top: 1px solid #eee; margin-top: 2px; padding-top: 2px;">
+                                <small class="text-muted">Total:</small> <b class="text-primary" style="font-size: 14px;">{{ number_format($item->amountTotal, 2) }}</b>
+                            </div>
+                        </div>
                     </td>
-                    <td style="text-align: right">
+                    <td style="text-align: right; vertical-align: middle">
                         @if ($item->debt == 0)
                             <label class="label label-success">PAGADO</label>
                         @else
-                            <label class="label label-danger"><small>Bs.</small> {{$item->debt}}</label>
+                            <label class="label label-danger" style="font-size: 12px;"><small>Bs.</small> {{ number_format($item->debt, 2) }}</label>
                         @endif
                         <br>
                         @if ($item->status == 'pendiente')
@@ -136,10 +110,10 @@
                             <label class="label label-danger">RECHAZADO</label>                            
                         @endif       
                     </td>
-                    <td class="no-sort no-click bread-actions text-right">
+                    <td class="no-sort no-click bread-actions text-right" style="vertical-align: middle">
                         @if ($item->status == 'entregado' && $item->status != 'rechazado')
                             <a href="{{ route('loans-daily.money', ['loan' => $item->id]) }}" title="Pagar"  class="btn btn-sm btn-success">
-                                <i class="fa-solid fa-calendar-days"></i> {{$item->debt == 0?'Ver':'Pagar'}}</span>
+                                <i class="fa-solid fa-calendar-days"></i> {{$item->debt == 0?'Ver':'Pagar'}}
                             </a>
                         @endif
 
@@ -155,10 +129,10 @@
 
                         @if($item->status != 'rechazado')
                             <div class="btn-group" style="margin-right: 3px">
-                                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown">
+                                <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
                                     Mas <span class="caret"></span>
                                 </button>
-                                <ul class="dropdown-menu" role="menu" style="left: -90px !important">
+                                <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     @if ($item->status == 'entregado' && $item->delivered == 'Si')
                                         <li><a href="{{ route('loans-list.transaction', ['loan'=>$item->id])}}" class="btn-transaction" data-toggle="modal" title="Imprimir Calendario" ><i class="fa-solid fa-money-bill-transfer"></i> Transacciones</a></li> 
                                     @endif
