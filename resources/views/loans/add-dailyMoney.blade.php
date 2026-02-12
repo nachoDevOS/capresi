@@ -17,30 +17,62 @@
             <div class="col-md-12">
                 <div class="panel panel-bordered">
                     <div class="panel-body">
-                        <div class="row info-container">
-                            <div class="col-md-2 col-sm-4 col-xs-6 info-item">
-                                <label>Fecha de solicitud</label>
-                                <p>{{ date('d-m-Y', strtotime($loan->date)) }}</p>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 id="h4" class="panel-title">Fecha de solicitud</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <small>{{ date('d-m-Y', strtotime($loan->date)) }}</small>
+                                </div>
+                                <hr style="margin:0;">
                             </div>
-                            <div class="col-md-2 col-sm-4 col-xs-6 info-item">
-                                <label>Ruta Asignada</label>
-                                <p>{{ $route->route->name }}</p>
+                            <div class="col-md-4">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 id="h4" class="panel-title">Ruta Asiganada</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <small>{{ $route->route->name }}</small>
+                                </div>
+                                <hr style="margin:0;">
                             </div>
-                            <div class="col-md-3 col-sm-4 col-xs-6 info-item">
-                                <label>Garante</label>
-                                <p>{{ $loan->guarantor_id ? $loan->guarantor->first_name . ' ' . $loan->guarantor->last_name1 . ' ' . $loan->guarantor->last_name2 : 'SN' }}</p>
+                            <div class="col-md-4">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 id="h4" class="panel-title">Garante</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <small>{{ $loan->guarantor_id ? $loan->guarantor->first_name . ' ' . $loan->guarantor->last_name1 . ' ' . $loan->guarantor->last_name2 : 'SN' }}</small>
+                                </div>
+                                <hr style="margin:0;">
                             </div>
-                            <div class="col-md-2 col-sm-4 col-xs-6 info-item">
-                                <label>CI</label>
-                                <p>{{ $loan->people->ci }}</p>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 id="h4" class="panel-title">CI</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <small>{{ $loan->people->ci }}</small>
+                                </div>
+                                <hr style="margin:0;">
                             </div>
-                            <div class="col-md-3 col-sm-4 col-xs-6 info-item">
-                                <label>Beneficiario</label>
-                                <p>{{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}</p>
+                            <div class="col-md-4">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 id="h4" class="panel-title">Beneficiario</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <small>{{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}</small>
+                                </div>
+                                <hr style="margin:0;">
                             </div>
-                            <div class="col-md-2 col-sm-4 col-xs-6 info-item">
-                                <label>Celular</label>
-                                <p>{{ $loan->people->cell_phone ? $loan->people->cell_phone : 'SN' }}</p>
+                            <div class="col-md-4">
+                                <div class="panel-heading" style="border-bottom:0;">
+                                    <h3 id="h4" class="panel-title">Celular</h3>
+                                </div>
+                                <div class="panel-body" style="padding-top:0;">
+                                    <small>{{ $loan->people->cell_phone ? $loan->people->cell_phone : 'SN' }}</small>
+                                </div>
+                                <hr style="margin:0;">
                             </div>
                         </div>
 
@@ -53,9 +85,9 @@
                         <hr>
                         
 
-                        <div class="col-md-8">
-                            <div class="table-responsive calendar-wrapper" id="imp1">
-                                <table class="calendar-table">
+                        <div class="col-md-8" id="imp1">
+                            <div class="table-responsive">
+                                <table width="100%" border="1" cellpadding="5" style="font-size: 12px">
 
                                     @php
                                         $meses = [
@@ -108,19 +140,19 @@
                                     @endphp
 
                                     @while ($mes < $cantMeses)
-                                        <tr class="month-header-row">
-                                            <td colspan="7" class="month-header-cell">
+                                        <tr style="background-color: #666666; color: white; font-size: 18px">
+                                            <td colspan="7" style="text-align: center">
                                                 {{ $meses[intval($cantMes[$mes]->mes)] }} - {{ intval($cantMes[$mes]->ano) }}
                                             </td>
                                         </tr>
-                                        <tr class="days-header-row">
-                                            <th>LUN</th>
-                                            <th>MAR</th>
-                                            <th>MIE</th>
-                                            <th>JUE</th>
-                                            <th>VIE</th>
-                                            <th>SAB</th>
-                                            <th>DOM</th>
+                                        <tr style="background-color: #666666; color: white; font-size: 15px">
+                                            <td style="text-align: center; width: 15%">LUN</td>
+                                            <td style="text-align: center; width: 15%">MAR</td>
+                                            <td style="text-align: center; width: 15%">MIE</td>
+                                            <td style="text-align: center; width: 15%">JUE</td>
+                                            <td style="text-align: center; width: 15%">VIE</td>
+                                            <td style="text-align: center; width: 15%">SAB</td>
+                                            <td style="text-align: center; width: 10%">DOM</td>
                                         </tr>
 
                                         @php
@@ -173,15 +205,16 @@
                                                                 $cantMes[$mes]->mes .
                                                                 ($dia <= 9 ? '-0' . $dia : '-' . $dia);
                                                             // dd($fecha);
-                                                            $isWeekend = ($i == 7);
-                                                            $isHighlight = (($fecha == $inicio || $fecha == $fin) && !$isWeekend);
-                                                            $cellClass = $isWeekend ? 'weekend-day' : ($isHighlight ? 'highlight-day' : '');
                                                         @endphp
-                                                        <td class="{{ $cellClass }}">
-                                                            @if($isHighlight) @php $okNumber++; @endphp @endif
+                                                        <td @if ($i == 7) style="height: 80px; text-align: center; background-color: #CCCFD2" @endif
+                                                            @if (($fecha == $inicio || $fecha == $fin) && $i != 7) @php
+                                                                        $okNumber++;
+                                                                    @endphp
+                                                                    style="height: 80px; text-align: center; background-color: #F8FF07;"
+                                                                @else
+                                                                    style="height: 80px; text-align: center" @endif>
                                                             {{-- ____________________________________________ --}}
-                                                            <span class="day-number">{{ $dia }}</span>
-                                                            <div class="day-status">
+                                                            <small style="font-size: 18px;">{{ $dia }}</small>
                                                             <br>
 
 
@@ -195,20 +228,19 @@
 
                                                                 @if ($loan->loanDay[$number - 1]->late == 1)
                                                                     <img src="{{ asset('images/icon/atrazado.png') }}"
-                                                                        width="20px" title="Atrasado">
+                                                                        width="15px">
                                                                 @endif
                                                                 @if ($loan->loanDay[$number - 1]->debt == 0)
                                                                     <img src="{{ asset('images/icon/pagado.png') }}"
-                                                                        width="40px" title="Pagado">
+                                                                        width="50px">
                                                                 @endif
 
                                                                 @if ($loan->loanDay[$number - 1]->debt != $loan->loanDay[$number - 1]->amount && $loan->loanDay[$number - 1]->debt > 0)
-                                                                    <strong class="debt-text">Bs.
-                                                                        {{ number_format($loan->loanDay[$number - 1]->amount - $loan->loanDay[$number - 1]->debt, 2) }}</strong>
+                                                                    <strong style="font-size: 20px; color:#440505">Bs.
+                                                                        {{ $loan->loanDay[$number - 1]->amount - $loan->loanDay[$number - 1]->debt }}</strong>
                                                                 @endif
                                                             @endif
                                                             {{-- <img src="{{ asset('images/icon/pagado.png') }}" width="80px"> --}}
-                                                            </div>
                                                         </td>
                                                     @else
                                                         @if ($ok && $dia < $ultimoDia)
@@ -220,15 +252,16 @@
                                                                     '-' .
                                                                     $cantMes[$mes]->mes .
                                                                     ($dia <= 9 ? '-0' . $dia : '-' . $dia);
-                                                                $isWeekend = ($i == 7);
-                                                                $isHighlight = (($fecha == $inicio || $fecha == $fin) && !$isWeekend);
-                                                                $cellClass = $isWeekend ? 'weekend-day' : ($isHighlight ? 'highlight-day' : '');
                                                             @endphp
-                                                            <td class="{{ $cellClass }}">
-                                                                @if($isHighlight) @php $okNumber++; @endphp @endif
+                                                            <td @if ($i == 7) style="height: 80px; text-align: center; background-color: #CCCFD2" @endif
+                                                                @if (($fecha == $inicio || $fecha == $fin) && $i != 7) @php
+                                                                            $okNumber++;
+                                                                        @endphp
+                                                                        style="height: 80px; text-align: center; background-color: #F8FF07;"
+                                                                    @else
+                                                                        style="height: 80px; text-align: center;" @endif>
                                                                 {{-- ____________________________________________ --}}
-                                                                <span class="day-number">{{ $dia }}</span>
-                                                                <div class="day-status">
+                                                                <small style="font-size: 18px;">{{ $dia }}</small>
                                                                 <br>
 
                                                                 @if (($okNumber == 1 || $okNumber == 2) && $i != 7)
@@ -241,21 +274,20 @@
 
                                                                     @if ($loan->loanDay[$number - 1]->late == 1)
                                                                         <img src="{{ asset('images/icon/atrazado.png') }}"
-                                                                            width="20px" title="Atrasado">
+                                                                            width="15px">
                                                                     @endif
                                                                     @if ($loan->loanDay[$number - 1]->debt != $loan->loanDay[$number - 1]->amount && $loan->loanDay[$number - 1]->debt > 0)
-                                                                        <strong class="debt-text">Bs.
-                                                                            {{ number_format($loan->loanDay[$number - 1]->amount - $loan->loanDay[$number - 1]->debt, 2) }}</strong>
+                                                                        <strong style="font-size: 20px; color:#440505">Bs.
+                                                                            {{ $loan->loanDay[$number - 1]->amount - $loan->loanDay[$number - 1]->debt }}</strong>
                                                                     @endif
                                                                     @if ($loan->loanDay[$number - 1]->debt == 0)
                                                                         <img src="{{ asset('images/icon/pagado.png') }}"
-                                                                            width="40px" title="Pagado">
+                                                                            width="50px">
                                                                     @endif
                                                                 @endif
-                                                                </div>
                                                             </td>
                                                         @else
-                                                            <td class="empty-day"></td>
+                                                            <td style="height: 80px; text-align: center"></td>
                                                         @endif
                                                     @endif
                                                     @if ($dia == $ultimoDia)
@@ -275,9 +307,7 @@
                         </div>
 
                         <div class="col-md-4">
-                            <div class="panel panel-default" style="border-top: 3px solid #007bff;">
-                                <div class="panel-body">
-                                @if (auth()->user()->hasPermission('addMoneyDaily_loans'))
+                            @if (auth()->user()->hasPermission('addMoneyDaily_loans'))
                                 @if ($loan->debt != 0)
                                 {{-- @if ($loan->debt != 0 && $cashier->status == 'abierta') --}}
                                     <form id="form-abonar-pago" action="{{ route('loans-daily-money.store') }}"
@@ -333,10 +363,8 @@
                                     </form>
                                 @endif
                             @endif
-                                </div>
-                            </div>
 
-                            <div class="row" style="margin-top: 15px;">
+                            <div class="row">
                                 <table width="100%" cellpadding="20" class="table">
                                     <tr>
                                         <td><small>Pago Diario</small></td>
@@ -614,239 +642,6 @@
 
             100% {
                 right: 20px;
-            }
-        }
-
-        /* New Calendar Styles */
-        .info-container {
-            background-color: #f9f9f9;
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #e3e3e3;
-            margin-bottom: 20px;
-        }
-        .info-item {
-            margin-bottom: 10px;
-        }
-        .info-item label {
-            font-size: 10px;
-            color: #888;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 0;
-        }
-        .info-item p {
-            font-weight: bold;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .calendar-wrapper {
-            background: white;
-            border: 1px solid #ddd;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            background: #f8f9fa;
-            border: none;
-            padding: 10px;
-            border-radius: 10px;
-        }
-        .calendar-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-family: 'Arial', sans-serif;
-            border-collapse: separate;
-            border-spacing: 6px;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-        }
-        .month-header-row {
-            background-color: #343a40;
-            color: white;
-            /* background-color: #343a40; */
-        }
-        .month-header-cell {
-            background: linear-gradient(135deg, #2c3e50, #4ca1af);
-            color: white;
-            text-align: center;
-            padding: 10px;
-            padding: 12px;
-            font-size: 16px;
-            font-weight: bold;
-            text-transform: uppercase;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-        .days-header-row th {
-            text-align: center;
-            padding: 8px;
-            background-color: #f1f1f1;
-            border-bottom: 1px solid #ddd;
-            font-size: 12px;
-            color: #555;
-            padding: 10px;
-            background-color: transparent;
-            border: none;
-            font-size: 11px;
-            color: #6c757d;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-        }
-        .calendar-table td {
-            border: 1px solid #eee;
-            height: 90px;
-            background: white;
-            border: 1px solid #e9ecef;
-            border-radius: 12px;
-            height: 100px;
-            vertical-align: top;
-            padding: 5px;
-            padding: 8px;
-            width: 14.28%;
-            position: relative;
-            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .calendar-table td:hover {
-            transform: translateY(-5px) scale(1.02);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-            z-index: 10;
-            border-color: #b3d7ff;
-        }
-        .day-number {
-            font-size: 14px;
-            font-weight: bold;
-            color: #444;
-            display: block;
-            margin-bottom: 5px;
-            font-size: 12px;
-            font-weight: 700;
-            color: #adb5bd;
-            position: absolute;
-            top: 8px;
-            right: 10px;
-            transition: color 0.3s;
-        }
-        .calendar-table td:hover .day-number {
-            color: #007bff;
-        }
-        .day-status {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 40px;
-            height: 100%;
-            margin-top: 15px;
-        }
-        .day-status img {
-            filter: drop-shadow(0 2px 3px rgba(0,0,0,0.1));
-            transition: transform 0.3s;
-        }
-        .calendar-table td:hover .day-status img {
-            transform: scale(1.15);
-        }
-        .highlight-day {
-            background-color: #fff3cd !important; /* Light yellow */
-            border: 1px solid #ffeeba;
-            background: linear-gradient(135deg, #fff3cd, #ffecb5) !important;
-            border: 1px solid #ffeeba !important;
-            color: #856404;
-        }
-        .highlight-day .day-number {
-            color: #856404 !important;
-        }
-        .weekend-day {
-            background-color: #f8f9fa;
-            color: #aaa;
-            background-color: #f1f3f5;
-            opacity: 0.8;
-        }
-        .weekend-day:hover {
-            opacity: 1;
-            background-color: #fff;
-        }
-        .debt-text {
-            color: #a94442;
-            font-size: 11px;
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            background: #f2dede;
-            padding: 2px 4px;
-            border-radius: 3px;
-            margin-top: 2px;
-            background: #e74c3c;
-            padding: 3px 8px;
-            border-radius: 20px;
-            margin-top: 5px;
-            box-shadow: 0 2px 4px rgba(231, 76, 60, 0.3);
-            display: inline-block;
-        }
-        .empty-day {
-            background-color: #fafafa;
-            background: transparent;
-            border: none;
-            box-shadow: none;
-            pointer-events: none;
-        }
-
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translate3d(0, 20px, 0);
-            }
-            to {
-                opacity: 1;
-                transform: translate3d(0, 0, 0);
-            }
-        }
-
-        .calendar-table tr {
-            animation: fadeInUp 0.5s ease-out forwards;
-            opacity: 0; /* Start hidden */
-        }
-        
-        /* Stagger animations for rows */
-        .calendar-table tr:nth-child(1) { animation-delay: 0.1s; }
-        .calendar-table tr:nth-child(2) { animation-delay: 0.15s; }
-        .calendar-table tr:nth-child(3) { animation-delay: 0.2s; }
-        .calendar-table tr:nth-child(4) { animation-delay: 0.25s; }
-        .calendar-table tr:nth-child(5) { animation-delay: 0.3s; }
-        .calendar-table tr:nth-child(6) { animation-delay: 0.35s; }
-        .calendar-table tr:nth-child(7) { animation-delay: 0.4s; }
-        .calendar-table tr:nth-child(8) { animation-delay: 0.45s; }
-        .calendar-table tr:nth-child(9) { animation-delay: 0.5s; }
-        .calendar-table tr:nth-child(10) { animation-delay: 0.55s; }
-        .calendar-table tr:nth-child(11) { animation-delay: 0.6s; }
-        .calendar-table tr:nth-child(12) { animation-delay: 0.65s; }
-        .calendar-table tr:nth-child(13) { animation-delay: 0.7s; }
-        .calendar-table tr:nth-child(14) { animation-delay: 0.75s; }
-        .calendar-table tr:nth-child(15) { animation-delay: 0.8s; }
-        .calendar-table tr:nth-child(16) { animation-delay: 0.85s; }
-        .calendar-table tr:nth-child(17) { animation-delay: 0.9s; }
-        .calendar-table tr:nth-child(18) { animation-delay: 0.95s; }
-        .calendar-table tr:nth-child(19) { animation-delay: 1.0s; }
-        .calendar-table tr:nth-child(20) { animation-delay: 1.05s; }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .calendar-table td {
-                height: 70px;
-                padding: 2px;
-            }
-            .day-number {
-                font-size: 10px;
-                top: 2px;
-                right: 4px;
-            }
-            .day-status img {
-                width: 25px !important;
-            }
-            .debt-text {
-                font-size: 9px;
-                padding: 1px 4px;
             }
         }
     </style>
