@@ -18,7 +18,7 @@ class ReportLoanController extends Controller
     // ######################       Prestamos x Gestion       ######################
     public function loanGestions()
     {
-        $this->custom_authorize('browse_printloanGestion');
+        // $this->custom_authorize('browse_printloanGestion');
         return view('reports.loans.loanGestions.browse');
     }
 
@@ -166,13 +166,13 @@ class ReportLoanController extends Controller
 
 
     // ######################       Prestamos x Rango de Gestion       ######################
-    public function loanRangeGestion()
+    public function loanRangeGestions()
     {
-        $this->custom_authorize('browse_printloanRangeGestion');
+        // $this->custom_authorize('browse_printloanRangeGestion');
         return view('reports.loans.loanRangeGestion.browse');
     }
 
-    public function loanRangeGestionList(Request $request)
+    public function loanRangeGestionsList(Request $request)
     {
         $start = $request->start;
         $finish = $request->finish;

@@ -13,7 +13,7 @@
                     <div class="panel-body" style="padding: 0px">
                         <div class="col-md-8" style="padding: 0px">
                             <h1 class="page-title">
-                                <i class="voyager-calendar"></i> Reporte Mensual de Prestamos por Gestión
+                                <i class="voyager-calendar"></i> Reporte de Prestamos Por Rango de Gestión
                             </h1>
                         </div>
                         <div class="col-md-4" style="margin-top: 30px">
