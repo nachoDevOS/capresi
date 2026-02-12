@@ -109,7 +109,8 @@
                             @endif
                         </div>
                     </td>
-                    <td class="no-sort no-click bread-actions text-right" style="vertical-align: middle">
+                    {{-- <td class="no-sort no-click bread-actions text-right" style="vertical-align: middle"> --}}
+                    <td style="width: 18%" class="no-sort no-click bread-actions text-right">
                         @if ($item->status == 'entregado' && $item->status != 'rechazado')
                             <a href="{{ route('loans-daily.money', ['loan' => $item->id]) }}" title="Pagar"  class="btn btn-sm btn-success">
                                 <i class="fa-solid fa-calendar-days"></i> {{$item->debt == 0?'Ver':'Pagar'}}
@@ -168,7 +169,7 @@
                                     <i class="fa-solid fa-thumbs-down"></i> <span class="hidden-xs hidden-sm">Rechazar</span>
                                 </button>
                                 <button title="Borrar" class="btn btn-sm btn-danger delete" onclick="deleteItem('{{ route('loans.destroy', ['loan' => $item->id]) }}')" data-toggle="modal" data-target="#modal-delete">
-                                    <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
+                                    <i class="voyager-trash"></i>
                                 </button>
                             @endif
                         @endif

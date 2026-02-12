@@ -12,7 +12,15 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="{{ asset('css/style/dataTable.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('css/style/page-title.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style/small.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style/h.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style/input.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style/label.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style/p.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style/li.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/style/span.css') }}">
 
     {{-- show swetalert message --}}
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>

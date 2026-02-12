@@ -456,7 +456,7 @@
                 if (option.loading) {
                     return '<span class="text-center"><i class="fas fa-spinner fa-spin"></i> Buscando...</span>';
                 }
-                let image = "{{ asset('images/icono-anonimato.png') }}";
+                let image = "{{ asset('images/default.jpg') }}";
                 if(option.image){
                     image = "{{ asset('storage') }}/"+option.image.replace('.', '-cropped.');
                 }
