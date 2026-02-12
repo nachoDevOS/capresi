@@ -39,7 +39,7 @@
                     <td style="vertical-align: middle">
                         <div style="display: flex; align-items: center;">
                             @php
-                                $image = asset('images/icono-anonimato.png');
+                                $image = asset('images/default.jpg');
                                 if($item->people->image){
                                     $image = asset('storage/'.str_replace('.', '-cropped.', $item->people->image));
                                 }
@@ -88,27 +88,26 @@
                         </div>
                     </td>
                     <td style="text-align: right; vertical-align: middle">
-                        @if ($item->debt == 0)
-                            <label class="label label-success">PAGADO</label>
-                        @else
-                            <label class="label label-danger" style="font-size: 12px;"><small>Bs.</small> {{ number_format($item->debt, 2) }}</label>
-                        @endif
-                        <br>
-                        @if ($item->status == 'pendiente')
-                            <label class="label label-danger">PENDIENTE</label>                            
-                        @endif
-                        @if ($item->status == 'verificado')
-                            <label class="label label-warning">VERIFICADO</label>                            
-                        @endif
-                        @if ($item->status == 'aprobado')
-                            <label class="label label-primary">APROBADO</label>                            
-                        @endif
-                        @if ($item->status == 'entregado')
-                            <label class="label label-success">ACTIVO</label>                            
-                        @endif
-                        @if ($item->status == 'rechazado')
-                            <label class="label label-danger">RECHAZADO</label>                            
-                        @endif       
+                        <div style="margin-bottom: 5px">
+                            @if ($item->debt == 0)
+                                <span class="label label-success">PAGADO</span>
+                            @else
+                                <span class="label label-danger" style="font-size: 12px">Bs. {{ number_format($item->debt, 2) }}</span>
+                            @endif
+                        </div>
+                        <div>
+                            @if ($item->status == 'pendiente')
+                                <span class="label label-danger">PENDIENTE</span>
+                            @elseif ($item->status == 'verificado')
+                                <span class="label label-warning">VERIFICADO</span>
+                            @elseif ($item->status == 'aprobado')
+                                <span class="label label-primary">APROBADO</span>
+                            @elseif ($item->status == 'entregado')
+                                <span class="label label-success">ACTIVO</span>
+                            @elseif ($item->status == 'rechazado')
+                                <span class="label label-danger">RECHAZADO</span>
+                            @endif
+                        </div>
                     </td>
                     <td class="no-sort no-click bread-actions text-right" style="vertical-align: middle">
                         @if ($item->status == 'entregado' && $item->status != 'rechazado')
