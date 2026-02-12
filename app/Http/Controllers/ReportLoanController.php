@@ -14,6 +14,8 @@ class ReportLoanController extends Controller
         $this->middleware('auth');
     }
 
+
+    // ######################       Prestamos x Gestion       ######################
     public function loanGestions()
     {
         $this->custom_authorize('browse_printloanGestion');
@@ -122,7 +124,7 @@ class ReportLoanController extends Controller
     }
 
 
-    // ######################################################################################
+    // ######################       Prestamos Actuales vigentes       ######################
     public function currentLoans()
     {        
         return view('reports.loans.currentLoans.browse');
@@ -159,6 +161,88 @@ class ReportLoanController extends Controller
             return view('reports.loans.currentLoans.print', compact('loans', 'type'));
         }else{
             return view('reports.loans.currentLoans.list', compact('loans', 'type'));
+        }
+    }
+
+
+    // ######################       Prestamos x Rango de Gestion       ######################
+    public function loanRangeGestion()
+    {
+        $this->custom_authorize('browse_printloanRangeGestion');
+        return view('reports.loans.loanRangeGestion.browse');
+    }
+
+    public function loanRangeGestionList(Request $request)
+    {
+        $start = $request->start;
+        $finish = $request->finish;
+        // dump($request);
+
+
+        $datas = DB::table('loans as l')
+            ->where('l.dateDelivered', '>=', $start)
+            ->where('l.dateDelivered', '<=', $finish)
+            ->where('l.deleted_at', null)
+            ->where('l.status', 'entregado')
+
+
+            ->select(DB::raw('MONTH(l.dateDelivered) as monthDate'), DB::raw('YEAR(l.dateDelivered) as yearDate'), 
+                DB::raw("SUM(l.amountLoan) as capital"),
+                DB::raw("SUM(l.amountLoan) + SUM(l.amountPorcentage) as amountLoan"),
+
+                DB::raw("(SELECT SUM(ld.amount - ld.debt) 
+                    FROM loan_days ld inner join loans ls on ld.loan_id = ls.id 
+                    WHERE 
+                    ls.dateDelivered >= '$start'
+                    AND ls.dateDelivered <= '$finish'
+                    AND YEAR(ls.dateDelivered) = yearDate
+                    AND MONTH(ls.dateDelivered) = monthDate
+
+                    AND ld.status = 1 
+                    AND ld.deleted_at IS NULL 
+                
+                    AND ls.status = 'entregado'
+                    AND ls.deleted_at IS NULL) as pagado"),
+
+
+                DB::raw("IFNULL(
+                    (SELECT SUM(ld.debt) 
+                     FROM loan_days ld 
+                     INNER JOIN loans ls ON ld.loan_id = ls.id 
+                     WHERE 
+                        ls.dateDelivered >= '$start'
+                        AND ls.dateDelivered <= '$finish'
+                        AND MONTH(ls.dateDelivered) = monthDate
+                        AND YEAR(ls.dateDelivered) = yearDate
+                        AND ld.status = 1 
+                        AND ld.deleted_at IS NULL 
+                        AND ld.debt != 0
+                        AND ls.status = 'entregado'
+                        AND ls.mora = 0
+                        AND ls.deleted_at IS NULL
+                    ), 0) as deuda"),
+
+                DB::raw("(SELECT SUM(ld.debt) 
+                    FROM loan_days ld inner join loans ls on ld.loan_id = ls.id 
+                    WHERE
+                    ls.dateDelivered >= '$start'
+                    AND ls.dateDelivered <= '$finish'
+                    AND MONTH(ls.dateDelivered) = monthDate
+                    AND YEAR(ls.dateDelivered) = yearDate
+                    AND ld.status = 1 
+                    AND ld.deleted_at IS NULL 
+                    AND ld.debt != 0
+                    AND ls.status = 'entregado'
+                    AND ls.mora = 1
+                    AND ls.deleted_at IS NULL) as mora")
+            )
+            ->groupBy('yearDate', 'monthDate')
+            ->get();
+
+        if($request->print){
+            return view('report.loanRangeGestion.print', compact('start', 'finish','datas'));
+        }else{
+            return view('report.loanRangeGestion.list', compact('start', 'finish', 'datas'));
         }
     }
 

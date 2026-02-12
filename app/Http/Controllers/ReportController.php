@@ -261,6 +261,8 @@ class ReportController extends Controller
     }
 
     // ::::::::::::::::::::::::::::::::::::::::::::
+
+    // Ya no sirve ha sido mejorado
     public function loanRangeGestion()
     {
         $this->custom_authorize('browse_printloanRangeGestion');

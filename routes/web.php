@@ -502,8 +502,12 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
     Route::get('reports/loans/currentloans', [ReportLoanController::class, 'currentLoans'])->name('reports-loans.currentloans');
     Route::post('reports/loans/currentloans/list', [ReportLoanController::class, 'currentLoansList'])->name('reports-loans.currentloans.list');
 
+    // Para prestamos por gention
     Route::get('reports/loans/loangestions', [ReportLoanController::class, 'loanGestions'])->name('reports-loans.loanGestions');
     Route::post('reports/loans/loangestions/list', [ReportLoanController::class, 'loanGestionsList'])->name('reports-loans.loanGestions.list');
+
+    // Para prestamos por rango de gention
+    Route::get('reports/loans/loanrangegestions', [ReportLoanController::class, 'loanRangeGestions'])->name('reports-loans.loanRangeGestions');
 
 
 
