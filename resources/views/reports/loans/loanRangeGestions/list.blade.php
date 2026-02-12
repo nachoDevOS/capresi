@@ -13,12 +13,13 @@
                 <table id="dataStyle" style="width:100%"  class="table table-bordered table-striped table-sm">
                     <thead>
                         <tr>                            
-                            <th colspan="10" style="text-align: center">GESTION {{$yearDate}}</th>    
+                        <th colspan="11" style="text-align: center">GESTION {{$yearDate}}</th>    
                         </tr>
                         <tr>
                             <th rowspan="2" style="width:5px">N&deg;</th>
                             <th rowspan="2" style="text-align: center">MES</th>
                             <th rowspan="2"style="text-align: center">CAPITAL</th>
+                        <th rowspan="2"style="text-align: center">INTERES</th>
                             <th rowspan="2"style="text-align: center">MONTO PRESTADO + INTERES Bs.</th>   
 
                             <th colspan="3" style="text-align: center">Bs.</th>
@@ -41,6 +42,7 @@
                             $months = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');   
                             $amountLoan =0; 
                             $capital =0;
+                            $interest = 0;
                             $pagado = 0;
                             $deuda = 0;
                             $mora = 0;
@@ -50,6 +52,7 @@
                                 <td>{{ $count }}</td>
                                 <td style="text-align: left">{{ $months[$item->monthDate] }}-{{$item->yearDate}}</td>
                                 <td style="text-align: right">{{ number_format($item->capital, 2, ',','.') }}</td>
+                                <td style="text-align: right">{{ number_format($item->interest, 2, ',','.') }}</td>
                                 <td style="text-align: right">{{ number_format($item->amountLoan, 2, ',','.') }}</td>
                                 <td style="text-align: right">{{ number_format($item->pagado, 2, ',','.') }}</td>
                                 <td style="text-align: right">{{ number_format($item->deuda, 2, ',','.') }}</td>
@@ -65,16 +68,18 @@
                                 $pagado+=$item->pagado;
                                 $deuda+=$item->deuda;
                                 $capital+=$item->capital;
+                                $interest+=$item->interest;
                                 $mora+=$item->mora;
                             @endphp
                         @empty
                             <tr style="text-align: center">
-                                <td colspan="10">No se encontraron registros.</td>
+                                <td colspan="11">No se encontraron registros.</td>
                             </tr>
                         @endforelse
                         <tr>
                             <td colspan="2" style="text-align: left">Total</td>
                             <td style="text-align: right">{{ number_format($capital, 2, ',','.') }}</td>
+                            <td style="text-align: right">{{ number_format($interest, 2, ',','.') }}</td>
                             <td style="text-align: right">{{ number_format($amountLoan, 2, ',','.') }}</td>
                             <td style="text-align: right">{{ number_format($pagado, 2, ',','.') }}</td>
                             <td style="text-align: right">{{ number_format($deuda, 2, ',','.') }}</td>

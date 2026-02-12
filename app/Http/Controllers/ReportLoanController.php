@@ -174,6 +174,7 @@ class ReportLoanController extends Controller
     {
         $start = $request->start;
         $finish = $request->finish;
+        $date = date('Y-m-d');
         // dump($request);
 
 
@@ -186,6 +187,7 @@ class ReportLoanController extends Controller
 
             ->select(DB::raw('MONTH(l.dateDelivered) as monthDate'), DB::raw('YEAR(l.dateDelivered) as yearDate'), 
                 DB::raw("SUM(l.amountLoan) as capital"),
+                DB::raw("SUM(l.amountPorcentage) as interest"),
                 DB::raw("SUM(l.amountLoan) + SUM(l.amountPorcentage) as amountLoan"),
 
                 DB::raw("(SELECT SUM(ld.amount - ld.debt) 
@@ -216,8 +218,8 @@ class ReportLoanController extends Controller
                         AND ld.deleted_at IS NULL 
                         AND ld.debt != 0
                         AND ls.status = 'entregado'
-                        AND ls.mora = 0
                         AND ls.deleted_at IS NULL
+                        AND (ls.mora = 0 OR (SELECT MAX(date) FROM loan_days WHERE loan_id = ls.id AND deleted_at IS NULL) >= '$date')
                     ), 0) as deuda"),
 
                 DB::raw("(SELECT SUM(ld.debt) 
@@ -231,8 +233,9 @@ class ReportLoanController extends Controller
                     AND ld.deleted_at IS NULL 
                     AND ld.debt != 0
                     AND ls.status = 'entregado'
-                    AND ls.mora = 1
-                    AND ls.deleted_at IS NULL) as mora")
+                    AND ls.deleted_at IS NULL
+                    AND (ls.mora = 1 AND (SELECT MAX(date) FROM loan_days WHERE loan_id = ls.id AND deleted_at IS NULL) < '$date')
+                    ) as mora")
             )
             ->groupBy('yearDate', 'monthDate')
             ->get();
