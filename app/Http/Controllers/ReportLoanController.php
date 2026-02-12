@@ -169,7 +169,7 @@ class ReportLoanController extends Controller
     public function loanRangeGestions()
     {
         // $this->custom_authorize('browse_printloanRangeGestion');
-        return view('reports.loans.loanRangeGestion.browse');
+        return view('reports.loans.loanRangeGestions.browse');
     }
 
     public function loanRangeGestionsList(Request $request)
@@ -240,9 +240,9 @@ class ReportLoanController extends Controller
             ->get();
 
         if($request->print){
-            return view('report.loanRangeGestion.print', compact('start', 'finish','datas'));
+            return view('report.loanRangeGestions.print', compact('start', 'finish','datas'));
         }else{
-            return view('report.loanRangeGestion.list', compact('start', 'finish', 'datas'));
+            return view('report.loanRangeGestions.list', compact('start', 'finish', 'datas'));
         }
     }
 
