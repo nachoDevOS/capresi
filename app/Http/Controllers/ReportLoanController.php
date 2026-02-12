@@ -14,6 +14,45 @@ class ReportLoanController extends Controller
         $this->middleware('auth');
     }
 
+    // ######################       Prestamos Actuales vigentes       ######################
+    public function currentLoans()
+    {        
+        return view('reports.loans.currentLoans.browse');
+    }
+
+    public function currentLoansList(Request $request)
+    {
+        $date = Carbon::now()->format('Y-m-d');
+        $type = $request->type;
+
+        $loans = Loan::with(['people', 'loanDay', 'current_loan_route.route'])
+            ->where('status', 'entregado')
+            ->where('deleted_at', null)
+            ->where('debt', '>', 0)
+            ->whereHas('loanDay', function($q) use ($date){
+                $q->where('date', '>=', $date)->where('deleted_at', null);
+            })
+            ->get();
+        
+        if($type == 'todo'){
+            $loans = $loans->groupBy(function($item) {
+                return 'Todo';
+            });
+        } else {
+            $type = 'grouped';
+            $loans = $loans->groupBy(function($item) {
+                return Carbon::parse($item->dateDelivered)->format('d/m/Y');
+            })->sortBy(function ($group, $key) {
+                return Carbon::createFromFormat('d/m/Y', $key)->timestamp;
+            });
+        }
+
+        if($request->print){
+            return view('reports.loans.currentLoans.print', compact('loans', 'type'));
+        }else{
+            return view('reports.loans.currentLoans.list', compact('loans', 'type'));
+        }
+    }
 
     // ######################       Prestamos x Gestion       ######################
     public function loanGestions()
@@ -120,47 +159,6 @@ class ReportLoanController extends Controller
             return view('reports.loans.loanGestions.print', compact('start', 'finish','datas'));
         }else{
             return view('reports.loans.loanGestions.list', compact('datas'));
-        }
-    }
-
-
-    // ######################       Prestamos Actuales vigentes       ######################
-    public function currentLoans()
-    {        
-        return view('reports.loans.currentLoans.browse');
-    }
-
-    public function currentLoansList(Request $request)
-    {
-        $date = Carbon::now()->format('Y-m-d');
-        $type = $request->type;
-
-        $loans = Loan::with(['people', 'loanDay', 'current_loan_route.route'])
-            ->where('status', 'entregado')
-            ->where('deleted_at', null)
-            ->where('debt', '>', 0)
-            ->whereHas('loanDay', function($q) use ($date){
-                $q->where('date', '>=', $date)->where('deleted_at', null);
-            })
-            ->get();
-        
-        if($type == 'todo'){
-            $loans = $loans->groupBy(function($item) {
-                return 'Todo';
-            });
-        } else {
-            $type = 'grouped';
-            $loans = $loans->groupBy(function($item) {
-                return Carbon::parse($item->dateDelivered)->format('d/m/Y');
-            })->sortBy(function ($group, $key) {
-                return Carbon::createFromFormat('d/m/Y', $key)->timestamp;
-            });
-        }
-
-        if($request->print){
-            return view('reports.loans.currentLoans.print', compact('loans', 'type'));
-        }else{
-            return view('reports.loans.currentLoans.list', compact('loans', 'type'));
         }
     }
 
