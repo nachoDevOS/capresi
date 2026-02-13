@@ -116,7 +116,7 @@
                             </a>
                         @if ($item->status == 'entregado' && $item->status != 'rechazado')
                             <a href="{{ route('loans-daily.money', ['loan' => $item->id]) }}" title="Pagar"  class="btn btn-sm btn-success">
-                                <i class="fa-solid fa-calendar-days"></i> {{$item->debt == 0?'Ver':'Pagar'}}
+                                <i class="fa-solid fa-calendar-days"></i>
                             </a>
                         @endif
 

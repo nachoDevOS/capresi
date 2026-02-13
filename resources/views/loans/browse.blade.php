@@ -122,69 +122,6 @@
     @include('partials.modal-deliverMoney')
     @include('partials.modal-decline')
     @include('partials.modal-approve')
-    {{-- <div class="modal modal-dark fade" data-backdrop="static" tabindex="-1" id="success-modal" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><i class="fa-solid fa-money-check-dollar"></i> Aprobar Prestamo</h4>
-                </div>
-                <div class="modal-footer">
-                    <form action="#" id="success_form" method="GET">
-                        {{ csrf_field() }}
-                        <input type="hidden" name="id" id="id">
-
-                            <div class="text-center" style="text-transform:uppercase">
-                                <i class="fa-solid fa-money-check-dollar" style="color: rgb(68, 68, 68); font-size: 5em;"></i>
-                                <br>
-                                
-                                <p><b>Desea aprobar el prestamo?</b></p>
-                            </div>
-                        <input type="submit" class="btn btn-dark pull-right delete-confirm" value="Sí, aprobar">
-                    </form>
-                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div> --}}
-
-
-    {{-- modal para destruir un prestamo  con caja cerrada --}}
-    {{-- <form action="#" id="destroy_form" method="POST">
-        {{ method_field('DELETE') }}
-        {{ csrf_field() }}
-        <div class="modal modal-danger fade" data-backdrop="static" tabindex="-1" id="destroy-modal" role="dialog">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title"><i class="voyager-trash"></i> Desea eliminar el siguiente registro?</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="alert alert-warning">
-                            <strong>Aviso: </strong>
-                            <p> Usted esta eliminando un prestamo que ha sido entregado al beneficiario, por lo tanto al eliminar el prestamo usted debera contar usted con caja abierta para realizar la eliminacion de prestamo. </p>
-                        </div> 
-
-                        <div class="text-center" style="text-transform:uppercase">
-                            <i class="voyager-trash" style="color: red; font-size: 5em;"></i>
-                        </div>
-                        <div class="form-group">
-                            <label for="observation">Motivo</label>
-                            <textarea name="destroyObservation" class="form-control" rows="5" placeholder="Describa el motivo de la anulación del prestamo" required></textarea>
-                        </div>
-                        <label class="checkbox-inline"><input type="checkbox" value="1" required>Confirmar eliminacion..!</label>
-                    </div>
-
-                    <div class="modal-footer">
-                        <input type="submit" class="btn btn-danger pull-right delete-confirm" value="Sí, eliminar">
-                        
-                        <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </form> --}}
 
     
 
@@ -235,14 +172,6 @@
         </div>
     </form>
     
-
-
-    
-    
-
-
-
-
 
     {{-- Cambio de perido de pago --}}
     <form class="form-submit" id="form-payments-period" action="{{ route('loans.update.payments-period') }}" method="post">
