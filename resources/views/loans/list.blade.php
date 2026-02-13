@@ -6,12 +6,12 @@
                     @if (auth()->user()->hasRole('admin'))
                         <th>ID</th>
                     @endif
-                    <th>Codigo</th>
-                    <th>Nombre Cliente</th>    
-                    <th>Detalles</th>
-                    <th class="text-right">Monto Prestado</th>             
-                    <th class="text-right">Deuda</th>      
-                    <th class="text-right">Acciones</th>
+                    <th style="text-align: center">Codigo</th>
+                    <th style="text-align: center">Nombre Cliente</th>    
+                    <th style="text-align: center">Detalles</th>
+                    <th style="text-align: center">Monto Prestado</th>             
+                    <th style="text-align: center">Deuda</th>      
+                    <th style="text-align: center">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,7 +44,7 @@
                                     $image = asset('storage/'.str_replace('.', '-cropped.', $item->people->image));
                                 }
                             @endphp
-                            <img src="{{ $image }}" alt="Avatar" style="width: 45px; height: 45px; border-radius: 50%; margin-right: 10px; object-fit: cover; border: 1px solid #ddd;">
+                            <img src="{{ $image }}" alt="Avatar" class="image-expandable" style="width: 45px; height: 45px; border-radius: 50%; margin-right: 10px; object-fit: cover; border: 1px solid #ddd;">
                             <div>
                                 <small>CI: {{ $item->people->ci }}</small><br>
                                 <span style="font-weight: 600; font-size: 13px;">{{strtoupper($item->people->first_name)}} {{strtoupper($item->people->last_name1)}} {{strtoupper($item->people->last_name2)}}</span>
@@ -111,6 +111,9 @@
                     </td>
                     {{-- <td class="no-sort no-click bread-actions text-right" style="vertical-align: middle"> --}}
                     <td style="width: 18%" class="no-sort no-click bread-actions text-right">
+                        <a href="#" onclick="" title="Eliminar" data-toggle="modal" data-target="#modal-delete" class="btn btn-sm btn-danger delete">
+                                <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm"></span>
+                            </a>
                         @if ($item->status == 'entregado' && $item->status != 'rechazado')
                             <a href="{{ route('loans-daily.money', ['loan' => $item->id]) }}" title="Pagar"  class="btn btn-sm btn-success">
                                 <i class="fa-solid fa-calendar-days"></i> {{$item->debt == 0?'Ver':'Pagar'}}

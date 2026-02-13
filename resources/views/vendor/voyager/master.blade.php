@@ -22,6 +22,8 @@
     <link rel="stylesheet" href="{{ asset('css/style/li.css') }}">
     <link rel="stylesheet" href="{{ asset('css/style/span.css') }}">
 
+    <link rel="stylesheet" href="{{ asset('css/image-expandable.css') }}">
+
     {{-- show swetalert message --}}
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
@@ -37,6 +39,19 @@
 
     <!-- App CSS -->
     <link rel="stylesheet" href="{{ voyager_asset('css/app.css') }}">
+
+    <style>
+        #voyager-loader img{
+            animation:none !important;
+            height:170px;
+            left:50%;
+            margin-left:-100px;
+            margin-right:-50px;
+            position:absolute;
+            top:40%;
+            width:200px
+        }
+    </style>
 
     @yield('css')
     @if(__('voyager::generic.is_rtl') == 'true')
@@ -68,10 +83,10 @@
     @yield('head')
 </head>
     <body class="voyager @if(isset($dataType) && isset($dataType->slug)){{ $dataType->slug }}@endif">
-        <div id="voyager-loader">
+        <div id="voyager-loader" style="animation: none !important;">
             <?php $admin_loader_img = Voyager::setting('admin.loader', ''); ?>
             @if($admin_loader_img == '')
-                <img src="{{ asset('images/loading.png') }}" alt="Voyager Loader">
+                <img src="{{ asset('images/loader_img.gif') }}" alt="Voyager Loader">
             @else
                 <img src="{{ Voyager::image($admin_loader_img) }}" alt="Voyager Loader">
             @endif
@@ -291,17 +306,7 @@
         <!-- Javascript Libs -->
         <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
 
-        {{-- @if (setting('configuracion.navidad')) --}}
-            {{-- <link href="{{asset('navidad/css/style.css')}}" rel="stylesheet" type="text/css" /> --}}
-            {{-- <script type="text/javascript" src="{{asset('navidad/js/jquery-latest.min.js')}}"></script> --}}
-            {{-- <script src="{{asset('navidad/js/snowfall.jquery.js')}}"></script> --}}
-            {{-- <script type="text/javascript" src="{{asset('navidad/snow.js')}}"></script>
-            <script type="text/javascript">
-                $(function() {
-                    $(document).snow({ SnowImage: "{{ asset('navidad/image/icon.png') }}", SnowImage2: "{{ asset('navidad/image/caramelo.png') }}" });
-                });
-            </script> --}}
-        {{-- @endif --}}
+        <script src="{{ asset('js/input-numberBlock.js') }}"></script>
 
         <script>
             @if(Session::has('alerts'))

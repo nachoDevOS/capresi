@@ -4,17 +4,35 @@
 
 @section('page_header')
     <div class="container-fluid">
-        <h1 id="titleHead" class="page-title">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="panel panel-bordered">
+                    <div class="panel-body" style="padding: 0px">
+                        <div class="col-md-8" style="padding: 0px">
+                            <h1 class="page-title">
+                                <i class="{{ $dataType->icon }}"></i> {{ $dataType->getTranslatedAttribute('display_name_plural') }}
+                            </h1>
+                        </div>
+                        <div class="col-md-4 text-right" style="margin-top: 30px">
+                            @can('add', app($dataType->model_name))
+                                <a href="{{ route('voyager.'.$dataType->slug.'.create') }}" class="btn btn-success btn-add-new">
+                                    <i class="voyager-plus"></i> <span>{{ __('voyager::generic.add_new') }}</span>
+                                </a>
+                            @endcan
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- <h1 class="page-title">
             <i class="{{ $dataType->icon }}"></i> {{ $dataType->getTranslatedAttribute('display_name_plural') }}
-        </h1>
-        @can('add', app($dataType->model_name))
+        </h1> --}}
+        {{-- @can('add', app($dataType->model_name))
             <a href="{{ route('voyager.'.$dataType->slug.'.create') }}" class="btn btn-success btn-add-new">
                 <i class="voyager-plus"></i> <span>{{ __('voyager::generic.add_new') }}</span>
             </a>
-        @endcan
-        {{-- @can('delete', app($dataType->model_name))
-            @include('voyager::partials.bulk-delete')
         @endcan --}}
+
         @can('edit', app($dataType->model_name))
             @if(!empty($dataType->order_column) && !empty($dataType->order_display_column))
                 <a href="{{ route('voyager.'.$dataType->slug.'.order') }}" class="btn btn-primary btn-add-new">
@@ -22,11 +40,6 @@
                 </a>
             @endif
         @endcan
-        {{-- @can('delete', app($dataType->model_name))
-            @if($usesSoftDeletes)
-                <input type="checkbox" @if ($showSoftDeleted) checked @endif id="show_soft_deletes" data-toggle="toggle" data-on="{{ __('voyager::bread.soft_deletes_off') }}" data-off="{{ __('voyager::bread.soft_deletes_on') }}">
-            @endif
-        @endcan --}}
         @foreach($actions as $action)
             @if (method_exists($action, 'massAction'))
                 @include('voyager::bread.partials.actions', ['action' => $action, 'data' => null])
@@ -75,7 +88,7 @@
                             </form>
                         @endif
                         <div class="table-responsive">
-                            <table id="dataStyle" class="table table-hover">
+                            <table id="dataTable" class="table table-hover">
                                 <thead>
                                     <tr>
                                         {{-- @if($showCheckboxColumn)
@@ -83,9 +96,6 @@
                                                 <input type="checkbox" class="select_all">
                                             </th>
                                         @endif --}}
-                                        @php
-                                            $cell = count($dataType->browseRows)+1;
-                                        @endphp
                                         @foreach($dataType->browseRows as $row)
                                         <th>
                                             @if ($isServerSide && in_array($row->field, $sortableColumns))
@@ -108,7 +118,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($dataTypeContent as $data)
+                                    @foreach($dataTypeContent as $data)
                                     <tr>
                                         {{-- @if($showCheckboxColumn)
                                             <td>
@@ -127,7 +137,7 @@
                                                 @elseif (isset($row->details->view))
                                                     @include($row->details->view, ['row' => $row, 'dataType' => $dataType, 'dataTypeContent' => $dataTypeContent, 'content' => $data->{$row->field}, 'action' => 'browse', 'view' => 'browse', 'options' => $row->details])
                                                 @elseif($row->type == 'image')
-                                                    <img src="@if( !filter_var($data->{$row->field}, FILTER_VALIDATE_URL)){{ Voyager::image( $data->{$row->field} ) }}@else{{ $data->{$row->field} }}@endif" style="width:60px">
+                                                    <img src="@if( !filter_var($data->{$row->field}, FILTER_VALIDATE_URL)){{ Voyager::image( $data->{$row->field} ) }}@else{{ $data->{$row->field} }}@endif" style="width:100px">
                                                 @elseif($row->type == 'relationship')
                                                     @include('voyager::formfields.relationship', ['view' => 'browse','options' => $row->details])
                                                 @elseif($row->type == 'select_multiple')
@@ -173,9 +183,9 @@
                                                 @elseif($row->type == 'checkbox')
                                                     @if(property_exists($row->details, 'on') && property_exists($row->details, 'off'))
                                                         @if($data->{$row->field})
-                                                            <span class="label label-primary">{{ $row->details->on }}</span>
+                                                            <span class="label label-info">{{ $row->details->on }}</span>
                                                         @else
-                                                            <span class="label label-default">{{ $row->details->off }}</span>
+                                                            <span class="label label-primary">{{ $row->details->off }}</span>
                                                         @endif
                                                     @else
                                                     {{ $data->{$row->field} }}
@@ -207,8 +217,6 @@
                                                     <div>{{ mb_strlen( strip_tags($data->{$row->field}, '<b><i><u>') ) > 200 ? mb_substr(strip_tags($data->{$row->field}, '<b><i><u>'), 0, 200) . ' ...' : strip_tags($data->{$row->field}, '<b><i><u>') }}</div>
                                                 @elseif($row->type == 'coordinates')
                                                     @include('voyager::partials.coordinates-static-image')
-                                                @elseif($row->type == 'register_userId')
-                                                    {{ App\Models\User::find($data->{$row->field})->name }}
                                                 @elseif($row->type == 'multiple_images')
                                                     @php $images = json_decode($data->{$row->field}); @endphp
                                                     @if($images)
@@ -265,11 +273,7 @@
                                             @endforeach
                                         </td>
                                     </tr>
-                                    @empty
-                                        <tr style="text-align: center">
-                                            <td colspan="{{$cell}}" class="dataTables_empty">No hay datos disponibles en la tabla</td>
-                                        </tr>
-                                    @endforelse
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
@@ -300,7 +304,7 @@
     </div>
 
     {{-- Single delete modal --}}
-    <div class="modal modal-danger fade" tabindex="-1" id="delete_modal" role="dialog">
+    {{-- <div class="modal modal-danger fade" tabindex="-1" id="delete_modal" role="dialog">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -311,20 +315,47 @@
                     <form action="#" id="delete_form" method="POST">
                         {{ method_field('DELETE') }}
                         {{ csrf_field() }}
-
-                        <div class="text-center" style="text-transform:uppercase">
-                            <i class="voyager-trash" style="color: red; font-size: 5em;"></i>
-                            <br>
-                            
-                            <p><b>Desea eliminar el siguiente registro?</b></p>
-                        </div>
                         <input type="submit" class="btn btn-danger pull-right delete-confirm" value="{{ __('voyager::generic.delete_confirm') }}">
                     </form>
                     <button type="button" class="btn btn-default pull-right" data-dismiss="modal">{{ __('voyager::generic.cancel') }}</button>
                 </div>
             </div><!-- /.modal-content -->
         </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+    </div><!-- /.modal --> --}}
+
+    <form action="#" class="form-edit-add" id="delete_form" method="POST">
+        {{ method_field('DELETE') }}
+        {{ csrf_field() }}
+        <div class="modal modal-danger fade" data-backdrop="static"  id="delete_modal" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" style="color:rgb(255, 255, 255) !important"><i class="voyager-trash"></i> ¿Estás seguro que quieres eliminar?</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center">
+                            <i class="voyager-trash" style="color: red; font-size: 4em;"></i>
+                            <br>
+                            <p><b>¿Estás seguro que quieres eliminar?</b></p>
+                        </div>
+                        <div class="form-group">
+                            <textarea name="deleteObservation" class="form-control" rows="4" placeholder="Describa el motivo de la eliminación..." required></textarea>
+                        </div>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" required>Confirmar eliminación..!
+                        </label>
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default btn-cancel" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-danger btn-submit">Sí, eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    
 @stop
 
 @section('css')
@@ -334,6 +365,8 @@
 @stop
 
 @section('javascript')
+    <script src="{{ asset('js/btn-submit.js') }}"></script>  
+
     <!-- DataTables -->
     @if(!$dataType->server_side && config('dashboard.data_tables.responsive'))
         <script src="{{ voyager_asset('lib/js/dataTables.responsive.min.js') }}"></script>
@@ -341,7 +374,7 @@
     <script>
         $(document).ready(function () {
             @if (!$dataType->server_side)
-                var table = $('#dataStyle').DataTable({!! json_encode(
+                var table = $('#dataTable').DataTable({!! json_encode(
                     array_merge([
                         "order" => $orderColumn,
                         "language" => __('voyager::datatable'),
@@ -360,7 +393,7 @@
             @if ($isModelTranslatable)
                 $('.side-body').multilingual();
                 //Reinitialise the multilingual features when they change tab
-                $('#dataStyle').on('draw.dt', function(){
+                $('#dataTable').on('draw.dt', function(){
                     $('.side-body').data('multilingual').init();
                 })
             @endif
@@ -389,9 +422,9 @@
             $(function() {
                 $('#show_soft_deletes').change(function() {
                     if ($(this).prop('checked')) {
-                        $('#dataStyle').before('<a id="redir" href="{{ (route('voyager.'.$dataType->slug.'.index', array_merge($params, ['showSoftDeleted' => 1]), true)) }}"></a>');
+                        $('#dataTable').before('<a id="redir" href="{{ (route('voyager.'.$dataType->slug.'.index', array_merge($params, ['showSoftDeleted' => 1]), true)) }}"></a>');
                     }else{
-                        $('#dataStyle').before('<a id="redir" href="{{ (route('voyager.'.$dataType->slug.'.index', array_merge($params, ['showSoftDeleted' => 0]), true)) }}"></a>');
+                        $('#dataTable').before('<a id="redir" href="{{ (route('voyager.'.$dataType->slug.'.index', array_merge($params, ['showSoftDeleted' => 0]), true)) }}"></a>');
                     }
 
                     $('#redir')[0].click();
