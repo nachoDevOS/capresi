@@ -1,6 +1,6 @@
 <div class="col-md-12">
     <div class="table-responsive">
-        <table id="dataStyle" class="table table-bordered table-hover">
+        <table id="dataTable" class="table table-bordered table-hover">
             <thead>
                 <tr>
                     @if (auth()->user()->hasRole('admin'))
@@ -111,9 +111,6 @@
                     </td>
                     {{-- <td class="no-sort no-click bread-actions text-right" style="vertical-align: middle"> --}}
                     <td style="width: 18%" class="no-sort no-click bread-actions text-right">
-                        <a href="#" onclick="" title="Eliminar" data-toggle="modal" data-target="#modal-delete" class="btn btn-sm btn-danger delete">
-                                <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm"></span>
-                            </a>
                         @if ($item->status == 'entregado' && $item->status != 'rechazado')
                             <a href="{{ route('loans-daily.money', ['loan' => $item->id]) }}" title="Pagar"  class="btn btn-sm btn-success">
                                 <i class="fa-solid fa-calendar-days"></i>
