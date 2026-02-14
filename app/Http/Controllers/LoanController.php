@@ -732,6 +732,12 @@ class LoanController extends Controller
             $servidor = setting('servidores.whatsapp');
             $id = setting('servidores.whatsapp-session');
 
+            // $baseUrlImage = setting('servidores.image-from-url');
+
+            // // Aumentamos el timeout a 120 segundos para la generación de imagen
+            // $url_image = Http::timeout(120)->get($baseUrlImage . '/generate?url=' . $url); 
+            // return $res = $url_image->object()->url;
+
 
 
             if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $id)
