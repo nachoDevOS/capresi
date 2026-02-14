@@ -1,42 +1,55 @@
-@extends('layouts.template-notification', ['title' => 'RECIBO DE PAGO'])
+@extends('layouts.template-notification', ['title' => 'Comprobante de Pago'])
 
 @php
     $months = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');    
-    $payment = $transaction->payments[0];
+    $payment = $transaction->payments->first();
 @endphp
 
 @section('body')
-    <p class="msj">Pago Exitoso!</p>
-    <p class="money"><span>Bs</span> {{ $transaction->payments->sum('amount') }}</p>
-    <table class="table-details">
+    <p class="msj">Pago Recibido Exitosamente</p>
+    <p class="money">
+        <span>Bs.</span> {{ number_format($transaction->payments->sum('amount'), 2, ',', '.') }}
+    </p>
+
+    <div style="width: 100%; text-align: left; margin-bottom: 20px;">
+        <p style="font-size: 14px; color: #6c757d; margin-bottom: 5px;">
+            <strong>Nro. Transacción:</strong> {{ str_pad($transaction->id, 8, "0", STR_PAD_LEFT) }}
+        </p>
+        <p style="font-size: 14px; color: #6c757d;">
+            <strong>Fecha y Hora:</strong> {{ date('d/m/Y H:i', strtotime($transaction->created_at)) }}
+        </p>
+    </div>
+
+    <h4 style="text-align: left; font-size: 16px; font-weight: 500; margin-bottom: 10px; width: 100%;">Detalle del Pago</h4>
+    <table class="table-details" style="width: 100%;">
         <thead>
             <tr>
-                <th>N&deg;</th>
-                <th>Fecha</th>
-                <th>Atraso</th>
-                <th>Monto</th>
+                <th style="text-align: center;">Cuota</th>
+                <th>Dia Pagado.</th>
+                <th style="text-align: right;">Monto Pagado</th>
             </tr>
         </thead>
         <tbody>
-            @php
-                $cont = 1;
-            @endphp
             @foreach ($transaction->payments as $item)
                 <tr>
-                    <td>{{ $cont }}</td>
-                    <td>{{ date('d', strtotime($item->loanDay->date)) }}/{{ Str::upper(substr($months[intval(date('m', strtotime($item->loanDay->date)))], 0, 3)) }}/{{ date('Y', strtotime($item->loanDay->date)) }}</td>
-                    <td style="text-align: center">{{ $item->late == 1 ? ' SI' : ' NO' }}</td>
-                    <td style="text-align: right">{{ $item->amount }}</td>
+                    <td style="text-align: center;">
+                        {{ $item->loanDay->number }}
+                        @if($item->late)
+                            <span style="color: #dc3545; font-size: 11px; display: block;">(Atraso)</span>
+                        @endif
+                    </td>
+                    <td>{{ date('d/m/Y', strtotime($item->loanDay->date)) }}</td>
+                    <td style="text-align: right;">{{ number_format($item->amount, 2, ',', '.') }}</td>
                 </tr>
-                @php
-                    $cont++;
-                @endphp
             @endforeach
         </tbody>
+        <tfoot>
+            <tr style="font-weight: bold;">
+                <td colspan="2" style="text-align: right;">Total Pagado</td>
+                <td style="text-align: right;">{{ number_format($transaction->payments->sum('amount'), 2, ',', '.') }}</td>
+            </tr>
+        </tfoot>
     </table>
-    <br>
-    <p class="name-empresa">{{ setting('admin.title') }}</p>
-    <p class="datetime">{{ date('d', strtotime($transaction->created_at)) }} DE {{ Str::upper($months[intval(date('m', strtotime($transaction->created_at)))]) }}, {{ date('Y H:i', strtotime($transaction->created_at)) }}</p>
 @endsection
 
 @section('info')
@@ -44,15 +57,21 @@
         <p class="account">Titular del préstamo</p>
         <p class="name">{{ $payment->loanDay->loan->people->first_name }} {{ $payment->loanDay->loan->people->last_name1 }} {{ $payment->loanDay->loan->people->last_name2 }}</p>
         <p class="number-account">
-            <span>CI: </span> {{ $payment->loanDay->loan->people->ci ?? 'No definido' }}
+            <strong>CI:</strong> {{ $payment->loanDay->loan->people->ci ?? 'No definido' }} <br>
+            <strong>Cód. Préstamo:</strong> {{ $payment->loanDay->loan->code }}
         </p>
     </div>
     <div class="group-table">
         <p class="account">Atendido por</p>
-        <p class="name">{{ $payment->agent->name }} - {{ $payment->agentType }}</p>
+        <p class="name">{{ $payment->agent->name }}</p>
+        <p class="number-account">{{ $payment->agentType }}</p>
     </div>
 @endsection
 
 @section('footer')
-    <p>RECIBO N° {{ str_pad($transaction->transaction, 6, "0", STR_PAD_LEFT) }}</p>
+    <div style="margin-bottom: 15px;">
+        {!! QrCode::size(100)->generate(Request::url()) !!}
+    </div>
+    <p>Escanee el código QR para verificar la transacción.</p>
+    <p style="margin-top: 5px;"><strong>{{ setting('admin.title') }}</strong> le agradece por su pago.</p>
 @endsection

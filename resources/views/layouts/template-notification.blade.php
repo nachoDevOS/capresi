@@ -4,6 +4,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{{ setting('admin.title') }} | Notificación de pago</title>
         
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <!-- Favicon -->
         <?php $admin_favicon = Voyager::setting('admin.icon_image', ''); ?>
         @if($admin_favicon == '')
@@ -14,147 +17,152 @@
     </head>
     <body>
         <style>
-            :root{
-                --color-dark-500: #000;
-                --color-dark-100: #555;
-                --color-litgh-100: #fff;
-                --color-primary: #154360;
-            }
             *{
                 margin: 0;
                 padding: 0;
                 box-sizing: border-box;
             }
             body{
-                font-family:  Arial, sans-serif;
-                background: linear-gradient(355deg,#1F618D, #5499C7);;
+                font-family: 'Roboto', sans-serif;
+                background-color: #f0f2f5;
+                color: #333;
             }
             .container{
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                margin: 10px;
+                padding: 20px;
+                min-height: 100vh;
             }
             .card{
+                max-width: 450px;
                 width: 100%;
-                margin: 1rem;
-                border: 1px solid var(--color-dark-100);
-                border-radius: 20px;
-                background-color: var(--color-litgh-100);
-                box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+                background-color: #fff;
+                border-radius: 16px;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                overflow: hidden;
             }
             .card-header{
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                background-color: var(--color-primary);
-                border-top-right-radius: 20px;
-                border-top-left-radius: 20px;
-                padding: 10px 0;
-                color: var(--color-litgh-100);
+                padding: 20px;
+                background-color: #f8f9fa;
+                border-bottom: 1px solid #e9ecef;
+            }
+            .card-header h3 {
+                margin: 0;
+                font-size: 18px;
+                font-weight: 500;
+                color: #495057;
             }
             .card-body{
-                padding: 0px 15px;
-                padding-top: 20px;
-                padding-bottom: 10px;
-                
+                padding: 25px;
             }
             .card-body .body-main{
                 display: flex;
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                
+                text-align: center;
             }
-            .body-main p{
-                padding-bottom: 1rem;
-                font-size: 1.2rem;
-                font-weight: 500;
+            .body-main .msj {
+                font-size: 24px;
+                font-weight: 700;
+                color: #28a745;
+                margin-bottom: 8px;
             }
             .body-main .money{
-                font-size: 2rem;
+                font-size: 36px;
                 font-weight: 700;
-                margin-bottom: 1rem;
+                color: #212529;
+                margin-bottom: 20px;
             }
             .body-main .money span{
-                color: var(--color-primary);
+                font-size: 20px;
+                font-weight: 500;
+                color: #6c757d;
             }
-            .body-main .money span{
-                color: var(--color-primary);
-            }
-            .body-main .datetime{
-                font-size: 0.8rem;
-                color: var(--color-dark-100);
-            }
-            .dotted-line {
-                border-top: 2px dashed #8d8b8b; /* Establece el ancho, el estilo y el color de la línea */
-                width: 100%;
-                margin: 0 auto; /* Centra la línea en el contenedor */
-                margin-bottom: 10px;
+            .separator {
+                border-top: 1px dashed #ced4da;
+                margin: 20px 0;
             }
             .logo{
-                height: 35px;
-                margin-right: 5px;
+                height: 40px;
+                margin-right: 10px;
             }
             .group-table{
-                margin-left: 5px;
                 margin-bottom: 15px;
             }
             .group-table p{
-                font-size: 0.8rem;
-                margin-bottom: 3px;
+                margin: 0;
+                line-height: 1.6;
             }
             .group-table .account{
-                font-weight: 700;
-                color: var(--color-dark-100);
+                font-size: 12px;
+                color: #6c757d;
+                text-transform: uppercase;
             }
             .group-table .name{
-                font-weight: 700;
+                font-size: 15px;
+                font-weight: 500;
+                color: #343a40;
             }
             .group-table .number-account{
-                color: var(--color-dark-100);
+                font-size: 14px;
+                color: #495057;
             }
 
             .card-footer{
                 display: flex;
+                flex-direction: column;
                 justify-content: center;
-                margin-bottom: 20px;
-                color: var(--color-dark-100);
-                font-size: 1rem;
-                font-weight: 700;
+                align-items: center;
+                padding: 20px;
+                background-color: #f8f9fa;
+                text-align: center;
+                border-top: 1px solid #e9ecef;
             }
-
+            .card-footer p {
+                margin: 0;
+                font-size: 12px;
+                color: #6c757d;
+            }
             .table-details {
                 width: 100%;
-                border-collapse: collapse
+                border-collapse: collapse;
+                margin-top: 20px;
             }
 
             .table-details th, .table-details td{
-                border-style: dotted;
                 padding: 5px;
-                border-color: #8d8b8b;
-                font-size: 12px
+                font-size: 13px;
+                text-align: left;
+                border-bottom: 1px solid #dee2e6;
+            }
+            .table-details th {
+                font-weight: 500;
+                color: #6c757d;
+                border-bottom-width: 2px;
             }
         </style>
         <div class="container">
             <div class="card">
                 <div class="card-header">
                     <img src="{{ $admin_favicon == '' ? asset('images/icon.png') : Voyager::image($admin_favicon) }}" alt="logo" class="logo">
-                    <h3>{{ $title }}</h3>
+                    <h3>{{ $title ?? 'Comprobante de Transacción' }}</h3>
                 </div>
                 <div class="card-body">
                     <div class="body-main">
                         @yield('body')
                     </div>
-                    <hr class="dotted-line">
+                    <hr class="separator">
                     @yield('info')
                 </div>
                 <div class="card-footer">
                     @yield('footer')
                 </div>
             </div>
-            
         </div>
-        
     </body>
 </html>
