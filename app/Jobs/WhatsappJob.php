@@ -37,41 +37,35 @@ class WhatsappJob implements ShouldQueue
 
     public function handle()
     {
-        try {
-            $urlStatus = $this->server.'/status?id='.$this->session;
-            $response = Http::timeout(30)->get($urlStatus)->json();
-            $baseUrlImage = setting('servidores.image-from-url');
+        $urlStatus = $this->server.'/status?id='.$this->session;
+        $response = Http::get($urlStatus)->json();
+        $baseUrlImage = setting('servidores.image-from-url');
 
-            // Aumentamos el timeout a 120 segundos para la generación de imagen
-            $url_image = Http::timeout(120)->get($baseUrlImage . '/generate?url=' . $this->url); 
-            
-            if(isset($response['success']) && $response['success'] == true && $url_image->successful()) {
-                if(isset($response['status']) && $response['status'] == true) {        
-                        // $res = $url_image->object();
-                        $url = $this->server.'/send?id='.$this->session.'&token='.null;
-                        $responseSend = Http::timeout(30)->post($url, [
-                            'phone' => '+'.$this->code.''.$this->phone,
-                            'text' => $this->message,
-                            // 'image_url' => $res->url ?? null,
-                        ])->json();
+        // $url_image = Http::get($baseUrlImage . '/generate?url=' . $this->url); 
+        if($response['success'] == true) {
+            if($response['status'] == true) {        
+                    // $res = $url_image->object();
+                    $url = $this->server.'/send?id='.$this->session.'&token='.null;
+                    $responseSend = Http::post($url, [
+                        'phone' => '+'.$this->code.''.$this->phone,
+                        'text' => $this->message,
+                        'image_url' => $this->url,
+                    ])->json();
 
-                        if(isset($responseSend['success']) && $responseSend['success'] == true) {
-                            $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Enviado');
-                        } else {
-                            $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'No Enviado');
-                        }
-                } 
-                else
-                {
-                    $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Whatsapp Desconectado');
-                }
-            }
+                    if($responseSend['success'] == true) {
+                        $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Enviado');
+                    } else {
+                        $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'No Enviado');
+                    }
+            } 
             else
             {
-                $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Servidor Fuera de Servicio');
+                $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Whatsapp Desconectado');
             }
-        } catch (\Throwable $th) {
-            $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Error: ' . $th->getMessage());
+        }
+        else
+        {
+            $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Servidor Fuera de Servicio');
         }
     }
 

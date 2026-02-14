@@ -727,19 +727,21 @@ class LoanController extends Controller
                 ->first();
 
             $url = 'https://consultorioveterinariocortez.com';
+            // $url = 'https://image-api.soluciondigital.dev/1771050107107.png';
             // $url = route('loans.payment.notification', $transaction->id);
 
             $servidor = setting('servidores.whatsapp');
             $id = setting('servidores.whatsapp-session');
 
-            // $baseUrlImage = setting('servidores.image-from-url');
+            $baseUrlImage = setting('servidores.image-from-url');
 
-            // // Aumentamos el timeout a 120 segundos para la generación de imagen
-            // $url_image = Http::timeout(120)->get($baseUrlImage . '/generate?url=' . $url); 
-            // return $res = $url_image->object()->url;
+            // Aumentamos el timeout a 120 segundos para la generación de imagen
+            $url_image = Http::get($baseUrlImage . '/generate?url=' . $url); 
+            $url = 'https://' . $url_image->object()->url;
+            // return $url;
 
 
-
+            sleep(15); // Esperamos 5 segundos para asegurarnos de que la imagen esté disponible
             if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $id)
             {
                 WhatsappJob::dispatch($servidor, $id, '591', $loan->people->cell_phone, $url, 'Gracias por su preferencia!', 'Manual - Comprobante de pago');
