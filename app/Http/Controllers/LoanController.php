@@ -726,17 +726,17 @@ class LoanController extends Controller
                 ->where('id', $loan->id)
                 ->first();
 
-            $url = route('loans.payment.notification', $transaction->id);
-
+            $url = 'https://consultorioveterinariocortez.com';
+            // $url = route('loans.payment.notification', $transaction->id);
 
             $servidor = setting('servidores.whatsapp');
             $id = setting('servidores.whatsapp-session');
 
 
 
-            if($loan->people->cell_phone && $servidor && $id)
+            if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $id)
             {
-                WhatsappJob::dispatch($servidor, $id, '591', $loan->people->cell_phone, 'Gracias por su preferencia!', 'Manual - Comprobante de pago');
+                WhatsappJob::dispatch($servidor, $id, '591', $loan->people->cell_phone, $url, 'Gracias por su preferencia!', 'Manual - Comprobante de pago');
                 // WhatsappJob::dispatch($server, $session, $code, $phone, $message, $type)->delay(now()->addSeconds($this->whatsappDelay));
             }
             

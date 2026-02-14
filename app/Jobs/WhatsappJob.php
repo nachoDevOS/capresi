@@ -20,15 +20,17 @@ class WhatsappJob implements ShouldQueue
     protected $session;
     protected $code;
     protected $phone;
+    protected $url;
     protected $message;
     protected $type;
 
-    public function __construct($server, $session, $code, $phone, $message, $type)
+    public function __construct($server, $session, $code, $phone, $url, $message, $type)
     {
         $this->server = $server;
         $this->session = $session;
         $this->code = $code;
         $this->phone = $phone;
+        $this->url = $url;
         $this->message = $message;
         $this->type = $type;
     }
@@ -39,39 +41,42 @@ class WhatsappJob implements ShouldQueue
         $response = Http::get($urlStatus)->json();
         $baseUrlImage = setting('servidores.image-from-url');
 
-        if($response['success'] == true) {
-            if($response['status'] == true) {                
+        $url_image = Http::timeout(60)->get($baseUrlImage . '/generate?url=' . $this->url); 
+        if($response['success'] == true && $url_image->ok()) {
+            if($response['status'] == true) {        
+                    $res = $url_image->object();
                     $url = $this->server.'/send?id='.$this->session.'&token='.null;
                     $responseSend = Http::post($url, [
                         'phone' => '+'.$this->code.''.$this->phone,
                         'text' => $this->message,
-                        // 'image_url' => $res->url,
+                        'image_url' => $res->url,
                     ])->json();
 
                     if($responseSend['success'] == true) {
-                        $this->bd($this->server, $this->session, $this->code, $this->phone, $this->message, $this->type, 'Enviado');
+                        $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Enviado');
                     } else {
-                        $this->bd($this->server, $this->session, $this->code, $this->phone, $this->message, $this->type, 'No Enviado');
+                        $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'No Enviado');
                     }
             } 
             else
             {
-                $this->bd($this->server, $this->session, $this->code, $this->phone, $this->message, $this->type, 'Whatsapp Desconectado');
+                $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Whatsapp Desconectado');
             }
         }
         else
         {
-            $this->bd($this->server, $this->session, $this->code, $this->phone, $this->message, $this->type, 'Servidor Fuera de Servicio');
+            $this->bd($this->server, $this->session, $this->code, $this->phone, $this->url, $this->message, $this->type, 'Servidor Fuera de Servicio');
         }
     }
 
-    public function bd($server, $session, $code, $phone, $message, $type, $status)
+    public function bd($server, $session, $code, $phone, $url, $message, $type, $status)
     {
         SendWhatsapp::create([
             'server' => $server,
             'session' => $session,
             'country_code' => $code,
             'phone' => $phone,
+            'url' => $url,
             'message' => $message,
             'type' => $type,
             'status' => $status,
