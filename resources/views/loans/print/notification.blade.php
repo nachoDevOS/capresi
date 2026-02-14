@@ -37,9 +37,9 @@
                     <td>{{ date('d/m/Y', strtotime($item->loanDay->date)) }}</td>
                     <td style="text-align: center;">
                         @if($item->loanDay->late)
-                            <span style="color: #dc3545; font-weight: bold;">Atraso</span>
+                            <span style="color: #ff0019; font-weight: bold;">Atraso</span>
                         @else
-                            <span style="color: #28a745; font-weight: bold;">Puntual</span>
+                            <span style="color: #000000; font-weight: bold;">Puntual</span>
                         @endif
                     </td>
                     <td style="text-align: right;">{{ number_format($item->amount, 2, ',', '.') }}</td>
