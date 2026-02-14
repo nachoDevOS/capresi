@@ -37,7 +37,7 @@ class SendNotification implements ShouldQueue
             Gracias🤝😊';
 
         if ($data->cell_phone != null) {
-            $result = Http::post(setting('servidores.whatsapp').'/send?id='.setting('servidores.whatsapp-session'),  [
+            $result = Http::post(setting('servidores.whatsapp1').'/send?id='.setting('servidores.whatsapp-session1'),  [
                 // 'phone' => '59167285914',
                 // 'text' => $message.'-'.Carbon::now(),
 

@@ -694,53 +694,6 @@ class Controller extends BaseController
     }
 
 
-    function capturarWebPHP($url, $rutaDestino = null) {
-        try {
-            if (!$rutaDestino) {
-                $rutaDestino = storage_path('app/public/screenshots/' . uniqid() . '.png');
-            }
-            
-            $directorio = dirname($rutaDestino);
-            if (!is_dir($directorio)) {
-                mkdir($directorio, 0755, true);
-            }
-            
-            // Obtener contenido de la página
-            $htmlContent = file_get_contents($url);
-            
-            if ($htmlContent === false) {
-                throw new Exception('No se pudo obtener el contenido de la URL');
-            }
-            
-            // Crear imagen básica (esto es un ejemplo simplificado)
-            $ancho = 1200;
-            $alto = 800;
-            
-            $imagen = imagecreate($ancho, $alto);
-            
-            // Colores
-            $blanco = imagecolorallocate($imagen, 255, 255, 255);
-            $negro = imagecolorallocate($imagen, 0, 0, 0);
-            $gris = imagecolorallocate($imagen, 200, 200, 200);
-            
-            // Fondo blanco
-            imagefill($imagen, 0, 0, $blanco);
-            
-            // Simular una captura básica (esto es muy limitado)
-            imagestring($imagen, 5, 50, 50, "Captura de: " . $url, $negro);
-            imagestring($imagen, 3, 50, 80, "Contenido no renderizable con PHP puro", $gris);
-            
-            // Guardar imagen
-            imagepng($imagen, $rutaDestino);
-            imagedestroy($imagen);
-            
-            return $rutaDestino;
-            
-        } catch (Exception $e) {
-            \Log::error('Error captura PHP: ' . $e->getMessage());
-            return false;
-        }
-    }
 
 
 

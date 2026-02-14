@@ -37,6 +37,7 @@ use App\Models\PaymentsPeriod;
 
 // Queues
 use App\Jobs\SendRecipe;
+use App\Jobs\WhatsappJob;
 
 class LoanController extends Controller
 {
@@ -727,19 +728,24 @@ class LoanController extends Controller
 
             $url = route('loans.payment.notification', $transaction->id);
 
-            $this->capturarWebPHP('https://www.yamaha.bo/', null);
-            // SendRecipe::dispatch($url, $loan->people->cell_phone, 'Gracias por su preferencia!', 'Comprobante');
-            // }
+
+            $servidor = setting('servidores.whatsapp');
+            $id = setting('servidores.whatsapp-session');
+
+
+
+            if($loan->people->cell_phone && $servidor && $id)
+            {
+                WhatsappJob::dispatch($servidor, $id, '591', $loan->people->cell_phone, 'Gracias por su preferencia!', 'Manual - Comprobante de pago');
+                // WhatsappJob::dispatch($server, $session, $code, $phone, $message, $type)->delay(now()->addSeconds($this->whatsappDelay));
+            }
+            
+
             DB::commit();
-            return redirect()
-                ->route('loans-daily.money', ['loan' => $request->loan_id])
-                ->with(['message' => 'Pagado exitosamente.', 'alert-type' => 'success', 'data' => $data]);
+            return redirect()->route('loans-daily.money', ['loan' => $request->loan_id])->with(['message' => 'Pagado exitosamente.', 'alert-type' => 'success', 'data' => $data]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return 0;
-            return redirect()
-                ->route('loans-daily.money', ['loan' => $request->loan_id])
-                ->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
+            return redirect()->route('loans-daily.money', ['loan' => $request->loan_id])->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
         }
     }
 

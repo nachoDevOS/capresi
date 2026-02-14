@@ -68,9 +68,9 @@ class SendRecipe implements ShouldQueue
     protected function handleComprobante()
     {
         // Validamos que existan las configuraciones necesarias
-        $baseUrlImage = setting('servidores.image-from-url');
-        $baseUrlWhatsapp = setting('servidores.whatsapp');
-        $sessionWhatsapp = setting('servidores.whatsapp-session');
+        $baseUrlImage = setting('servidores.image-from-url1');
+        $baseUrlWhatsapp = setting('servidores.whatsapp1');
+        $sessionWhatsapp = setting('servidores.whatsapp-session1');
 
         if ($baseUrlImage && $baseUrlWhatsapp && $sessionWhatsapp) {
             
