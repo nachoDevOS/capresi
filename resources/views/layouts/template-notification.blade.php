@@ -41,6 +41,7 @@
                 border-radius: 16px;
                 box-shadow: 0 4px 20px rgba(0,0,0,0.08);
                 overflow: hidden;
+                position: relative;
             }
             .card-header{
                 display: flex;
@@ -49,6 +50,8 @@
                 padding: 20px;
                 background-color: #f8f9fa;
                 border-bottom: 1px solid #e9ecef;
+                position: relative;
+                z-index: 1;
             }
             .card-header h3 {
                 margin: 0;
@@ -56,8 +59,24 @@
                 font-weight: 500;
                 color: #495057;
             }
+            .card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: url('{{ $admin_favicon == '' ? asset('images/icon.png') : Voyager::image($admin_favicon) }}');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: 300px;
+                opacity: 0.1;
+                z-index: 0;
+            }
             .card-body{
                 padding: 25px;
+                position: relative;
+                z-index: 1;
             }
             .card-body .body-main{
                 display: flex;
@@ -122,6 +141,8 @@
                 background-color: #f8f9fa;
                 text-align: center;
                 border-top: 1px solid #e9ecef;
+                position: relative;
+                z-index: 1;
             }
             .card-footer p {
                 margin: 0;
@@ -149,7 +170,6 @@
         <div class="container">
             <div class="card">
                 <div class="card-header">
-                    <img src="{{ $admin_favicon == '' ? asset('images/icon.png') : Voyager::image($admin_favicon) }}" alt="logo" class="logo">
                     <h3>{{ $title }}</h3>
                 </div>
                 <div class="card-body">
