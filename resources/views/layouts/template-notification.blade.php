@@ -39,7 +39,7 @@
                 width: 100%;
                 background-color: #fff;
                 border-radius: 16px;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
                 overflow: hidden;
                 position: relative;
             }
@@ -48,16 +48,18 @@
                 justify-content: center;
                 align-items: center;
                 padding: 20px;
-                background-color: #f8f9fa;
-                border-bottom: 1px solid #e9ecef;
+                background-color: #fff;
+                border-bottom: 2px dashed #f0f2f5;
                 position: relative;
                 z-index: 1;
             }
             .card-header h3 {
                 margin: 0;
-                font-size: 18px;
-                font-weight: 500;
+                font-size: 20px;
+                font-weight: 700;
                 color: #495057;
+                text-transform: uppercase;
+                letter-spacing: 1px;
             }
             .card::before {
                 content: "";
@@ -69,9 +71,11 @@
                 background-image: url('{{ $admin_favicon == '' ? asset('images/icon.png') : Voyager::image($admin_favicon) }}');
                 background-repeat: no-repeat;
                 background-position: center;
-                background-size: 300px;
-                opacity: 0.1;
+                background-size: 250px;
+                opacity: 0.3;
+                /* transform: rotate(-15deg); */
                 z-index: 0;
+                pointer-events: none;
             }
             .card-body{
                 padding: 25px;
@@ -138,9 +142,9 @@
                 justify-content: center;
                 align-items: center;
                 padding: 20px;
-                background-color: #f8f9fa;
+                background-color: #fff;
                 text-align: center;
-                border-top: 1px solid #e9ecef;
+                border-top: 2px dashed #f0f2f5;
                 position: relative;
                 z-index: 1;
             }
@@ -165,6 +169,14 @@
                 font-weight: 500;
                 color: #6c757d;
                 border-bottom-width: 2px;
+            }
+            @media print {
+                body {
+                    background-color: #fff;
+                }
+                .card {
+                    box-shadow: none;
+                }
             }
         </style>
         <div class="container">
