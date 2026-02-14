@@ -85,7 +85,7 @@ Route::get('/development', [DevelopmentController::class , 'development'])->name
 
 // Ruta que renderiza el recibo de pago que se envía al usuario
 Route::get('admin/pawn/payment/{id}/notification', [HomeController::class, 'payment_notification'])->name('pawn.payment.notification');
-Route::get('admin/loans/payment/{id}/notification', [TransactionController::class, 'payment_notification'])->name('loans.payment.notification');
+Route::get('admin/payment/transaction/{id}', [TransactionController::class, 'payment_notification'])->name('loans.payment.notification');
 
 // Route::group(['prefix' => 'admin', 'middleware' => 'loggin'], function () {
 Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours']], function () {

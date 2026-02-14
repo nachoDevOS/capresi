@@ -726,7 +726,6 @@ class LoanController extends Controller
                 ->where('id', $loan->id)
                 ->first();
 
-            // $url = 'https://consultorioveterinariocortez.com';
 
             $url = route('loans.payment.notification', $transaction->id);
 
@@ -821,6 +820,7 @@ class LoanController extends Controller
     }
 
 
+    // Para enviar de forma manual el comprobante
     public function transactionWhatsapp($loan, $transaction)
     {
         // return $loan;
