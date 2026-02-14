@@ -96,52 +96,52 @@ function formatResultPeople(data) {
     return $container;
 }
 
-$(document).ready(function(){
-    $('.btn-notification').click(async function(e){
-        if (whatsappServer && imagesGeneratorServer && whatsappServerSession) {
-            $('body').loading({message: 'Enviando...'});
-            e.preventDefault();
-            let route = $(this).attr('href');
-            var phone = $(this).data('phone');
-            if (phone) {
-                let image = await fetch(`${imagesGeneratorServer}/generate?url=${route}`)
-                                    .then(res => {
-                                        if (!res.ok) {
-                                            return null;
-                                        }
-                                        return res.json();
-                                    })
-                                    .then(res => res);
-                if(image){
-                    let body = {
-                        phone: `591${phone}`,
-                        text: '',
-                        image_url: image.url
-                    }
+// $(document).ready(function(){
+//     $('.btn-notification').click(async function(e){
+//         if (whatsappServer && imagesGeneratorServer && whatsappServerSession) {
+//             $('body').loading({message: 'Enviando...'});
+//             e.preventDefault();
+//             let route = $(this).attr('href');
+//             var phone = $(this).data('phone');
+//             if (phone) {
+//                 let image = await fetch(`${imagesGeneratorServer}/generate?url=${route}`)
+//                                     .then(res => {
+//                                         if (!res.ok) {
+//                                             return null;
+//                                         }
+//                                         return res.json();
+//                                     })
+//                                     .then(res => res);
+//                 if(image){
+//                     let body = {
+//                         phone: `591${phone}`,
+//                         text: '',
+//                         image_url: image.url
+//                     }
 
-                    fetch(`${whatsappServer}/send?id=${whatsappServerSession}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                        },
-                        body: JSON.stringify(body)
-                    })
-                        .then(res => {
-                            if (!res.ok) {
-                                return null;
-                            }
-                            return res.json();
-                        });
-                    toastr.success('Recibo reenviado', 'Bien hecho');
-                }else{
-                    toastr.error('No se puedo generar el recibo', 'Error');
-                }
-                $('body').loading('toggle');
-            } else {
-                toastr.warning('Número de celular vacío', 'Advertencia');
-            }
-        } else {
-            toastr.warning('Uno de los servidores no está configurado', 'Advertencia');
-        }
-    });
-});
+//                     fetch(`${whatsappServer}/send?id=${whatsappServerSession}`, {
+//                         method: "POST",
+//                         headers: {
+//                             "Content-Type": "application/json",
+//                         },
+//                         body: JSON.stringify(body)
+//                     })
+//                         .then(res => {
+//                             if (!res.ok) {
+//                                 return null;
+//                             }
+//                             return res.json();
+//                         });
+//                     toastr.success('Recibo reenviado', 'Bien hecho');
+//                 }else{
+//                     toastr.error('No se puedo generar el recibo', 'Error');
+//                 }
+//                 $('body').loading('toggle');
+//             } else {
+//                 toastr.warning('Número de celular vacío', 'Advertencia');
+//             }
+//         } else {
+//             toastr.warning('Uno de los servidores no está configurado', 'Advertencia');
+//         }
+//     });
+// });

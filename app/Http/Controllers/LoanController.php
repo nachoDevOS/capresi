@@ -727,29 +727,16 @@ class LoanController extends Controller
                 ->first();
 
             // $url = 'https://consultorioveterinariocortez.com';
-            // $url = 'https://capresi.soluciondigital.dev/admin/loans/payment/85954/notification';
-            // $url = 'https://image-api.soluciondigital.dev/1771089531948.png';
+
             $url = route('loans.payment.notification', $transaction->id);
 
             $servidor = setting('servidores.whatsapp');
-            $id = setting('servidores.whatsapp-session');
-
-            // $baseUrlImage = setting('servidores.image-from-url');
-
-            // Aumentamos el timeout a 120 segundos para la generación de imagen
-            // $url_image = Http::timeout(120)->get($baseUrlImage . '/generate', [
-            // $url_image = Http::get($baseUrlImage . '/generate', [
-            //     'url' => $url
-            // ]);
-            // $url = 'https://' . $url_image->object()->url;
-
-            // return $url;
-
+            $session = setting('servidores.whatsapp-session');
 
             // sleep(15); // Esperamos 5 segundos para asegurarnos de que la imagen esté disponible
-            if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $id)
+            if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $session)
             {
-                WhatsappJob::dispatch($servidor, $id, '591', $loan->people->cell_phone, $url, 'Gracias por su preferencia!', 'Manual - Comprobante de pago');
+                $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Gracias por su preferencia!', 'Automatico - Comprobante de pago');
                 // WhatsappJob::dispatch($server, $session, $code, $phone, $message, $type)->delay(now()->addSeconds($this->whatsappDelay));
             }
             
@@ -762,24 +749,6 @@ class LoanController extends Controller
         }
     }
 
-    // function checkServiceStatus($url) {
-
-    //     $parsedUrl = parse_url($url);
-
-    //     $baseUrl = $parsedUrl['scheme'] . '://' . $parsedUrl['host'];
-
-    //     if (isset($parsedUrl['port'])) {
-    //         $baseUrl .= ':' . $parsedUrl['port'];
-    //     }
-
-    //     $context = stream_context_create([
-    //         'http' => ['timeout' => 3] // tiempo de espera de 3 segundos para verificar 127.0.0.1:port
-    //     ]);
-
-    //     $response = @file_get_contents($baseUrl, false, $context);
-
-    //     return ($response !== false) ? true : false;
-    // }
 
     public function printDailyMoney($loan_id, $transaction_id)
     {
@@ -849,5 +818,42 @@ class LoanController extends Controller
         return redirect()
             ->route('loans.index')
             ->with(['message' => 'Notificación actualizada', 'alert-type' => 'success']);
+    }
+
+
+    public function transactionWhatsapp($loan, $transaction)
+    {
+        return $loan;
+        $loan = Loan::with(['people'])
+            ->where('id', $loan)
+            ->first();
+        $transaction = Transaction::find($transaction);
+
+        $url = route('loans.payment.notification', $transaction->id);
+
+        $servidor = setting('servidores.whatsapp');
+        $session = setting('servidores.whatsapp-session');
+
+        if ($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $session)
+        {
+            $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Gracias por su preferencia!', 'Manual - Comprobante de pago');
+            return redirect()
+                ->route('loans-list.transaction', ['loan' => $loan->id])
+                ->with(['message' => 'Whatsapp enviado exitosamente.', 'alert-type' => 'success']);
+        }
+        else
+        {
+            return redirect()
+                ->route('loans-list.transaction', ['loan' => $loan->id])
+                ->with(['message' => 'Whatsapp no enviado.', 'alert-type' => 'error']);
+        }
+    }
+
+
+
+    // Meotodo Para envio de mensaje 
+    public function whatsapp($servidor, $session, $code, $phone, $url, $message, $type)
+    {
+        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type);
     }
 }

@@ -73,9 +73,9 @@
                                                     <i class="fa-solid fa-location-dot"></i>
                                                 </a>
                                                 @if (!$item->deleted_at)
-                                                    <a href="{{ route('loans.payment.notification', $item->transaction_id) }}"
+                                                    <a href="{{ route('loans-transaction.whatsapp', ['loan' => $item->id, 'transaction' => $item->transaction]) }}"
                                                         data-phone="{{ $item->people_phone }}"
-                                                        class="btn btn-success btn-notification" title="Reenviar recibo">
+                                                        class="btn btn-success" title="Reenviar recibo">
                                                         <i class="fa fa-paper-plane"></i>
                                                     </a>
                                                     {{-- <a onclick="printDailyMoney({{$item->loan}}, {{$item->transaction_id}})" title="Imprimir"  class="btn btn-danger">

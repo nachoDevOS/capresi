@@ -209,7 +209,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
     Route::get('loans/{loan}/decline', [LoanController::class, 'declineLoan'])->name('loans.decline'); //para rechazar  los perestamos
     // Route::delete('loans/{loan?}/cashierclose/destroy', [LoanController::class, 'destroyLoan'])->name('loans-cashierclose.destroy'); //para la destruccion de prestamo con caja cerrada
     // Route::get('loans/ajax/notPeople/{id?}', [LoanController::class, 'ajaxNotPeople'])->name('loans-ajax.notpeople');
-    Route::get('loans/{loan?}/list/transaction', [TransactionController::class, 'listTransaction'])->name('loans-list.transaction');
+    Route::get('loans/{loan}/list/transaction', [TransactionController::class, 'listTransaction'])->name('loans-list.transaction');
     Route::get('loans/{loan?}/print/calendar', [LoanController::class, 'printCalendar'])->name('loans-print.calendar');
     Route::get('loans/{loan?}/requirement/daily/create', [LoanController::class, 'createDaily'])->name('loans-requirement-daily.create');
     Route::post('loans/{loan?}/requirement/daily/store', [LoanController::class, 'storeRequirement'])->name('loans-requirement-daily.store');
@@ -229,6 +229,11 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
     // PARA CAMBIOS DE RUTAS DE LOS PRESTAMOS DIARIOS Y ESPECIALES
     Route::get('loans/{loan?}/routeOld', [RouteController::class, 'loanRouteOld'])->name('loan-routeOld.index');
     Route::post('loans/{loan?}/route/store', [RouteController::class, 'updateRouteLoan'])->name('loan-route.store');
+
+    // Funcional de transacciones
+
+    Route::get('loans/{loan}/transaction/{transaction}/whatsapp', [LoanController::class, 'transactionWhatsapp'])->name('loans-transaction.whatsapp');
+
 
 
 
