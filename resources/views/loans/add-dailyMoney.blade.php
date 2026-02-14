@@ -493,25 +493,18 @@
                     <h5 class="modal-title" id="confirmModalLabel">Confirmar Pago</h5>
                 </div>
                 <div class="modal-body">
-
-                    <small style="font-size: 18px"><strong>{{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}</strong></small>
-                    <br>
-                    <small style="font-size: 20px"><strong id="modal-amount">0.00</strong></small>
-                    <small><p>Medio de pago seleccionado:</p></small>
-                    <h5 style="font-size: 20px" class="text-success"><strong id="modal-payment-method">Efectivo</strong></h5>
-                    
-                    <!-- Barra de progreso oculta inicialmente -->
-                    <div class="progress mt-3" id="progress-bar" style="display: none;">
-                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
-                            style="width: 0%;" id="progress-bar-inner">Enviando...</div>
+                    <div id="step-confirmation">
+                        <small style="font-size: 18px"><strong>{{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}</strong></small>
+                        <br>
+                        <small style="font-size: 20px"><strong id="modal-amount">0.00</strong></small>
+                        <small><p>Medio de pago seleccionado:</p></small>
+                        <h5 style="font-size: 20px" class="text-success"><strong id="modal-payment-method">Efectivo</strong></h5>
                     </div>
-
-                    <!-- Spinner de carga (opcional) -->
-                    <div class="spinner-border text-primary mt-3" role="status" id="loading-spinner" style="display: none;">
-                        <span class="sr-only">Enviando...</span>
+                    <div id="step-loading" style="display: none; text-align: center; padding: 20px;">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 5em; color: #28a745;"></i>
+                        <h4 class="mt-3" style="margin-top: 20px;">Procesando pago...</h4>
+                        <p class="text-muted">Por favor espere, estamos registrando la transacción.</p>
                     </div>
-                    {{-- <br>
-                    ¿Está seguro de que desea proceder con el pago? --}}
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn-submit-cancel-modal btn btn-secondary" data-dismiss="modal">Cancelar</button>
@@ -701,9 +694,6 @@
             const modalAmount = document.getElementById("modal-amount"); // Monto dentro del modal
             const modalPaymentMethod = document.getElementById("modal-payment-method"); // Método de pago en el modal
             const labelAmount = document.getElementById("label-amount"); // Mensaje de error
-            const progressBar = document.getElementById("progress-bar"); // Contenedor de la barra de progreso
-            const progressBarInner = document.getElementById("progress-bar-inner"); // Barra de progreso interna
-            const spinner = document.getElementById("loading-spinner"); // Spinner de carga
 
             // Mostrar el modal con el monto y el método de pago
             btnConfirm.addEventListener("click", function() {
@@ -728,29 +718,12 @@
                 btnSubmitConfirm.style.display = "none";
                 document.querySelector(".btn-submit-cancel-modal").style.display = "none";
 
-                // Mostrar barra de progreso y spinner
-                progressBar.style.display = "block";
-                spinner.style.display = "block";
+                // Mostrar animación de carga
+                document.getElementById("step-confirmation").style.display = "none";
+                document.getElementById("step-loading").style.display = "block";
 
-                // Simular progreso de la barra
-                let progress = 0;
-                const interval = setInterval(() => {
-                    progress += 10;
-                    progressBarInner.style.width = `${progress}%`;
-
-                    // Si el progreso llega al 100%
-                    if (progress >= 100) {
-                        clearInterval(interval);
-
-                        // Ocultar barra de progreso y spinner
-                        spinner.style.display = "none";
-
-                        // Simular envío del formulario después de 1 segundo
-                        setTimeout(() => {
-                            form.submit();
-                        }, 1000);
-                    }
-                }, 200); // Incremento cada 200ms
+                // Enviar formulario inmediatamente
+                form.submit();
             });
         });
 
