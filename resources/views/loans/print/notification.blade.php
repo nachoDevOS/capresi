@@ -25,20 +25,23 @@
         <thead>
             <tr>
                 <th style="text-align: center;">Cuota</th>
-                <th>Dia Pagado.</th>
+                <th>Dia Pagado</th>
+                <th style="text-align: center;">Estado</th>
                 <th style="text-align: right;">Monto Pagado</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($transaction->payments as $item)
                 <tr>
+                    <td style="text-align: center;">{{ $item->loanDay->number }}</td>
+                    <td>{{ date('d/m/Y', strtotime($item->loanDay->date)) }}</td>
                     <td style="text-align: center;">
-                        {{ $item->loanDay->number }}
-                        @if($item->late)
-                            <span style="color: #dc3545; font-size: 11px; display: block;">(Atraso)</span>
+                        @if($item->loanDay->late)
+                            <span style="color: #dc3545; font-weight: bold;">Atraso</span>
+                        @else
+                            <span style="color: #28a745; font-weight: bold;">Puntual</span>
                         @endif
                     </td>
-                    <td>{{ date('d/m/Y', strtotime($item->loanDay->date)) }}</td>
                     <td style="text-align: right;">{{ number_format($item->amount, 2, ',', '.') }}</td>
                 </tr>
             @endforeach
