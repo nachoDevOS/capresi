@@ -737,7 +737,7 @@ class LoanController extends Controller
 
             // Aumentamos el timeout a 120 segundos para la generación de imagen
             $url_image = Http::get($baseUrlImage . '/generate?url=' . $url); 
-            // $url = 'https://' . $url_image->object()->url;
+            $url = 'https://' . $url_image->object()->url;
 
             // return $url;
 
