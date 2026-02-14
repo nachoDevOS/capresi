@@ -726,16 +726,15 @@ class LoanController extends Controller
                 ->where('id', $loan->id)
                 ->first();
 
-            $url = 'https://consultorioveterinariocortez.com';
-            $url = 'https://capresi.soluciondigital.dev/admin/loans/payment/85954/notification';
+            // $url = 'https://consultorioveterinariocortez.com';
+            // $url = 'https://capresi.soluciondigital.dev/admin/loans/payment/85954/notification';
             // $url = 'https://image-api.soluciondigital.dev/1771089531948.png';
-            // $url = route('loans.payment.notification', $transaction->id);
-            // return $url;
+            $url = route('loans.payment.notification', $transaction->id);
 
             $servidor = setting('servidores.whatsapp');
             $id = setting('servidores.whatsapp-session');
 
-            $baseUrlImage = setting('servidores.image-from-url');
+            // $baseUrlImage = setting('servidores.image-from-url');
 
             // Aumentamos el timeout a 120 segundos para la generación de imagen
             // $url_image = Http::timeout(120)->get($baseUrlImage . '/generate', [
