@@ -823,7 +823,7 @@ class LoanController extends Controller
 
     public function transactionWhatsapp($loan, $transaction)
     {
-        return $loan;
+        // return $loan;
         $loan = Loan::with(['people'])
             ->where('id', $loan)
             ->first();
