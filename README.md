@@ -45,6 +45,47 @@ pm2 start worker.yml
 ```
 supervisord -c /etc/supervisor/supervisord.conf
 supervisorctl status # verificar estado
-```"# capresi" 
-"# capresi" 
-"# capresi" 
+```
+
+- Producción (Usando Systemd)
+
+Crear el archivo de servicio:
+
+```bash
+sudo nano /etc/systemd/system/capresi-worker.service
+```
+
+Pegar el siguiente contenido:
+
+```ini
+[Unit]
+Description=Laravel Queue Worker (Capresi)
+After=network.target mysql.service redis.service
+
+[Service]
+User=www-data
+Group=www-data
+Restart=always
+RestartSec=3
+WorkingDirectory=/var/www/production/capresi
+
+# CAMBIO AQUÍ: Aumentamos timeout a 380 segundos (6 min 20 seg)
+ExecStart=/usr/bin/php /var/www/production/capresi/artisan queue:work --sleep=3 --tries=2 --timeout=380
+
+# CAMBIO AQUÍ: Aumentamos TimeoutStopSec acorde al nuevo timeout
+TimeoutStopSec=390
+StandardOutput=append:/var/www/production/capresi/storage/logs/worker.log
+StandardError=inherit
+Environment=APP_ENV=production
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Recargar, reiniciar y verificar estado:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl restart capresi-worker.service
+sudo systemctl status capresi-worker.service
+```
