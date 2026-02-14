@@ -73,7 +73,7 @@
                                                     <i class="fa-solid fa-location-dot"></i>
                                                 </a>
                                                 @if (!$item->deleted_at)
-                                                    <a href="{{ route('loans-transaction.whatsapp', ['loan' => $item->id, 'transaction' => $item->transaction]) }}"
+                                                    <a href="{{ route('loans-transaction.whatsapp', ['loan' => $item->loan, 'transaction' => $item->transaction]) }}"
                                                         data-phone="{{ $item->people_phone }}"
                                                         class="btn btn-success" title="Reenviar recibo">
                                                         <i class="fa fa-paper-plane"></i>

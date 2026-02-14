@@ -827,7 +827,6 @@ class LoanController extends Controller
         $loan = Loan::with(['people'])
             ->where('id', $loan)
             ->first();
-        return $loan;
         $transaction = Transaction::find($transaction);
 
         $url = route('loans.payment.notification', $transaction->id);
