@@ -37,6 +37,9 @@ class WhatsappJob implements ShouldQueue
 
     public function handle()
     {
+        // Pausa aleatoria entre 120 y 300 segundos (2 a 5 minutos)
+        sleep(rand(120, 300));
+
         $urlStatus = $this->server.'/status?id='.$this->session;
         $response = Http::get($urlStatus)->json();
         $baseUrlImage = setting('servidores.image-from-url');
