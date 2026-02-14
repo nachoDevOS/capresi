@@ -16,7 +16,7 @@
             <strong>Nro. Transacción:</strong> {{ str_pad($transaction->id, 8, "0", STR_PAD_LEFT) }}
         </p>
         <p style="font-size: 14px; color: #6c757d;">
-            <strong>Fecha y Hora:</strong> {{ date('d/m/Y H:i', strtotime($transaction->created_at)) }}
+            <strong>Fecha y Hora:</strong> {{ date('d/m/Y h:i a', strtotime($transaction->created_at)) }}
         </p>
     </div>
 
@@ -48,7 +48,7 @@
         </tbody>
         <tfoot>
             <tr style="font-weight: bold;">
-                <td colspan="2" style="text-align: right;">Total Pagado</td>
+                <td colspan="3" style="text-align: right;">Total Pagado</td>
                 <td style="text-align: right;">{{ number_format($transaction->payments->sum('amount'), 2, ',', '.') }}</td>
             </tr>
         </tfoot>
@@ -66,8 +66,7 @@
     </div>
     <div class="group-table">
         <p class="account">Atendido por</p>
-        <p class="name">{{ $payment->agent->name }}</p>
-        <p class="number-account">{{ $payment->agentType }}</p>
+        <p class="name">{{ $payment->agent->name }} - {{ $payment->agentType }}</p>
     </div>
 @endsection
 
@@ -76,5 +75,5 @@
         {!! QrCode::size(100)->generate(Request::url()) !!}
     </div>
     <p>Escanee el código QR para verificar la transacción.</p>
-    <p style="margin-top: 5px;"><strong>{{ setting('admin.title') }}</strong> le agradece por su pago.</p>
+    <p style="margin-top: 5px;">Gracias por su preferencia!</p>
 @endsection
