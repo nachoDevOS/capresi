@@ -150,7 +150,7 @@
             <div class="card">
                 <div class="card-header">
                     <img src="{{ $admin_favicon == '' ? asset('images/icon.png') : Voyager::image($admin_favicon) }}" alt="logo" class="logo">
-                    <h3>{{ $title ?? 'Comprobante de Transacción' }}</h3>
+                    <h3>{{ $title }}</h3>
                 </div>
                 <div class="card-body">
                     <div class="body-main">
