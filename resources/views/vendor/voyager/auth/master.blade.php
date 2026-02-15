@@ -12,16 +12,15 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-rtl/3.4.0/css/bootstrap-rtl.css">
         <link rel="stylesheet" href="{{ voyager_asset('css/rtl.css') }}">
     @endif
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-
-    <!-- Favicon -->
+        <!-- Favicon -->
     <?php $admin_favicon = Voyager::setting('admin.icon_image', ''); ?>
-    {{-- @if($admin_favicon == '') --}}
+    @if($admin_favicon == '')
         <link rel="shortcut icon" href="{{ asset('images/icon.png') }}" type="image/png">
-    {{-- @else
+    @else
         <link rel="shortcut icon" href="{{ Voyager::image($admin_favicon) }}" type="image/png">
-    @endif --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    @endif
 
     {{-- SEO --}}
     <meta property="og:title"         content="{{ Voyager::setting('admin.title') }}" />
@@ -29,11 +28,9 @@
     <meta property="og:image"         content="{{ $admin_favicon == '' ? asset('images/icon.png') : Voyager::image($admin_favicon) }}" />
 
 
-
-
     <style>
         body {
-            background-image:url('{{ Voyager::image( Voyager::setting("admin.bg_image"), voyager_asset("images/bg.jpg") ) }}');
+            background-image:url('{{ Voyager::image( Voyager::setting("admin.bg_image"), asset("images/bg_image.png") ) }}');
             background-color: {{ Voyager::setting("admin.bg_color", "#FFFFFF" ) }};
         }
         body.login .login-sidebar {
@@ -69,9 +66,9 @@
                     <div class="logo-title-container">
                         <?php $admin_logo_img = Voyager::setting('admin.icon_image', ''); ?>
                         @if($admin_logo_img == '')
-                            <img class="img-responsive pull-left flip logo hidden-xs animated fadeIn" src="{{ voyager_asset('images/logo-icon-light.png') }}" alt="Logo Icon">
+                            <img class="img-responsive pull-left flip logo hidden-xs animated fadeIn" src="{{ asset('images/icon.png') }}" alt="Logo Icon" style="width: 120px; height: auto;">
                         @else
-                            <img class="img-responsive pull-left flip logo hidden-xs animated fadeIn" src="{{ Voyager::image($admin_logo_img) }}" alt="Logo Icon">
+                            <img class="img-responsive pull-left flip logo hidden-xs animated fadeIn" src="{{ Voyager::image($admin_logo_img) }}"  alt="Logo Icon" style="width: 120px; height: auto;">
                         @endif
                         <div class="copy animated fadeIn">
                             <h1>{{ Voyager::setting('admin.title', 'Voyager') }}</h1>

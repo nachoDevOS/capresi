@@ -4,14 +4,6 @@
     <div class="login-container">
 
         <p>{{ __('voyager::login.signin_below') }}</p>
-    
-
-        {{-- @if ($errors->any())
-            <div class="alert alert-danger">
-                {!! $errors->first() !!}
-            </div>
-        @endif --}}
-        {{-- <span></span> --}}
 
         <form action="{{ route('voyager.login') }}" method="POST">
             {{ csrf_field() }}
@@ -38,6 +30,18 @@
                 </div>
             </div>
 
+
+            @if (env('APP_DEMO', false))
+                <div class="row">
+                    <div class="col-md-12" style="margin-bottom: 0px">
+                        <div class="alert alert-info" style="margin-bottom: 5px">
+                            <small style="font-weight: bold">Ingrese los siguientes datos en el formulario</small><br>
+                            <strong>Email: </strong> admin@admin.com <br>
+                            <strong>Contraseña: </strong> password
+                        </div>
+                    </div>
+                </div>
+            @endif
             <div class="form-group" id="rememberMeGroup">
                 <div class="controls">
                     <input type="checkbox" name="remember" id="remember" value="1"><label for="remember" class="remember-me-text">{{ __('voyager::generic.remember_me') }}</label>
@@ -57,7 +61,7 @@
             <div class="alert alert-red">
                 <ul class="list-unstyled">
                     @foreach($errors->all() as $err)
-                        <li>{!! $err !!}</li>
+                        <li>{{ $err }}</li>
                     @endforeach
                 </ul>
             </div>
@@ -68,7 +72,6 @@
 
 @section('post_js')
     <script type="text/javascript" src="{{ voyager_asset('js/app.js') }}"></script>
-
     <script>
         var btn = document.querySelector('button[type="submit"]');
         var form = document.forms[0];
@@ -115,6 +118,15 @@
             });
         });
 
-        
     </script>
+
+
+@if (setting('configuracion.navidad'))
+    <script type="text/javascript" src="{{asset('navidad/snow.js')}}"></script>
+    <script type="text/javascript">
+        $(function() {
+            $(document).snow({ SnowImage: "{{ asset('navidad/image/icon.png') }}", SnowImage2: "{{ asset('navidad/image/caramelo.png') }}" });
+        });
+    </script>
+@endif
 @endsection
