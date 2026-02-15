@@ -854,6 +854,7 @@ class LoanController extends Controller
     // Meotodo Para envio de mensaje 
     public function whatsapp($servidor, $session, $code, $phone, $url, $message, $type)
     {
-        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type);
+        // Retraso aleatorio entre 30 y 60 minutos para evitar bloqueos y restricciones de WhatsApp
+        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(30, 60)));
     }
 }
