@@ -857,36 +857,61 @@ class LoanController extends Controller
     {
         // --- 1. MENSAJE DE SALUDO (Aviso de envío) ---
         $nameStr = $name ? " ".ucfirst(strtolower($name)) : "";
-        $greetings = ["Hola{$nameStr}", "Saludos{$nameStr}", "Estimado cliente{$nameStr}", "Buen día{$nameStr}", "Hola{$nameStr}, ¿cómo estás?", "Buenas{$nameStr}"];
+        $greetings = [
+            "Hola{$nameStr} 👋", 
+            "Saludos{$nameStr} ✨", 
+            "Estimado cliente{$nameStr} 🤝", 
+            "Buen día{$nameStr} ☀️", 
+            "Hola{$nameStr}, ¿cómo estás? 😊", 
+            "Buenas{$nameStr} 🙋‍♂️",
+            "¡Hola{$nameStr}! Espero que estés bien 🌟",
+            "Un gusto saludarte{$nameStr} 👋",
+            "¡Qué tal{$nameStr}! 😃"
+        ];
         $preludes = [
-            "En unos momentos le enviamos su comprobante de pago.",
-            "Ya estamos procesando su comprobante, se lo envío en breve.",
-            "Deme unos minutos y le paso su recibo.",
-            "Su pago fue registrado, enseguida le adjunto el comprobante.",
-            "Estamos generando su recibo, aguarde un instante por favor."
+            "En unos momentos le enviamos su comprobante de pago ⏳.",
+            "Ya estamos procesando su comprobante, se lo envío en breve 📨.",
+            "Deme unos minutos y le paso su recibo 🕐.",
+            "Su pago fue registrado, enseguida le adjunto el comprobante ✅.",
+            "Estamos generando su recibo, aguarde un instante por favor 🔄.",
+            "Confirmando su transacción, en breve recibe el comprobante 🧾.",
+            "Procesando su pago... un momento por favor ⚙️.",
+            "Todo listo con su pago, ya le paso el comprobante 👍."
         ];
         $msg1 = $greetings[array_rand($greetings)] . " " . $preludes[array_rand($preludes)];
         
         // --- 2. MENSAJE DEL COMPROBANTE (Con la imagen) ---
         $receiptTexts = [
             "Aquí tiene su comprobante 👇",
-            "Le adjunto el recibo de su pago:",
-            "Listo, aquí está su comprobante:",
-            "Comprobante generado exitosamente:",
-            "Su recibo digital:"
+            "Le adjunto el recibo de su pago 📄:",
+            "Listo, aquí está su comprobante ✅:",
+            "Comprobante generado exitosamente ✨:",
+            "Su recibo digital 📱:",
+            "Adjunto encontrará el detalle de su pago 📎:",
+            "Aquí está la constancia de su operación 🧾:"
         ];
         $msg2 = $receiptTexts[array_rand($receiptTexts)];
 
         // --- 3. MENSAJE DE AGRADECIMIENTO (Cierre) ---
         $thanks = [
-            "Gracias por su preferencia!",
-            "Agradecemos su confianza en nosotros.",
-            "Gracias por ser parte de nuestra comunidad.",
-            "Su operación se realizó con éxito.",
-            "Pago registrado correctamente."
+            "¡Gracias por su preferencia! 🙏",
+            "Agradecemos su confianza en nosotros 🤝.",
+            "Gracias por ser parte de nuestra comunidad 🌟.",
+            "Su operación se realizó con éxito ✅.",
+            "Pago registrado correctamente 👍.",
+            "¡Muchas gracias por su pago! 😊",
+            "Valoramos mucho su puntualidad 👏."
         ];
-        $closings = ["Atentamente, el equipo.", "Cualquier duda, estamos aquí.", "Nos vemos pronto.", "Que tenga buen resto de jornada.", "Gracias por su tiempo."];
-        $emojis = ['✅', '👍', '😊', '👋', '✨', '🤝'];
+        $closings = [
+            "Atentamente, el equipo.", 
+            "Cualquier duda, estamos aquí 📞.", 
+            "Nos vemos pronto 👋.", 
+            "Que tenga buen resto de jornada 🌤️.", 
+            "Gracias por su tiempo ⏳.",
+            "¡Que tenga un excelente día! 🌈",
+            "Estamos a su disposición 🫡."
+        ];
+        $emojis = ['✅', '👍', '😊', '👋', '✨', '🤝', '🌟', '🎉', '💯'];
         
         $msg3 = $thanks[array_rand($thanks)] . " " . $emojis[array_rand($emojis)] . "\n" . $closings[array_rand($closings)];
 
