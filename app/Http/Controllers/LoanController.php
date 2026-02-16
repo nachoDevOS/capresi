@@ -18,6 +18,7 @@ use TCG\Voyager\Models\Role;
 use App\Models\Route;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Cache;
 
 use App\Http\Controllers\FileController;
 use App\Models\LoanDayAgent;
@@ -900,6 +901,22 @@ class LoanController extends Controller
         }
 
         // Retraso aleatorio entre 20 y 60 minutos para evitar bloqueos y restricciones de WhatsApp
-        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(20, 60)));
+        // WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(20, 60)));
+
+        // 1. Recuperar la última hora programada (o usar 'ahora' si no existe)
+        $lastScheduled = Cache::get('last_whatsapp_schedule');
+        $lastScheduled = $lastScheduled ? Carbon::parse($lastScheduled) : now();
+
+        // Si la última hora programada ya pasó (ej. ayer), reiniciamos el contador a 'ahora'
+        if ($lastScheduled < now()) { $lastScheduled = now(); }
+
+        // 2. Sumar minutos aleatorios a la ÚLTIMA hora programada (Cola secuencial)
+        // Nota: Al ser secuencial, usa un rango menor (ej. 15-30 min) para no acumular demasiado retraso
+        $sendAt = $lastScheduled->copy()->addMinutes(rand(5, 15));
+        
+        // 3. Guardar la nueva hora para el siguiente job
+        Cache::put('last_whatsapp_schedule', $sendAt, now()->addDay());
+
+        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay($sendAt);
     }
 }
