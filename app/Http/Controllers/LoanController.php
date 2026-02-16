@@ -866,7 +866,11 @@ class LoanController extends Controller
             "Buenas{$nameStr} 🙋‍♂️",
             "¡Hola{$nameStr}! Espero que estés bien 🌟",
             "Un gusto saludarte{$nameStr} 👋",
-            "¡Qué tal{$nameStr}! 😃"
+            "¡Qué tal{$nameStr}! 😃",
+            "Hola{$nameStr}, espero que tengas un excelente día ☀️",
+            "¡Buenas! {$nameStr} 👋",
+            "Saludos cordiales{$nameStr} 🎩",
+            "¡Hola! {$nameStr}, un placer saludarte 😊"
         ];
         $preludes = [
             "En unos momentos le enviamos su comprobante de pago ⏳.",
@@ -876,7 +880,12 @@ class LoanController extends Controller
             "Estamos generando su recibo, aguarde un instante por favor 🔄.",
             "Confirmando su transacción, en breve recibe el comprobante 🧾.",
             "Procesando su pago... un momento por favor ⚙️.",
-            "Todo listo con su pago, ya le paso el comprobante 👍."
+            "Todo listo con su pago, ya le paso el comprobante 👍.",
+            "Estoy preparando su comprobante, un momento por favor 📄.",
+            "Su pago ha sido validado, en breve le envío el recibo ✅.",
+            "Generando comprobante de pago... ⏳",
+            "Enseguida le comparto la constancia de su pago 📨.",
+            "Unos segundos y le envío su comprobante 👍."
         ];
         $msg1 = $greetings[array_rand($greetings)] . " " . $preludes[array_rand($preludes)];
         
@@ -888,7 +897,12 @@ class LoanController extends Controller
             "Comprobante generado exitosamente ✨:",
             "Su recibo digital 📱:",
             "Adjunto encontrará el detalle de su pago 📎:",
-            "Aquí está la constancia de su operación 🧾:"
+            "Aquí está la constancia de su operación 🧾:",
+            "Le comparto su comprobante de pago 📩:",
+            "Aquí tiene el detalle de su transacción 🧾:",
+            "Comprobante listo 👇:",
+            "Su constancia de pago digital ✅:",
+            "Adjunto el recibo correspondiente 📎:"
         ];
         $msg2 = $receiptTexts[array_rand($receiptTexts)];
 
@@ -900,7 +914,12 @@ class LoanController extends Controller
             "Su operación se realizó con éxito ✅.",
             "Pago registrado correctamente 👍.",
             "¡Muchas gracias por su pago! 😊",
-            "Valoramos mucho su puntualidad 👏."
+            "Valoramos mucho su puntualidad 👏.",
+            "¡Gracias por cumplir con su pago! 🙌",
+            "Agradecemos su puntualidad y compromiso 🤝.",
+            "¡Excelente! Gracias por su pago 😊.",
+            "Su pago nos ayuda a seguir creciendo juntos 🌟.",
+            "¡Muchas gracias! Valoramos su preferencia 🙏."
         ];
         $closings = [
             "Atentamente, el equipo.", 
@@ -909,7 +928,12 @@ class LoanController extends Controller
             "Que tenga buen resto de jornada 🌤️.", 
             "Gracias por su tiempo ⏳.",
             "¡Que tenga un excelente día! 🌈",
-            "Estamos a su disposición 🫡."
+            "Estamos a su disposición 🫡.",
+            "Quedamos atentos a cualquier consulta 📞.",
+            "¡Hasta la próxima! 👋",
+            "Que tenga un día productivo 🚀.",
+            "Saludos de parte de todo el equipo 🏢.",
+            "Cualquier cosa, no dude en escribirnos 📩."
         ];
         $emojis = ['✅', '👍', '😊', '👋', '✨', '🤝', '🌟', '🎉', '💯'];
         
