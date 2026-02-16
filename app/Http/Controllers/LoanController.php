@@ -855,7 +855,19 @@ class LoanController extends Controller
     public function whatsapp($servidor, $session, $code, $phone, $url, $type)
     {
         // Retraso aleatorio entre 30 y 60 minutos para evitar bloqueos y restricciones de WhatsApp
-        $message = 'Gracias por su preferencia!';
+        $messages = [
+            'Gracias por su preferencia!',
+            'Su pago ha sido procesado correctamente. ¡Gracias!',
+            'Agradecemos su confianza en nosotros.',
+            'Transacción exitosa. ¡Que tenga un excelente día!',
+            'Hemos recibido su pago. ¡Gracias por elegirnos!',
+            'Confirmamos la recepción de su pago. ¡Saludos!',
+            '¡Gracias por ser parte de nuestra comunidad!',
+            'Su operación se realizó con éxito. ¡Gracias!',
+            'Pago registrado. ¡Agradecemos su puntualidad!',
+            '¡Todo listo! Gracias por confiar en nuestros servicios.'
+        ];
+        $message = $messages[array_rand($messages)];
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(20, 60)));
     }
 }
