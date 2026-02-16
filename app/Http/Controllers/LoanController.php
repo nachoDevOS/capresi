@@ -735,7 +735,7 @@ class LoanController extends Controller
             // sleep(15); // Esperamos 5 segundos para asegurarnos de que la imagen esté disponible
             if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $session)
             {
-                $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Gracias por su preferencia!', 'Automatico - Comprobante de pago');
+                $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Automatico - Comprobante de pago');
                 // WhatsappJob::dispatch($server, $session, $code, $phone, $message, $type)->delay(now()->addSeconds($this->whatsappDelay));
             }
             
@@ -836,7 +836,7 @@ class LoanController extends Controller
 
         if ($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $session)
         {
-            $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Gracias por su preferencia!', 'Manual - Comprobante de pago');
+            $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Manual - Comprobante de pago');
             return redirect()
                 ->route('loans-list.transaction', ['loan' => $loan->id])
                 ->with(['message' => 'Whatsapp enviado exitosamente.', 'alert-type' => 'success']);
@@ -852,9 +852,10 @@ class LoanController extends Controller
 
 
     // Meotodo Para envio de mensaje 
-    public function whatsapp($servidor, $session, $code, $phone, $url, $message, $type)
+    public function whatsapp($servidor, $session, $code, $phone, $url, $type)
     {
         // Retraso aleatorio entre 30 y 60 minutos para evitar bloqueos y restricciones de WhatsApp
-        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(30, 60)));
+        $message = 'Gracias por su preferencia!';
+        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(20, 60)));
     }
 }
