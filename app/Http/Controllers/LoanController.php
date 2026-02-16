@@ -735,7 +735,7 @@ class LoanController extends Controller
             // sleep(15); // Esperamos 5 segundos para asegurarnos de que la imagen esté disponible
             if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $session)
             {
-                $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Automatico - Comprobante de pago');
+                $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Automatico - Comprobante de pago', $loan->people->first_name);
                 // WhatsappJob::dispatch($server, $session, $code, $phone, $message, $type)->delay(now()->addSeconds($this->whatsappDelay));
             }
             
@@ -836,7 +836,7 @@ class LoanController extends Controller
 
         if ($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $session)
         {
-            $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Manual - Comprobante de pago');
+            $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Manual - Comprobante de pago', $loan->people->first_name);
             return redirect()
                 ->route('loans-list.transaction', ['loan' => $loan->id])
                 ->with(['message' => 'Whatsapp enviado exitosamente.', 'alert-type' => 'success']);
@@ -852,10 +852,11 @@ class LoanController extends Controller
 
 
     // Meotodo Para envio de mensaje 
-    public function whatsapp($servidor, $session, $code, $phone, $url, $type)
+    public function whatsapp($servidor, $session, $code, $phone, $url, $type, $name = null)
     {
-        // 1. Variación de Saludos
-        $greetings = ['Hola', 'Saludos', 'Estimado cliente', 'Buen día', 'Hola, ¿cómo estás?', 'Aviso importante', 'Buenas'];
+        // 1. Variación de Saludos (Personalización con Nombre)
+        $nameStr = $name ? " ".ucfirst(strtolower($name)) : "";
+        $greetings = ["Hola{$nameStr}", "Saludos{$nameStr}", "Estimado cliente{$nameStr}", "Buen día{$nameStr}", "Hola{$nameStr}, ¿cómo estás?", "Aviso importante{$nameStr}", "Buenas{$nameStr}"];
         
         // 2. Variación de Emojis
         $emojis = ['✅', '👍', '😊', '👋', '📩', '✨', '📱', '🔔', '🤝'];
@@ -873,17 +874,30 @@ class LoanController extends Controller
             'Pago registrado. ¡Agradecemos su puntualidad!',
             '¡Todo listo! Gracias por confiar en nuestros servicios.'
         ];
+        
+        // 4. Variación de Cierres (Nuevo)
+        $closings = ['Atentamente, el equipo.', 'Cualquier duda, estamos aquí.', 'Nos vemos pronto.', 'Que tenga buen resto de jornada.', 'Gracias por su tiempo.'];
 
         // Selección aleatoria
         $greeting = $greetings[array_rand($greetings)];
         $emoji = $emojis[array_rand($emojis)];
         $body = $messages[array_rand($messages)];
+        $closing = $closings[array_rand($closings)];
         
-        // 4. Identificador único (Anti-spam hash) - Hace que cada mensaje sea 100% único
-        $uniqueId = strtoupper(substr(md5(uniqid()), 0, 4));
+        // 5. Identificador único (Anti-spam hash)
+        $uniqueId = strtoupper(substr(md5(uniqid()), 0, 5));
 
-        // Componer mensaje final
-        $message = "$greeting $emoji\n$body\nRef: $uniqueId";
+        // 6. Estructura Dinámica (Randomizar el orden de los elementos)
+        // Esto evita que el mensaje siempre tenga la misma "forma" para el algoritmo
+        $structure = rand(1, 3);
+        
+        if ($structure == 1) {
+            $message = "$greeting $emoji\n$body\n$closing\nRef: $uniqueId";
+        } elseif ($structure == 2) {
+            $message = "$emoji $greeting\n$body\nRef: $uniqueId";
+        } else {
+            $message = "$greeting\n$body $emoji\n$closing\nRef: $uniqueId";
+        }
 
         // Retraso aleatorio entre 20 y 60 minutos para evitar bloqueos y restricciones de WhatsApp
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(20, 60)));
