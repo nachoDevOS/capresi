@@ -854,7 +854,13 @@ class LoanController extends Controller
     // Meotodo Para envio de mensaje 
     public function whatsapp($servidor, $session, $code, $phone, $url, $type)
     {
-        // Retraso aleatorio entre 30 y 60 minutos para evitar bloqueos y restricciones de WhatsApp
+        // 1. Variación de Saludos
+        $greetings = ['Hola', 'Saludos', 'Estimado cliente', 'Buen día', 'Hola, ¿cómo estás?', 'Aviso importante', 'Buenas'];
+        
+        // 2. Variación de Emojis
+        $emojis = ['✅', '👍', '😊', '👋', '📩', '✨', '📱', '🔔', '🤝'];
+
+        // 3. Variación del Mensaje Principal
         $messages = [
             'Gracias por su preferencia!',
             'Su pago ha sido procesado correctamente. ¡Gracias!',
@@ -867,7 +873,19 @@ class LoanController extends Controller
             'Pago registrado. ¡Agradecemos su puntualidad!',
             '¡Todo listo! Gracias por confiar en nuestros servicios.'
         ];
-        $message = $messages[array_rand($messages)];
+
+        // Selección aleatoria
+        $greeting = $greetings[array_rand($greetings)];
+        $emoji = $emojis[array_rand($emojis)];
+        $body = $messages[array_rand($messages)];
+        
+        // 4. Identificador único (Anti-spam hash) - Hace que cada mensaje sea 100% único
+        $uniqueId = strtoupper(substr(md5(uniqid()), 0, 4));
+
+        // Componer mensaje final
+        $message = "$greeting $emoji\n$body\nRef: $uniqueId";
+
+        // Retraso aleatorio entre 20 y 60 minutos para evitar bloqueos y restricciones de WhatsApp
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(20, 60)));
     }
 }
