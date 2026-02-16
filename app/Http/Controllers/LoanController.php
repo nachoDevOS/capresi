@@ -855,68 +855,63 @@ class LoanController extends Controller
     // Meotodo Para envio de mensaje 
     public function whatsapp($servidor, $session, $code, $phone, $url, $type, $name = null)
     {
-        // 1. Variación de Saludos (Personalización con Nombre)
+        // --- 1. MENSAJE DE SALUDO (Aviso de envío) ---
         $nameStr = $name ? " ".ucfirst(strtolower($name)) : "";
-        $greetings = ["Hola{$nameStr}", "Saludos{$nameStr}", "Estimado cliente{$nameStr}", "Buen día{$nameStr}", "Hola{$nameStr}, ¿cómo estás?", "Aviso importante{$nameStr}", "Buenas{$nameStr}"];
-        
-        // 2. Variación de Emojis
-        $emojis = ['✅', '👍', '😊', '👋', '📩', '✨', '📱', '🔔', '🤝'];
-
-        // 3. Variación del Mensaje Principal
-        $messages = [
-            'Gracias por su preferencia!',
-            'Su pago ha sido procesado correctamente. ¡Gracias!',
-            'Agradecemos su confianza en nosotros.',
-            'Transacción exitosa. ¡Que tenga un excelente día!',
-            'Hemos recibido su pago. ¡Gracias por elegirnos!',
-            'Confirmamos la recepción de su pago. ¡Saludos!',
-            '¡Gracias por ser parte de nuestra comunidad!',
-            'Su operación se realizó con éxito. ¡Gracias!',
-            'Pago registrado. ¡Agradecemos su puntualidad!',
-            '¡Todo listo! Gracias por confiar en nuestros servicios.'
+        $greetings = ["Hola{$nameStr}", "Saludos{$nameStr}", "Estimado cliente{$nameStr}", "Buen día{$nameStr}", "Hola{$nameStr}, ¿cómo estás?", "Buenas{$nameStr}"];
+        $preludes = [
+            "En unos momentos le enviamos su comprobante de pago.",
+            "Ya estamos procesando su comprobante, se lo envío en breve.",
+            "Deme unos minutos y le paso su recibo.",
+            "Su pago fue registrado, enseguida le adjunto el comprobante.",
+            "Estamos generando su recibo, aguarde un instante por favor."
         ];
+        $msg1 = $greetings[array_rand($greetings)] . " " . $preludes[array_rand($preludes)];
         
-        // 4. Variación de Cierres (Nuevo)
-        $closings = ['Atentamente, el equipo.', 'Cualquier duda, estamos aquí.', 'Nos vemos pronto.', 'Que tenga buen resto de jornada.', 'Gracias por su tiempo.'];
+        // --- 2. MENSAJE DEL COMPROBANTE (Con la imagen) ---
+        $receiptTexts = [
+            "Aquí tiene su comprobante 👇",
+            "Le adjunto el recibo de su pago:",
+            "Listo, aquí está su comprobante:",
+            "Comprobante generado exitosamente:",
+            "Su recibo digital:"
+        ];
+        $msg2 = $receiptTexts[array_rand($receiptTexts)];
 
-        // Selección aleatoria
-        $greeting = $greetings[array_rand($greetings)];
-        $emoji = $emojis[array_rand($emojis)];
-        $body = $messages[array_rand($messages)];
-        $closing = $closings[array_rand($closings)];
+        // --- 3. MENSAJE DE AGRADECIMIENTO (Cierre) ---
+        $thanks = [
+            "Gracias por su preferencia!",
+            "Agradecemos su confianza en nosotros.",
+            "Gracias por ser parte de nuestra comunidad.",
+            "Su operación se realizó con éxito.",
+            "Pago registrado correctamente."
+        ];
+        $closings = ["Atentamente, el equipo.", "Cualquier duda, estamos aquí.", "Nos vemos pronto.", "Que tenga buen resto de jornada.", "Gracias por su tiempo."];
+        $emojis = ['✅', '👍', '😊', '👋', '✨', '🤝'];
         
-        // 5. Identificador único (Anti-spam hash)
-        $uniqueId = strtoupper(substr(md5(uniqid()), 0, 5));
+        $msg3 = $thanks[array_rand($thanks)] . " " . $emojis[array_rand($emojis)] . "\n" . $closings[array_rand($closings)];
 
-        // 6. Estructura Dinámica (Randomizar el orden de los elementos)
-        // Esto evita que el mensaje siempre tenga la misma "forma" para el algoritmo
-        $structure = rand(1, 3);
+        // --- GESTIÓN DE TIEMPOS (Cache para cola secuencial) ---
         
-        if ($structure == 1) {
-            $message = "$greeting $emoji\n$body\n$closing\nRef: $uniqueId";
-        } elseif ($structure == 2) {
-            $message = "$emoji $greeting\n$body\nRef: $uniqueId";
-        } else {
-            $message = "$greeting\n$body $emoji\n$closing\nRef: $uniqueId";
-        }
-
-        // Retraso aleatorio entre 20 y 60 minutos para evitar bloqueos y restricciones de WhatsApp
-        // WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay(now()->addMinutes(rand(20, 60)));
-
-        // 1. Recuperar la última hora programada (o usar 'ahora' si no existe)
+        // Recuperar la última hora programada globalmente
         $lastScheduled = Cache::get('last_whatsapp_schedule');
         $lastScheduled = $lastScheduled ? Carbon::parse($lastScheduled) : now();
 
-        // Si la última hora programada ya pasó (ej. ayer), reiniciamos el contador a 'ahora'
+        // Si la última hora programada ya pasó, reiniciamos a 'ahora'
         if ($lastScheduled < now()) { $lastScheduled = now(); }
 
-        // 2. Sumar minutos aleatorios a la ÚLTIMA hora programada (Cola secuencial)
-        // Nota: Al ser secuencial, usa un rango menor (ej. 15-30 min) para no acumular demasiado retraso
-        $sendAt = $lastScheduled->copy()->addMinutes(rand(5, 15));
-        
-        // 3. Guardar la nueva hora para el siguiente job
-        Cache::put('last_whatsapp_schedule', $sendAt, now()->addDay());
+        // --- ENVÍO 1: Saludo (1-3 min después del último job global) ---
+        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(10, 25));
+        Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
+        WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
 
-        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $message, $type)->delay($sendAt);
+        // --- ENVÍO 2: Comprobante (2-5 min después del saludo) ---
+        $sendAt2 = $sendAt1->copy()->addMinutes(rand(3, 6));
+        Cache::put('last_whatsapp_schedule', $sendAt2, now()->addDay());
+        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt2);
+
+        // --- ENVÍO 3: Agradecimiento (1-3 min después del comprobante) ---
+        $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 3));
+        Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
+        WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
     }
 }
