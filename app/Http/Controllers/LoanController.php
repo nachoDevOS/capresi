@@ -949,7 +949,7 @@ class LoanController extends Controller
         if ($lastScheduled < now()) { $lastScheduled = now(); }
 
         // --- ENVÍO 1: Saludo (1-3 min después del último job global) ---
-        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(10, 25));
+        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(1, 2));
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
 
