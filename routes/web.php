@@ -49,6 +49,7 @@ use App\Models\Contract;
 use App\Models\Inventory;
 use App\Models\PawnRegister;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -537,5 +538,6 @@ Route::get('template/loan/search/verification/{loan?}/{phone?}/{code?}', [Templa
 
 Route::get('/admin/clear-cache', function() {
     Artisan::call('optimize:clear');
+    Cache::forget('last_whatsapp_schedule');
     return redirect('/admin')->with(['message' => 'Cache eliminada.', 'alert-type' => 'success']);
 })->name('clear.cache');

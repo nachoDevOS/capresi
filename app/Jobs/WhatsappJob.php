@@ -41,10 +41,17 @@ class WhatsappJob implements ShouldQueue
         $response = Http::get($urlStatus)->json();
         $baseUrlImage = setting('servidores.image-from-url');
 
-        $url_image = Http::get($baseUrlImage . '/generate', [
-                'url' => $this->url
-            ]);
-        $url_image = 'https://' . $url_image->object()->url;
+        $url_image = '';
+        if (!empty($this->url)) {
+            try {
+                $responseImage = Http::get($baseUrlImage . '/generate', [
+                    'url' => $this->url
+                ]);
+                if ($responseImage->successful() && ($obj = $responseImage->object()) && isset($obj->url)) {
+                    $url_image = 'https://' . $obj->url;
+                }
+            } catch (\Exception $e) {}
+        }
 
         if($response['success'] == true) {
             if($response['status'] == true) {        

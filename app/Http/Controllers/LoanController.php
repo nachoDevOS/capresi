@@ -18,6 +18,7 @@ use TCG\Voyager\Models\Role;
 use App\Models\Route;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
 use App\Http\Controllers\FileController;
@@ -855,6 +856,8 @@ class LoanController extends Controller
     // Meotodo Para envio de mensaje 
     public function whatsapp($servidor, $session, $code, $phone, $url, $type, $name = null)
     {
+        Log::info("Whatsapp: Iniciando programación de mensajes para {$phone}. Tipo: {$type}");
+
         // --- 1. MENSAJE DE SALUDO (Aviso de envío) ---
         $nameStr = $name ? " ".ucfirst(strtolower($name)) : "";
         $greetings = [
@@ -944,23 +947,31 @@ class LoanController extends Controller
         // Recuperar la última hora programada globalmente
         $lastScheduled = Cache::get('last_whatsapp_schedule');
         $lastScheduled = $lastScheduled ? Carbon::parse($lastScheduled) : now();
+        Log::info("Whatsapp: Última hora en cache: {$lastScheduled}");
 
         // Si la última hora programada ya pasó, reiniciamos a 'ahora'
-        if ($lastScheduled < now()) { $lastScheduled = now(); }
+        if ($lastScheduled < now()) { 
+            $lastScheduled = now(); 
+            Log::info("Whatsapp: Reiniciando hora base a NOW.");
+        }
 
         // --- ENVÍO 1: Saludo (1-3 min después del último job global) ---
         $sendAt1 = $lastScheduled->copy()->addMinutes(rand(1, 2));
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
+        Log::info("Whatsapp: Programando Saludo para {$sendAt1}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
 
         // --- ENVÍO 2: Comprobante (2-5 min después del saludo) ---
-        $sendAt2 = $sendAt1->copy()->addMinutes(rand(3, 6));
+        $url = 'https://capresi.soluciondigital.dev/admin/payment/transaction/88565';
+        $sendAt2 = $sendAt1->copy()->addMinutes(rand(1, 2));
         Cache::put('last_whatsapp_schedule', $sendAt2, now()->addDay());
+        Log::info("Whatsapp: Programando Comprobante para {$sendAt2}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt2);
 
         // --- ENVÍO 3: Agradecimiento (1-3 min después del comprobante) ---
-        $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 3));
+        $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 2));
         Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
+        Log::info("Whatsapp: Programando Agradecimiento para {$sendAt3}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
     }
 }
