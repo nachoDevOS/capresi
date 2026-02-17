@@ -856,6 +856,17 @@ class LoanController extends Controller
     // Meotodo Para envio de mensaje 
     public function whatsapp($servidor, $session, $code, $phone, $url, $type, $name = null)
     {
+        // 1. CONTROL DE LÍMITE DIARIO (Seguridad anti-bloqueo)
+        $limitKey = 'whatsapp_daily_count_' . now()->format('Y-m-d');
+        $dailyLimit = 150; // Límite conservador. Cuentas nuevas deberían empezar con 100-200.
+        $currentCount = Cache::get($limitKey, 0);
+
+        if ($currentCount >= $dailyLimit) {
+            Log::warning("Whatsapp: Límite diario ({$dailyLimit}) excedido. Se omitió el envío a {$phone}.");
+            return;
+        }
+        Cache::put($limitKey, $currentCount + 3, now()->addDay()); // +3 mensajes por transacción
+
         Log::info("Whatsapp: Iniciando programación de mensajes para {$phone}. Tipo: {$type}");
 
         // --- 1. MENSAJE DE SALUDO (Aviso de envío) ---
@@ -955,8 +966,10 @@ class LoanController extends Controller
             Log::info("Whatsapp: Reiniciando hora base a NOW.");
         }
 
-        // --- ENVÍO 1: Saludo (1-3 min después del último job global) ---
-        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 20));
+        // Calculamos el tiempo tentativo (cola secuencial + delay aleatorio)
+        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 45));
+
+        // --- ENVÍO 1: Saludo ---
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
         Log::info("Whatsapp: Programando Saludo para {$sendAt1}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
