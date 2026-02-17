@@ -975,7 +975,7 @@ class LoanController extends Controller
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
 
         // --- ENVÍO 2: Comprobante (2-5 min después del saludo) ---
-        $sendAt2 = $sendAt1->copy()->addMinutes(rand(2, 5));
+        $sendAt2 = $sendAt1->copy()->addMinutes(rand(1, 3));
         Cache::put('last_whatsapp_schedule', $sendAt2, now()->addDay());
         Log::info("Whatsapp: Programando Comprobante para {$sendAt2}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt2);
