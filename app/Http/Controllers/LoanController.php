@@ -956,7 +956,7 @@ class LoanController extends Controller
         }
 
         // --- ENVÍO 1: Saludo (1-3 min después del último job global) ---
-        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 15));
+        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 20));
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
         Log::info("Whatsapp: Programando Saludo para {$sendAt1}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);

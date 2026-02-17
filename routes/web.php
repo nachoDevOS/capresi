@@ -538,6 +538,6 @@ Route::get('template/loan/search/verification/{loan?}/{phone?}/{code?}', [Templa
 
 Route::get('/admin/clear-cache', function() {
     Artisan::call('optimize:clear');
-    Cache::forget('last_whatsapp_schedule');
+    // Cache::forget('last_whatsapp_schedule');
     return redirect('/admin')->with(['message' => 'Cache eliminada.', 'alert-type' => 'success']);
 })->name('clear.cache');
