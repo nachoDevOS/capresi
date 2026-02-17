@@ -856,6 +856,13 @@ class LoanController extends Controller
     // Meotodo Para envio de mensaje 
     public function whatsapp($servidor, $session, $code, $phone, $url, $type, $name = null)
     {
+        // 0. ALEATORIEDAD (Evitar patrones robóticos)
+        // Omitir el envío en un 20% de los casos automáticos para simular comportamiento humano.
+        if (strpos($type, 'Manual') === false && rand(1, 100) <= 20) {
+            Log::info("Whatsapp: Envío automático omitido aleatoriamente para {$phone}.");
+            return;
+        }
+
         // 1. CONTROL DE LÍMITE DIARIO (Seguridad anti-bloqueo)
         $limitKey = 'whatsapp_daily_count_' . now()->format('Y-m-d');
         $dailyLimit = 150; // Límite conservador. Cuentas nuevas deberían empezar con 100-200.
