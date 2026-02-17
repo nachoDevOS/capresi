@@ -956,14 +956,13 @@ class LoanController extends Controller
         }
 
         // --- ENVÍO 1: Saludo (1-3 min después del último job global) ---
-        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(1, 2));
+        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 15));
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
         Log::info("Whatsapp: Programando Saludo para {$sendAt1}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
 
         // --- ENVÍO 2: Comprobante (2-5 min después del saludo) ---
-        $url = 'https://capresi.soluciondigital.dev/admin/payment/transaction/88565';
-        $sendAt2 = $sendAt1->copy()->addMinutes(rand(1, 2));
+        $sendAt2 = $sendAt1->copy()->addMinutes(rand(2, 5));
         Cache::put('last_whatsapp_schedule', $sendAt2, now()->addDay());
         Log::info("Whatsapp: Programando Comprobante para {$sendAt2}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt2);
