@@ -2,6 +2,7 @@
 
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Cache;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,3 +18,8 @@ use Illuminate\Support\Facades\Artisan;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+Artisan::command('whatsapp:clear-cache', function () {
+    Cache::forget('last_whatsapp_schedule');
+    $this->info('Cache de WhatsApp eliminada correctamente.');
+})->purpose('Eliminar la cache de last_whatsapp_schedule');
