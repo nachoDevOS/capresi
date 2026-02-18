@@ -1066,7 +1066,7 @@ class LoanController extends Controller
         }
 
         // Calculamos el tiempo tentativo (cola secuencial + delay aleatorio)
-        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 30));
+        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 25));
 
         // --- ENVÍO 1: Saludo ---
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
