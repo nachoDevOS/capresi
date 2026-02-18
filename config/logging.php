@@ -120,6 +120,8 @@ return [
             'level' => 'info',
         ],
 
+
+        // Pendiente Para ser eliminados
         'notificacion' => [
             'driver' => 'single',
             'path' => storage_path('logs/notificacion.log'),
@@ -136,6 +138,16 @@ return [
             'path' => storage_path('logs/errorComprobante.log'),
             'level' => 'info',
         ],
+        // Fin
+
+
+        // Funciuonal Para poder guardar las tareas de whatsapp las horas de envios
+        'whatsappJob' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/whatsappJob.log'),
+            'level' => 'info',
+        ],
     ],
+
 
 ];
