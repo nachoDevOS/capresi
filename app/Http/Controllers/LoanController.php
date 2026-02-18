@@ -412,14 +412,30 @@ class LoanController extends Controller
      */
     private function sendRandomLoanApprovalMessage($phone, $fullName)
     {
+        $emojis = ['🤝', '✨', '😊', '🙏', '💰', '🎉', '😃', '✅', '👍', '🌟', '💸', '🏦', '💼', '👋', '😎', '🔥', '💫', '🙌', '👏', '🤩'];
+        $emoji = $emojis[array_rand($emojis)];
+
         $messages = [
-            "¡Excelente noticia, *{$fullName}*! Tu solicitud de préstamo ha sido *APROBADA*. Te esperamos en nuestras oficinas para finalizar el proceso. ¡Gracias por tu confianza! 🤝",
-            "Hola *{$fullName}*, nos complace informarte que tu préstamo ha sido *APROBADO*. Pasa por nuestras oficinas para la entrega. ¡Saludos! ✨",
-            "Felicidades, *{$fullName}*. Tu solicitud de préstamo ha sido *APROBADA* con éxito. Acércate a nuestras oficinas para la entrega. ¡Te esperamos! 😊",
-            "Estimado(a) *{$fullName}*, tu préstamo ha sido *APROBADO*. Por favor, visita nuestras oficinas para la entrega. ¡Gracias! 🙏",
-            "¡Buenas noticias, *{$fullName}*! Tu préstamo ha sido *APROBADO*. Pasa por nuestras oficinas para la entrega de tu dinero. ¡No te lo pierdas! 💰",
-            "Hola *{$fullName}*, tu solicitud de crédito ha sido *APROBADA*. Estamos listos para atenderte en nuestras oficinas. ¡Bienvenido! 🎉",
-            "¡Atención, *{$fullName}*! Tu préstamo ha sido *APROBADO*. Acércate a nuestras instalaciones para completar el proceso. ¡Te esperamos con gusto! 😃"
+            "¡Excelente noticia, *{$fullName}*! Tu solicitud de préstamo ha sido *APROBADA*. Te esperamos en nuestras oficinas para finalizar el proceso. ¡Gracias por tu confianza! {$emoji}",
+            "Hola *{$fullName}*, nos complace informarte que tu préstamo ha sido *APROBADO*. Pasa por nuestras oficinas para la entrega. ¡Saludos! {$emoji}",
+            "Felicidades, *{$fullName}*. Tu solicitud de préstamo ha sido *APROBADA* con éxito. Acércate a nuestras oficinas para la entrega. ¡Te esperamos! {$emoji}",
+            "Estimado(a) *{$fullName}*, tu préstamo ha sido *APROBADO*. Por favor, visita nuestras oficinas para la entrega. ¡Gracias! {$emoji}",
+            "¡Buenas noticias, *{$fullName}*! Tu préstamo ha sido *APROBADO*. Pasa por nuestras oficinas para la entrega de tu dinero. ¡No te lo pierdas! {$emoji}",
+            "Hola *{$fullName}*, tu solicitud de crédito ha sido *APROBADA*. Estamos listos para atenderte en nuestras oficinas. ¡Bienvenido! {$emoji}",
+            "¡Atención, *{$fullName}*! Tu préstamo ha sido *APROBADO*. Acércate a nuestras instalaciones para completar el proceso. ¡Te esperamos con gusto! {$emoji}",
+            "¡Todo listo *{$fullName}*! Tu crédito fue *APROBADO*. Ven a recogerlo cuando gustes en horario de oficina. {$emoji}",
+            "¡Enhorabuena *{$fullName}*! Hemos aprobado tu solicitud. Te aguardamos en nuestras oficinas. {$emoji}",
+            "Saludos *{$fullName}*, te confirmamos que tu préstamo está *APROBADO*. Pasa a retirarlo. {$emoji}",
+            "¡Aprobado! *{$fullName}*, ya puedes pasar por nuestras oficinas para recibir tu préstamo. {$emoji}",
+            "Tu solicitud ha sido procesada y *APROBADA*, *{$fullName}*. ¡Te esperamos! {$emoji}",
+            "¡Qué alegría informarte *{$fullName}*! Tu préstamo está listo para ser entregado. Visítanos. {$emoji}",
+            "Confirmado *{$fullName}*: Solicitud *APROBADA*. Acércate a nuestras oficinas para finalizar. {$emoji}",
+            "¡Lo logramos *{$fullName}*! Tu crédito ha sido autorizado. Te esperamos para la entrega. {$emoji}",
+            "Hola *{$fullName}*, tu trámite finalizó con éxito: *APROBADO*. Ven por tu dinero. {$emoji}",
+            "¡Gran noticia *{$fullName}*! Ya tienes tu préstamo *APROBADO*. Pasa por caja en nuestras oficinas. {$emoji}",
+            "Aviso importante para *{$fullName}*: Tu solicitud fue *APROBADA*. Te esperamos. {$emoji}",
+            "¡Felicidades *{$fullName}*! Tu crédito está disponible. Pasa por nuestras oficinas. {$emoji}",
+            "Estimado cliente *{$fullName}*, su préstamo ha sido *APROBADO*. Por favor apersónese por oficinas. {$emoji}"
         ];
 
         $randomMessage = $messages[array_rand($messages)];
