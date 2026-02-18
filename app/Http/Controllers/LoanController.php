@@ -1082,11 +1082,21 @@ class LoanController extends Controller
         Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
 
-        $clientNameForLog = $name ? " ({$name})" : "";
-        $logMessage = "Programación para {$phone}{$clientNameForLog}:\n" .
-                      "    - Saludo:         " . $sendAt1->format('Y-m-d H:i:s') . "\n" .
-                      "    - Comprobante:    " . $sendAt2->format('Y-m-d H:i:s') . "\n" .
-                      "    - Agradecimiento: " . $sendAt3->format('Y-m-d H:i:s');
+        // --- LOG UNIFICADO Y ESTRUCTURADO ---
+        $clientInfo = $name ? "{$name} ({$phone})" : $phone;
+        $border = str_repeat('=', 60);
+        $logMessage = "\n" .
+            $border . "\n" .
+            " [ WHATSAPP JOB PROGRAMADO ]\n" .
+            str_repeat('-', 60) . "\n" .
+            " Cliente: " . $clientInfo . "\n" .
+            " Tipo:    " . $type . "\n" .
+            str_repeat('-', 60) . "\n" .
+            " 1. Saludo:         " . $sendAt1->format('Y-m-d H:i:s') . "\n" .
+            " 2. Comprobante:    " . $sendAt2->format('Y-m-d H:i:s') . "\n" .
+            " 3. Agradecimiento: " . $sendAt3->format('Y-m-d H:i:s') . "\n" .
+            $border;
+
         Log::channel('whatsappJob')->info($logMessage);
     }
 }
