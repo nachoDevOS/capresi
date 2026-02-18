@@ -62,10 +62,10 @@ use Illuminate\Support\Facades\Cache;
 |
 */
 
-Route::get('/', [TemplateController::class, 'index']);
-Route::get('message/{id?}/verification', [MessageController::class, 'verification']);
+// Route::get('/', [TemplateController::class, 'index']);
+// Route::get('message/{id?}/verification', [MessageController::class, 'verification']);
 
-Route::get('login', function () {
+Route::get('/', function () {
     return redirect('admin/login');
 })->name('login');
 

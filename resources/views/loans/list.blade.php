@@ -3,9 +3,6 @@
         <table id="dataTable" class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    @if (auth()->user()->hasRole('admin'))
-                        <th>ID</th>
-                    @endif
                     <th style="text-align: center">Codigo</th>
                     <th style="text-align: center">Nombre Cliente</th>    
                     <th style="text-align: center">Detalles</th>
@@ -17,9 +14,6 @@
             <tbody>
                 @forelse ($data as $item)
                 <tr>
-                    @if (auth()->user()->hasRole('admin'))
-                        <td style="vertical-align: middle">{{$item->id}}</td>
-                    @endif
                     <td style="vertical-align: middle">
                         <small>
                             {{ $item->code }}
