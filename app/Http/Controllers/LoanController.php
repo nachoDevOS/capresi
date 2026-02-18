@@ -385,14 +385,7 @@ class LoanController extends Controller
 
         DB::beginTransaction();
         try {
-            if (setting('servidores.whatsapp') && setting('servidores.whatsapp-session') && $loan->people->cell_phone) {
-                Http::post(setting('servidores.whatsapp') . '/send?id=' . setting('servidores.whatsapp-session'), [
-                    'phone' => '591' . $loan->people->cell_phone,
-                    'text' => 'Hola *' . $loan->people->first_name . ' ' . $loan->people->last_name1 . ' ' . $loan->people->last_name2 . '* SU SOLICITUD DE PRESTAMO HA SIDO APROBADA EXITOSAMENTE. Pase por favor por las oficinas para entregarle su solicitud de prestamos, Gracias🤝',
-                    'image_url' => '',
-                ]);
-            }
-
+            $this->sendRandomLoanApprovalMessage($loan->people->cell_phone, $loan->people->first_name . ' ' . $loan->people->last_name1 . ' ' . $loan->people->last_name2);
             $loan->update([
                 'status' => 'aprobado',
                 'success_userId' => Auth::user()->id,
@@ -407,6 +400,42 @@ class LoanController extends Controller
             return redirect()
                 ->route('loans.index')
                 ->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
+        }
+    }
+
+    /**
+     * Sends a random WhatsApp message for loan approval.
+     *
+     * @param string $phone The recipient's phone number.
+     * @param string $fullName The full name of the loan recipient.
+     * @return void
+     */
+    private function sendRandomLoanApprovalMessage($phone, $fullName)
+    {
+        $messages = [
+            "¡Excelente noticia, *{$fullName}*! Tu solicitud de préstamo ha sido *APROBADA*. Te esperamos en nuestras oficinas para finalizar el proceso. ¡Gracias por tu confianza! 🤝",
+            "Hola *{$fullName}*, nos complace informarte que tu préstamo ha sido *APROBADO*. Pasa por nuestras oficinas para la entrega. ¡Saludos! ✨",
+            "Felicidades, *{$fullName}*. Tu solicitud de préstamo ha sido *APROBADA* con éxito. Acércate a nuestras oficinas para la entrega. ¡Te esperamos! 😊",
+            "Estimado(a) *{$fullName}*, tu préstamo ha sido *APROBADO*. Por favor, visita nuestras oficinas para la entrega. ¡Gracias! 🙏",
+            "¡Buenas noticias, *{$fullName}*! Tu préstamo ha sido *APROBADO*. Pasa por nuestras oficinas para la entrega de tu dinero. ¡No te lo pierdas! 💰",
+            "Hola *{$fullName}*, tu solicitud de crédito ha sido *APROBADA*. Estamos listos para atenderte en nuestras oficinas. ¡Bienvenido! 🎉",
+            "¡Atención, *{$fullName}*! Tu préstamo ha sido *APROBADO*. Acércate a nuestras instalaciones para completar el proceso. ¡Te esperamos con gusto! 😃"
+        ];
+
+        $randomMessage = $messages[array_rand($messages)];
+
+        $servidor = setting('servidores.whatsapp');
+        $session = setting('servidores.whatsapp-session');
+
+        if ($phone && is_numeric($phone) && $servidor && $session) {
+            Http::post($servidor . '/send?id=' . $session, [
+                'phone' => '591' . $phone,
+                'text' => $randomMessage,
+                'image_url' => '', // No image for approval
+            ]);
+            Log::info("WhatsApp approval message sent to {$phone}. Message: {$randomMessage}");
+        } else {
+            Log::warning("WhatsApp approval message not sent. Invalid phone, server settings, or session for {$phone}.");
         }
     }
 
