@@ -6,7 +6,7 @@
     <h1 id="titleHead" class="page-title">
         <i class="voyager-dollar"></i> Abonar Pago
     </h1>
-    <a href="{{ route('loans.index') }}" class="btn btn-warning">
+    <a href="{{ route('loans.index') }}" class="btn btn-warning btn-return">
         <i class="fa-solid fa-rotate-left"></i> <span>Volver</span>
     </a>
 @stop
@@ -15,78 +15,86 @@
     <div class="page-content edit-add container-fluid">
         <div class="row">
             <div class="col-md-12">
-                <div class="panel panel-bordered">
+                
+                <!-- Información del Cliente y Préstamo -->
+                <div class="panel panel-bordered" style="border-left: 5px solid #22A7F0;">
                     <div class="panel-body">
                         <div class="row">
-                            <div class="col-md-4">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 id="h4" class="panel-title">Fecha de solicitud</h3>
+                            <div class="col-md-8">
+                                <h3 style="margin-top: 0; font-weight: bold;">
+                                    <i class="fa-solid fa-user-circle"></i> {{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}
+                                    <small class="text-muted">({{ $loan->code }})</small>
+                                </h3>
+                                <div class="row" style="margin-top: 15px;">
+                                    <div class="col-md-4 col-sm-6">
+                                        <p class="text-muted" style="margin-bottom: 2px;"><i class="fa-solid fa-id-card"></i> CI</p>
+                                        <strong>{{ $loan->people->ci }}</strong>
+                                    </div>
+                                    <div class="col-md-4 col-sm-6">
+                                        <p class="text-muted" style="margin-bottom: 2px;"><i class="fa-solid fa-mobile-screen"></i> Celular</p>
+                                        <strong>{{ $loan->people->cell_phone ? $loan->people->cell_phone : 'SN' }}</strong>
+                                    </div>
+                                    <div class="col-md-4 col-sm-6">
+                                        <p class="text-muted" style="margin-bottom: 2px;"><i class="fa-solid fa-route"></i> Ruta</p>
+                                        <strong>{{ $route->route->name }}</strong>
+                                    </div>
+                                    <div class="col-md-4 col-sm-6" style="margin-top: 10px;">
+                                        <p class="text-muted" style="margin-bottom: 2px;"><i class="fa-solid fa-calendar"></i> Fecha Solicitud</p>
+                                        <strong>{{ date('d/m/Y', strtotime($loan->date)) }}</strong>
+                                    </div>
+                                    <div class="col-md-4 col-sm-6" style="margin-top: 10px;">
+                                        <p class="text-muted" style="margin-bottom: 2px;"><i class="fa-solid fa-user-shield"></i> Garante</p>
+                                        <strong>{{ $loan->guarantor_id ? $loan->guarantor->first_name . ' ' . $loan->guarantor->last_name1 : 'SN' }}</strong>
+                                    </div>
+                                    <div class="col-md-4 col-sm-6" style="margin-top: 10px;">
+                                        @if ($loan->recovery == 'si')
+                                            <span class="label label-danger" style="font-size: 100%">EN RECUPERACIÓN</span>
+                                        @endif
+                                    </div>
                                 </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ date('d-m-Y', strtotime($loan->date)) }}</small>
-                                </div>
-                                <hr style="margin:0;">
                             </div>
                             <div class="col-md-4">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 id="h4" class="panel-title">Ruta Asiganada</h3>
+                                <div class="well well-sm" style="background-color: #f9f9f9; border: 1px solid #e5e5e5; border-radius: 5px;">
+                                    <div class="row text-center">
+                                        <div class="col-xs-6" style="border-right: 1px solid #ddd;">
+                                            <small class="text-muted">DEUDA ACTUAL</small>
+                                            <h3 class="text-danger" style="margin-top: 5px;">Bs. {{ number_format($loan->debt, 2, ',', '.') }}</h3>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <small class="text-muted">PAGO DIARIO</small>
+                                            <h3 class="text-primary" style="margin-top: 5px;">Bs. {{ number_format($loan->amountTotal / $loan->day, 2, ',', '.') }}</h3>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 10px;">
+                                        @php
+                                            $percent = ($loan->amountTotal > 0) ? (($loan->amountTotal - $loan->debt) / $loan->amountTotal) * 100 : 0;
+                                        @endphp
+                                        <div class="progress" style="height: 8px; margin-bottom: 5px;">
+                                            <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{ $percent }}%;" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <div class="text-center">
+                                            <small class="text-muted">Progreso: {{ number_format($percent, 0) }}%</small>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $route->route->name }}</small>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 id="h4" class="panel-title">Garante</h3>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $loan->guarantor_id ? $loan->guarantor->first_name . ' ' . $loan->guarantor->last_name1 . ' ' . $loan->guarantor->last_name2 : 'SN' }}</small>
-                                </div>
-                                <hr style="margin:0;">
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 id="h4" class="panel-title">CI</h3>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $loan->people->ci }}</small>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 id="h4" class="panel-title">Beneficiario</h3>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}</small>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                            <div class="col-md-4">
-                                <div class="panel-heading" style="border-bottom:0;">
-                                    <h3 id="h4" class="panel-title">Celular</h3>
-                                </div>
-                                <div class="panel-body" style="padding-top:0;">
-                                    <small>{{ $loan->people->cell_phone ? $loan->people->cell_phone : 'SN' }}</small>
-                                </div>
-                                <hr style="margin:0;">
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
-                        <h3 id="h3" style="text-align: center"><i class="fa-solid fa-calendar-days"></i>
-                            {{ $loan->code }} <br>
-                            @if ($loan->recovery == 'si')
-                                <small style="color: red; font-size: 20px">Prestamo en Recuperación</small>
-                            @endif
-                        </h3>
-                        <hr>
-                        
-
-                        <div class="col-md-8" id="imp1">
-                            <div class="table-responsive">
+                <div class="row">
+                    <!-- Columna Izquierda: Calendario -->
+                    <div class="col-md-8">
+                        <div class="panel panel-bordered">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><i class="fa-solid fa-calendar-days"></i> Calendario de Pagos</h3>
+                                <div class="panel-actions">
+                                    <button type="button" class="btn btn-default btn-sm" title="Imprimir calendario" onclick="javascript:imprim1(imp1);">
+                                        <i class="fa fa-print"></i> Imprimir
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="panel-body table-responsive" id="imp1">
                                 <table width="100%" border="1" cellpadding="5" style="font-size: 12px">
 
                                     @php
@@ -306,176 +314,126 @@
                             </div>
                         </div>
 
-                        <div class="col-md-4">
-                            @if (auth()->user()->hasPermission('addMoneyDaily_loans'))
-                                @if ($loan->debt != 0)
-                                {{-- @if ($loan->debt != 0 && $cashier->status == 'abierta') --}}
+                    <!-- Columna Derecha: Formulario y Detalles -->
+                    <div class="col-md-4">
+                        
+                        <!-- Formulario de Pago -->
+                        @if (auth()->user()->hasPermission('addMoneyDaily_loans') && $loan->debt != 0)
+                        <div class="panel panel-success" style="border: 1px solid #2ecc71;">
+                            <div class="panel-heading" style="background-color: #2ecc71; color: white;">
+                                <h3 class="panel-title"><i class="fa-solid fa-money-bill-wave"></i> Registrar Pago</h3>
+                            </div>
+                            <div class="panel-body">
                                     <form id="form-abonar-pago" action="{{ route('loans-daily-money.store') }}"
                                         method="POST" enctype="multipart/form-data">
                                         @csrf
-                                        <div class="row">
                                             <input type="hidden" name="date" value="{{ $date }}">
                                             <input type="hidden" name="loan_id" value="{{ $loan->id }}">
 
 
-                                            <div class="form-group col-md-6">
-                                                <small>Cuota</small>
-                                                <input type="number" name="amount" id="amount" min="0.1"
-                                                    step=".01"
-                                                    {{-- onkeypress="return filterFloat(event,this);" --}}
-                                                    onchange="subTotal()" onkeyup="subTotal()" style="text-align: right"
-                                                    class="form-control text" required>
-                                                <b class="text-danger" id="label-amount" style="display:none">El monto
-                                                    incorrecto..</b>
+                                            <div class="form-group">
+                                                <label for="amount">Monto a Pagar</label>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon">Bs.</span>
+                                                    <input type="number" name="amount" id="amount" min="0.1" step=".01"
+                                                        onchange="subTotal()" onkeyup="subTotal()" style="text-align: right; font-size: 20px; font-weight: bold;"
+                                                        class="form-control" required placeholder="0.00">
+                                                </div>
+                                                <small class="text-danger" id="label-amount" style="display:none">El monto es incorrecto o excede la deuda.</small>
                                             </div>
-                                            <div class="form-group col-md-6">
-                                                <small>Registrado Por</small>
+                                            
+                                            <div class="form-group">
+                                                <label>Agente</label>
                                                 <select name="agent_id" id="agent_id" class="form-control select2" required>
                                                     <option value="{{ $register->id }}" selected>{{ $register->name }} -
                                                         {{ $register->role->name }}</option>
                                                 </select>
                                             </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="form-group">
-                                                <input type="radio" id="html" name="qr" value="Efectivo"
-                                                    checked>
-                                                <label for="html"><small
-                                                        style="font-size: 15px">Efectivo</small></label>
-                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                                <input type="radio" id="css" name="qr" value="Qr">
-                                                <label for="css"><small style="font-size: 15px">QR</small></label>
-                                            </div>
                                             
-                                        </div>
+                                            <div class="form-group text-center">
+                                                <div class="btn-group" data-toggle="buttons" style="width: 100%;">
+                                                    <label class="btn btn-default active" style="width: 50%;">
+                                                        <input type="radio" name="qr" value="Efectivo" checked autocomplete="off"> <i class="fa-solid fa-money-bill"></i> Efectivo
+                                                    </label>
+                                                    <label class="btn btn-default" style="width: 50%;">
+                                                        <input type="radio" name="qr" value="Qr" autocomplete="off"> <i class="fa-solid fa-qrcode"></i> QR
+                                                    </label>
+                                                </div>
+                                            </div>
 
                                         <input type="hidden" name="latitude" id="latitudeField">
                                         <input type="hidden" name="longitude" id="longitudeField">
                                         <input type="hidden" name="precision" id="precision">
 
-                                        <div class="row">
-                                            <div class="col-md-12 text-right">
-                                                <button type="button" id="btn-sumit" style="display:block" disabled
-                                                    class="btn btn-success btn-sumit"><i
-                                                        class="fa-solid fa-money-bill"></i> Pagar</button>
-                                            </div>
-                                        </div>
+                                        <button type="button" id="btn-sumit" disabled class="btn btn-success btn-lg btn-block btn-sumit">
+                                            <i class="fa-solid fa-check-circle"></i> CONFIRMAR PAGO
+                                        </button>
                                     </form>
-                                @endif
-                            @endif
+                            </div>
+                        </div>
+                        @endif
 
-                            <div class="row">
-                                <table width="100%" cellpadding="20" class="table">
-                                    <tr>
-                                        <td><small>Pago Diario</small></td>
-                                        <td class="text-right">
-                                            <h3 id="h4">Bs.{{ number_format($loan->amountTotal / $loan->day, 2, ',', '.') }}</h3>
-                                        </td>
-                                    </tr>
-                                </table>
-                                <h3 id="h4" style="text-align: center">Atrazo</h3>
+                        <!-- Resumen Financiero -->
+                        <div class="panel panel-bordered">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Resumen Financiero</h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Monto Prestado
+                                        <span class="badge">Bs. {{ number_format($loan->amountLoan, 2) }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Interés
+                                        <span class="badge">Bs. {{ number_format($loan->amountPorcentage, 2) }}</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" style="background-color: #f5f5f5;">
+                                        <strong>Total a Pagar</strong>
+                                        <span class="badge badge-primary" style="font-size: 1.1em;">Bs. {{ number_format($loan->amountTotal, 2) }}</span>
+                                    </li>
+                                </ul>
 
-                                <table width="100%" cellpadding="20" class="table">
-                                    <tr>
-                                        <td class="text-right">
+                                <div class="row text-center" style="margin-top: 20px;">
+                                    <div class="col-xs-6" style="border-right: 1px solid #eee;">
+                                        <small class="text-muted">PAGADO</small>
+                                        <h4 class="text-success">{{ number_format($loan->amountTotal - $loan->debt, 2, ',', '.') }} <small>Bs.</small></h4>
+                                    </div>
+                                    <div class="col-xs-6">
+                                        <small class="text-muted">DEUDA</small>
+                                        <h4 class="text-danger">{{ number_format($loan->debt, 2, ',', '.') }} <small>Bs.</small></h4>
+                                    </div>
+                                </div>
+
+                                <hr>
+                                
+                                <div class="text-center">
+                                    <h5 class="text-warning" style="font-weight: bold;">ATRASO</h5>
                                             @php
                                                 $dias_deuda = '';
                                                 foreach ($loanday->where('debt', '>', 0)->where('late', 1) as $dia_deuda) {
                                                     $dias_deuda .= date('d/m/Y', strtotime($dia_deuda->date)).', ';
                                                 }
                                             @endphp
-                                            <h3 id="h4" style="cursor: pointer" @if($dias_deuda) title="{{ $dias_deuda }}" @endif>Dias. {{ $loanday->where('debt', '>', 0)->where('late', 1)->count() }}</h3>
-                                        </td>
-                                        <td class="text-right">
-                                            <h3 id="h4">Bs.
-                                                {{ number_format($loanday->where('debt', '>', 0)->where('late', 1)->sum('debt'), 2, ',', '.') }}
-                                            </h3>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
+                                    <h4 style="cursor: pointer" @if($dias_deuda) title="{{ $dias_deuda }}" @endif>
+                                        {{ $loanday->where('debt', '>', 0)->where('late', 1)->count() }} Días
+                                        <br>
+                                        <small>Bs. {{ number_format($loanday->where('debt', '>', 0)->where('late', 1)->sum('debt'), 2, ',', '.') }}</small>
+                                    </h4>
+                                </div>
 
+                                <div style="margin-top: 20px;">
+                                    <canvas id="myChart" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
 
-                            <div class="row">
-                                <canvas id="myChart"></canvas>
+                        <div class="panel panel-bordered">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Observaciones</h3>
                             </div>
-                            <div class="row">
-                                <table width="100%" cellpadding="20">
-                                    <tr>
-                                        <td><small>Monto Pagado</small></td>
-                                        <td class="text-right">
-                                            <h3>{{ number_format($loan->amountTotal - $loan->debt, 2, ',', '.') }}
-                                                <small>Bs.</small></h3>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><small>Deuda</small></td>
-                                        <td class="text-right">
-                                            <h3>{{ number_format($loan->debt, 2, ',', '.') }} <small>Bs.</small></h3>
-                                        </td>
-                                    </tr>
-
-                                    {{-- <tr>                                            
-                                            <td><small>TOTAL PAGADO</small></td>
-                                            <td class="text-right"><h3>{{ number_format($loan->amountTotal, 2, ',', '.') }} <small>Bs.</small></h3></td>
-                                        </tr> --}}
-                                </table>
-                            </div>
-                            <h3 id="h4" style="text-align: center"><i class="voyager-dollar"></i> Detalle del Pago
-                            </h3>
-                            <hr>
-                            <div class="row">
-                                <table width="100%" cellpadding="20">
-                                    <tr>
-                                        <td><small>Dias Total a Pagar</small></td>
-                                        <td class="text-right">
-                                            <h3>{{ number_format($loan->day, 2, ',', '.') }} </h3>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><small>Pago Diario</small></td>
-                                        <td class="text-right">
-                                            <h3>{{ number_format($loan->amountTotal / $loan->day, 2, ',', '.') }}
-                                                <small>Bs.</small></h3>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <h3 id="h4" style="text-align: center"><i class="voyager-dollar"></i> Detalle del
-                                Prestamo</h3>
-                            <hr>
-                            <div class="row">
-                                <table width="100%" cellpadding="20">
-                                    <tr>
-                                        <td><small>Monto Prestado</small></td>
-                                        <td class="text-right">
-                                            <h3>{{ number_format($loan->amountLoan, 2, ',', '.') }} <small>Bs.</small></h3>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><small>Interes a Pagar</small></td>
-                                        <td class="text-right">
-                                            <h3>{{ number_format($loan->amountPorcentage, 2, ',', '.') }}
-                                                <small>Bs.</small></h3>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td><small>TOTAL A PAGAR</small></td>
-                                        <td class="text-right">
-                                            <h3>{{ number_format($loan->amountTotal, 2, ',', '.') }} <small>Bs.</small>
-                                            </h3>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                            <div class="row">
-                                <small>Observación</small>
+                            <div class="panel-body">
                                 <textarea name="observation" id="observation" disabled class="form-control text" cols="30" rows="3">{{ $loan->observation }}</textarea>
-                            </div>
-                            <br>
-                            <div class="row text-right">
-                                <button type="button" class="btn btn-danger" title="Imprimir calendario"
-                                    onclick="javascript:imprim1(imp1);">Imprimir <i class="fa fa-print"></i></button>
                             </div>
                         </div>
                     </div>
