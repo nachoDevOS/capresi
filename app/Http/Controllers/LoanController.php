@@ -951,7 +951,7 @@ class LoanController extends Controller
         // 0. ALEATORIEDAD (Evitar patrones robóticos)
         // Omitir el envío en un 20% de los casos automáticos para simular comportamiento humano.
         if (strpos($type, 'Manual') === false && rand(1, 100) <= 20) {
-            Log::info("Whatsapp: Envío automático omitido aleatoriamente para {$phone}.");
+            Log::channel('whatsappJob')->info("Whatsapp: Envío automático omitido aleatoriamente para {$phone}.");
             return;
         }
 
@@ -961,12 +961,12 @@ class LoanController extends Controller
         $currentCount = Cache::get($limitKey, 0);
 
         if ($currentCount >= $dailyLimit) {
-            Log::warning("Whatsapp: Límite diario ({$dailyLimit}) excedido. Se omitió el envío a {$phone}.");
+            Log::channel('whatsappJob')->info("Whatsapp: Límite diario ({$dailyLimit}) excedido. Se omitió el envío a {$phone}.");
             return;
         }
         Cache::put($limitKey, $currentCount + 3, now()->addDay()); // +3 mensajes por transacción
 
-        Log::info("Whatsapp: Iniciando programación de mensajes para {$phone}. Tipo: {$type}");
+        Log::channel('whatsappJob')->info("Whatsapp: Iniciando programación de mensajes para {$phone}. Tipo: {$type}");
 
         // --- 1. MENSAJE DE SALUDO (Aviso de envío) ---
         $nameStr = $name ? " ".ucfirst(strtolower($name)) : "";
@@ -1057,12 +1057,12 @@ class LoanController extends Controller
         // Recuperar la última hora programada globalmente
         $lastScheduled = Cache::get('last_whatsapp_schedule');
         $lastScheduled = $lastScheduled ? Carbon::parse($lastScheduled) : now();
-        Log::info("Whatsapp: Última hora en cache: {$lastScheduled}");
+        Log::channel('whatsappJob')->info("Whatsapp: Última hora en cache: {$lastScheduled}");
 
         // Si la última hora programada ya pasó, reiniciamos a 'ahora'
         if ($lastScheduled < now()) { 
             $lastScheduled = now(); 
-            Log::info("Whatsapp: Reiniciando hora base a NOW.");
+            Log::channel('whatsappJob')->info("Whatsapp: Reiniciando hora base a NOW.");
         }
 
         // Calculamos el tiempo tentativo (cola secuencial + delay aleatorio)
@@ -1070,19 +1070,19 @@ class LoanController extends Controller
 
         // --- ENVÍO 1: Saludo ---
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
-        Log::info("Whatsapp: Programando Saludo para {$sendAt1}");
+        Log::channel('whatsappJob')->info("Whatsapp: Programando Saludo para {$sendAt1}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
 
         // --- ENVÍO 2: Comprobante (2-5 min después del saludo) ---
         $sendAt2 = $sendAt1->copy()->addMinutes(rand(1, 3));
         Cache::put('last_whatsapp_schedule', $sendAt2, now()->addDay());
-        Log::info("Whatsapp: Programando Comprobante para {$sendAt2}");
+        Log::channel('whatsappJob')->info("Whatsapp: Programando Comprobante para {$sendAt2}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt2);
 
         // --- ENVÍO 3: Agradecimiento (1-3 min después del comprobante) ---
         $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 2));
         Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
-        Log::info("Whatsapp: Programando Agradecimiento para {$sendAt3}");
+        Log::channel('whatsappJob')->info("Whatsapp: Programando Agradecimiento para {$sendAt3}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
     }
 }
