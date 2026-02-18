@@ -1070,19 +1070,23 @@ class LoanController extends Controller
 
         // --- ENVÍO 1: Saludo ---
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
-        Log::channel('whatsappJob')->info("Whatsapp: Programando Saludo para {$sendAt1}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
 
         // --- ENVÍO 2: Comprobante (2-5 min después del saludo) ---
         $sendAt2 = $sendAt1->copy()->addMinutes(rand(1, 3));
         Cache::put('last_whatsapp_schedule', $sendAt2, now()->addDay());
-        Log::channel('whatsappJob')->info("Whatsapp: Programando Comprobante para {$sendAt2}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt2);
 
         // --- ENVÍO 3: Agradecimiento (1-3 min después del comprobante) ---
         $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 2));
         Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
-        Log::channel('whatsappJob')->info("Whatsapp: Programando Agradecimiento para {$sendAt3}");
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
+
+        $clientNameForLog = $name ? " ({$name})" : "";
+        $logMessage = "Programación para {$phone}{$clientNameForLog}:\n" .
+                      "    - Saludo:         " . $sendAt1->format('Y-m-d H:i:s') . "\n" .
+                      "    - Comprobante:    " . $sendAt2->format('Y-m-d H:i:s') . "\n" .
+                      "    - Agradecimiento: " . $sendAt3->format('Y-m-d H:i:s');
+        Log::channel('whatsappJob')->info($logMessage);
     }
 }
