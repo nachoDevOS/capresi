@@ -412,6 +412,15 @@ class LoanController extends Controller
      */
     private function sendRandomLoanApprovalMessage($phone, $fullName)
     {
+        $time = now()->format('H:i');
+        if ($time >= '06:00' && $time <= '11:59') {
+            $greeting = "Buen día";
+        } elseif ($time >= '12:00' && $time <= '18:30') {
+            $greeting = "Buenas tardes";
+        } else {
+            $greeting = "Buenas noches";
+        }
+
         $emojis = ['🤝', '✨', '😊', '🙏', '💰', '🎉', '😃', '✅', '👍', '🌟', '💸', '🏦', '💼', '👋', '😎', '🔥', '💫', '🙌', '👏', '🤩'];
         $emoji = $emojis[array_rand($emojis)];
 
@@ -440,16 +449,18 @@ class LoanController extends Controller
 
         $randomMessage = $messages[array_rand($messages)];
 
+        $finalMessage = $greeting . ". " . $randomMessage;
+
         $servidor = setting('servidores.whatsapp');
         $session = setting('servidores.whatsapp-session');
 
         if ($phone && is_numeric($phone) && $servidor && $session) {
             Http::post($servidor . '/send?id=' . $session, [
                 'phone' => '591' . $phone,
-                'text' => $randomMessage,
+                'text' => $finalMessage,
                 'image_url' => '', // No image for approval
             ]);
-            Log::info("WhatsApp approval message sent to {$phone}. Message: {$randomMessage}");
+            Log::info("WhatsApp approval message sent to {$phone}. Message: {$finalMessage}");
         } else {
             Log::warning("WhatsApp approval message not sent. Invalid phone, server settings, or session for {$phone}.");
         }
