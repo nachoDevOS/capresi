@@ -35,16 +35,16 @@
         <ul class="nav navbar-nav @if (__('voyager::generic.is_rtl') == 'true') navbar-left @else navbar-right @endif">
             @php
                 $user = App\Models\User::where('id', Auth::user()->id)->first();
-                if ($user->worker) {
-                    // if ($user->worker->image) {
-                    //     $user_avatar = asset('storage/' . str_replace('.', '-cropped.', $user->worker->image));
+                if ($user->people) {
+                    // if ($user->people->image) {
+                    //     $user_avatar = asset('storage/' . str_replace('.', '-cropped.', $user->people->image));
                     // }
-                    if ($user->worker->image) {
-                        $pathInfo = pathinfo($user->worker->image);
+                    if ($user->people->image) {
+                        $pathInfo = pathinfo($user->people->image);
                         $extension = strtolower($pathInfo['extension'] ?? '');
 
                         if (str_contains($extension, 'avif')) {
-                            $image = str_replace('.avif', '', $user->worker->image);
+                            $image = str_replace('.avif', '', $user->people->image);
                         }
                         $user_avatar = asset('storage/' . $image . '-cropped.webp');
                     }

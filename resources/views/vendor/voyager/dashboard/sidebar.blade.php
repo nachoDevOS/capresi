@@ -71,19 +71,19 @@
                 <div class="panel-content">
                     @php
                         $user = App\Models\User::where('id', Auth::user()->id)->first();
-                        if($user->worker)
+                        if($user->people)
                         {
                             // if($user->person->image)
                             // {
                             //     $user_avatar = asset('storage/'.str_replace('.', '-cropped.', $user->person->image));
                             // }
 
-                            if ($user->worker->image) {
-                                $pathInfo = pathinfo($user->worker->image);
+                            if ($user->people->image) {
+                                $pathInfo = pathinfo($user->people->image);
                                 $extension = strtolower($pathInfo['extension'] ?? '');
 
                                 if (str_contains($extension, 'avif')) {
-                                    $image = str_replace('.avif', '', $user->worker->image);
+                                    $image = str_replace('.avif', '', $user->people->image);
                                 }
                                 $user_avatar = asset('storage/' . $image . '-cropped.webp');
                             }

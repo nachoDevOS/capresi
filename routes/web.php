@@ -62,7 +62,7 @@ use Illuminate\Support\Facades\Cache;
 |
 */
 
-// Route::get('/', [TemplateController::class, 'index']);
+
 // Route::get('message/{id?}/verification', [MessageController::class, 'verification']);
 
 Route::get('/', function () {
@@ -88,15 +88,9 @@ Route::get('/development', [DevelopmentController::class , 'development'])->name
 Route::get('admin/pawn/payment/{id}/notification', [HomeController::class, 'payment_notification'])->name('pawn.payment.notification');
 Route::get('admin/payment/transaction/{id}', [TransactionController::class, 'payment_notification'])->name('loans.payment.notification');
 
-// Route::group(['prefix' => 'admin', 'middleware' => 'loggin'], function () {
 Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours']], function () {
 
     Voyager::routes();
-
-    // Route::get('/admin/session/extend', function () {
-    //     session()->put('last_activity', time()); // Actualiza la hora de actividad de la sesión
-    //     return response()->json(['message' => 'Sesión extendida']);
-    // })->name('voyager.session.extend');
 
     Route::get('articles', [ArticleController::class, 'index'])->name('voyager.articles.index');
     Route::get('articles/ajax/list/{search?}', [ArticleController::class, 'list']);
@@ -195,13 +189,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
 
 
 
-
-    // Route::post('print/dailyList/list', [ReportCashierController::class, 'dailyListList'])->name('print-dailyList.list');
-
-
-
-    // Route::get('contracts/{loan?}/success', [ContractController::class, 'successLoan'])->name('contracts.success');//Para aporobar el contrato
-
     Route::resource('loans', LoanController::class);
     Route::get('loans/ajax/list/{type?}/{search?}', [LoanController::class, 'list']);
     Route::post('loans/update/payments-period', [LoanController::class, 'update_payments_period'])->name('loans.update.payments-period');
@@ -232,7 +219,6 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
     Route::post('loans/{loan?}/route/store', [RouteController::class, 'updateRouteLoan'])->name('loan-route.store');
 
     // Funcional de transacciones
-
     Route::get('loans/{loan}/transaction/{transaction}/whatsapp', [LoanController::class, 'transactionWhatsapp'])->name('loans-transaction.whatsapp');
 
 
