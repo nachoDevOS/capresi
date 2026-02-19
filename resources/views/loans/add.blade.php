@@ -149,6 +149,9 @@
     @endsection
 
     @section('javascript')
+        <script src="{{ asset('js/include/person-select.js') }}"></script>
+        <script src="{{ asset('js/include/person-register.js') }}"></script>
+        <script src="{{ asset('js/btn-submit.js') }}"></script>
         <script>
 
             $(document).ready(function(){
@@ -160,48 +163,6 @@
 
                 });
 
-                
-                $('#select_people_id').select2({
-                    placeholder: '<i class="fa fa-search"></i> Buscar...',
-                    escapeMarkup : function(markup) {
-                        return markup;
-                    },
-                    language: {
-                        inputTooShort: function (data) {
-                            return `Por favor ingrese ${data.minimum - data.input.length} o más caracteres`;
-                        },
-                        noResults: function () {
-                            return `<i class="far fa-frown"></i> No hay resultados encontrados`;
-                        }
-                    },
-                    quietMillis: 250,
-                    minimumInputLength: 2,
-                    ajax: {
-                        url: "{{ url('admin/loans/people/ajax') }}",        
-                        processResults: function (data) {
-                            let results = [];
-                            data.map(data =>{
-                                results.push({
-                                    ...data,
-                                    disabled: false
-                                });
-                            });
-                            return {
-                                results
-                            };
-                        },
-                        cache: true
-                    },
-                    templateResult: formatResultCustomers_people,
-                    templateSelection: (opt) => {
-                        productSelected = opt;
-                        // alert(opt)
-                        
-                        return opt.first_name?opt.first_name+' '+opt.last_name1+' '+opt.last_name2:'<i class="fa fa-search"></i> Buscar... ';
-                    }
-                }).change(function(){
-                
-                });
 
                 $('#select_guarantor_id').select2({
                     placeholder: '<i class="fa fa-search"></i> Buscar...',
@@ -451,27 +412,7 @@
                 
             }
 
-            function formatResultCustomers_people(option){
-            // Si está cargando mostrar texto de carga
-                if (option.loading) {
-                    return '<span class="text-center"><i class="fas fa-spinner fa-spin"></i> Buscando...</span>';
-                }
-                let image = "{{ asset('images/default.jpg') }}";
-                if(option.image){
-                    image = "{{ asset('storage') }}/"+option.image.replace('.', '-cropped.');
-                }
-                
-                // Mostrar las opciones encontradas
-                return $(`  <div style="display: flex">
-                                <div style="margin: 0px 10px">
-                                    <img src="${image}" width="50px" />
-                                </div>
-                                <div>
-                                    <small>CI: </small><b style="font-size: 15px; color: black">${option.ci?option.ci:'No definido'}</b><br>
-                                    <b style="font-size: 15px; color: black">${option.first_name} ${option.last_name1} ${option.last_name2} </b>
-                                </div>
-                            </div>`);
-            }
+            
         </script>
     @stop
 @endif

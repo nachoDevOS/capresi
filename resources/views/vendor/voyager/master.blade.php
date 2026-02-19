@@ -37,7 +37,13 @@
         <link rel="shortcut icon" href="{{ Voyager::image($admin_favicon) }}" type="image/png">
     @endif
 
-
+    {{-- Para person-select --}}
+    <script>
+        window.personListUrl = "{{ url('admin/loans/people/ajax') }}";
+        window.defaultImage = "{{ asset('images/default.jpg') }}";
+        
+        window.storagePath = "{{ asset('storage') }}/";
+    </script>
 
     <!-- App CSS -->
     <link rel="stylesheet" href="{{ voyager_asset('css/app.css') }}">

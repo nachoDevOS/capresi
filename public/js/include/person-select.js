@@ -1,7 +1,7 @@
 var personSelected;
         $(document).ready(function(){
             $('<style>.select2-results__options { max-height: 350px !important; }</style>').appendTo('head');
-            $('#select-person_id').select2({
+            $('#select_people_id').select2({
                 width: '100%',
                 placeholder: '<i class="fa fa-search"></i> Buscar...',
                 escapeMarkup : function(markup) {
@@ -69,7 +69,7 @@ var personSelected;
                             </div>
                             <div>
                                 <small>CI: </small><b style="font-size: 15px; color: black">${option.ci?option.ci:'No definido'}</b><br>
-                                <b style="font-size: 15px; color: black">${option.first_name} ${option.middle_name?option.middle_name:''} ${option.paternal_surname} ${option.maternal_surname?option.maternal_surname:''}</b>
+                                <b style="font-size: 15px; color: black">${option.first_name} ${option.last_name1??''} ${option.last_name2??''}</b>
                             </div>
                         </div>
                         `);
