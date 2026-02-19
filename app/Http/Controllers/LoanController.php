@@ -829,8 +829,8 @@ class LoanController extends Controller
             // sleep(15); // Esperamos 5 segundos para asegurarnos de que la imagen esté disponible
             if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $session)
             {
-                $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Automatico - Comprobante de pago', $loan->people->first_name);
-                // WhatsappJob::dispatch($server, $session, $code, $phone, $message, $type)->delay(now()->addSeconds($this->whatsappDelay));
+                // $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Automatico - Comprobante de pago', $loan->people->first_name);
+
             }
             
 

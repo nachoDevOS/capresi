@@ -321,12 +321,12 @@
                         <!-- Formulario de Pago -->
                         @if (auth()->user()->hasPermission('addMoneyDaily_loans') && $loan->debt != 0)
                         <div class="panel panel-success" style="border: 1px solid #2ecc71;">
-                            <div class="panel-heading" style="background-color: #2ecc71; color: white;">
+                            <div class="panel-heading" style="background-color: #e2e2e2; color: white;">
                                 <h3 class="panel-title"><i class="fa-solid fa-money-bill-wave"></i> Registrar Pago</h3>
                             </div>
                             <div class="panel-body">
                                     <form id="form-abonar-pago" action="{{ route('loans-daily-money.store') }}"
-                                        method="POST" enctype="multipart/form-data">
+                                        method="POST">
                                         @csrf
                                             <input type="hidden" name="date" value="{{ $date }}">
                                             <input type="hidden" name="loan_id" value="{{ $loan->id }}">
@@ -718,11 +718,6 @@
                 toastr.warning('No se permite pegar en este campo.', 'Advertencia');
             });
 
-            $('#form-abonar-pago').on('submit', function() {
-                $('#btn-sumit').prop('disabled', true);
-                $('#btn-confirm-payment').prop('disabled', true);
-            });
-
             const debtData = {
                 labels: ['Deuda Pendiente', 'Total Pagado'],
                 datasets: [{
@@ -804,7 +799,6 @@
                 $('#loading-step').show();
                 $(this).prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');
                 $('#btn-cancel-payment').hide();
-                $paymentModal.data('bs.modal')._config.backdrop = 'static';
                 $paymentModal.find('.close').hide();
 
                 $('#form-abonar-pago').submit();
@@ -813,7 +807,6 @@
             $paymentModal.on('hidden.bs.modal', function () {
                 const $confirmBtn = $('#btn-confirm-payment');
                 $confirmBtn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> Confirmar y Pagar');
-                $paymentModal.data('bs.modal')._config.backdrop = true;
                 $paymentModal.find('.close').show();
             });
 
