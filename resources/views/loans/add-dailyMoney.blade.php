@@ -252,7 +252,7 @@
                                         <input type="hidden" name="precision" id="precision">
 
                                         <button type="button" id="btn-sumit" disabled class="btn btn-success btn-lg btn-block btn-sumit">
-                                            <i class="fa-solid fa-check-circle"></i> CONFIRMAR PAGO
+                                            <i class="fa-solid fa-check-circle"></i> Pagar
                                         </button>
                                     </form>
                             </div>
@@ -333,43 +333,63 @@
     <div class="modal fade" id="confirmPaymentModal" tabindex="-1" role="dialog" aria-labelledby="confirmPaymentModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h4 class="modal-title" id="confirmPaymentModalLabel"><i class="fa-solid fa-circle-info"></i> Confirmación de Pago</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <div class="modal-header" style="background: #22A7F0; color: #fff; border-radius: 5px 5px 0 0;">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; opacity: 1;">
                         <span aria-hidden="true">&times;</span>
                     </button>
+                    <h4 class="modal-title text-center" id="confirmPaymentModalLabel" style="font-weight: bold;">
+                        <i class="fa-solid fa-check-to-slot"></i> Confirmar Transacción
+                    </h4>
                 </div>
-                <div class="modal-body" style="padding: 20px 30px;">
+                <div class="modal-body" style="padding: 25px;">
                     <!-- Step 1: Confirmation Details -->
                     <div id="confirmation-step">
-                        <p class="text-center">Por favor, verifique los detalles del pago:</p>
                         <div class="text-center" style="margin-bottom: 20px;">
-                            <h5 style="margin-bottom: 5px;"><strong>{{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}</strong></h5>
-                            <small class="text-muted">CI: {{ $loan->people->ci }}</small>
+                            <div style="width: 80px; height: 80px; background: #f0f4f8; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px;">
+                                <i class="fa-solid fa-user" style="font-size: 35px; color: #22A7F0;"></i>
+                            </div>
+                            <h4 style="font-weight: bold; margin-bottom: 5px;">{{ $loan->people->first_name }} {{ $loan->people->last_name1 }}</h4>
+                            <p class="text-muted"><i class="fa-solid fa-id-card"></i> {{ $loan->people->ci }}</p>
                         </div>
-                        <ul class="list-group">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Monto a Pagar
-                                <strong id="modal-payment-amount" style="font-size: 1.2em;">Bs. 0.00</strong>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Método de Pago
-                                <strong id="modal-payment-method">Efectivo</strong>
-                            </li>
-                        </ul>
-                        <p class="text-center text-muted" style="margin-top: 15px; font-size: 0.9em;">¿Desea continuar con la transacción?</p>
+
+                        <div class="payment-summary" style="background: #f8f9fa; border: 1px dashed #cbd5e0; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                            <div class="row" style="margin-bottom: 10px;">
+                                <div class="col-xs-6 text-left">
+                                    <span style="color: #6c757d; font-size: 14px;">Monto a Pagar</span>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <span id="modal-payment-amount" style="font-size: 18px; font-weight: bold; color: #2ecc71;">Bs. 0.00</span>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-6 text-left">
+                                    <span style="color: #6c757d; font-size: 14px;">Método de Pago</span>
+                                </div>
+                                <div class="col-xs-6 text-right">
+                                    <span id="modal-payment-method" style="font-size: 16px; font-weight: 600; color: #4a5568;">Efectivo</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <p class="text-muted" style="font-size: 13px;">
+                                <i class="fa-solid fa-circle-info"></i> Por favor revisa los datos antes de confirmar.
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Step 2: Loading Indicator -->
-                    <div id="loading-step" style="display: none; text-align: center; padding: 40px 0;">
-                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 4em; color: #28a745;"></i>
-                        <h4 style="margin-top: 20px;">Procesando pago...</h4>
-                        <p class="text-muted">Por favor espere, no cierre esta ventana.</p>
+                    <div id="loading-step" style="display: none; text-align: center; padding: 20px 0;">
+                        <div class="spinner-border" style="display: inline-block; width: 3rem; height: 3rem; vertical-align: text-bottom; border: .25em solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spinner-border .75s linear infinite; color: #22A7F0;"></div>
+                        <h4 style="margin-top: 20px; font-weight: 600; color: #4a5568;">Procesando pago...</h4>
+                        <p class="text-muted">No cierres esta ventana.</p>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" id="btn-cancel-payment" class="btn btn-default" data-dismiss="modal">Cancelar</button>
-                    <button type="button" id="btn-confirm-payment" class="btn btn-success"><i class="fa-solid fa-check-circle"></i> Confirmar y Pagar</button>
+                <div class="modal-footer" style="border-top: none; text-align: center; padding-bottom: 25px;">
+                    <button type="button" id="btn-cancel-payment" class="btn btn-default btn-lg" data-dismiss="modal" style="margin-right: 10px; font-size: 14px;">Cancelar</button>
+                    <button type="button" id="btn-confirm-payment" class="btn btn-success btn-lg" style="background: #22A7F0; border-color: #22A7F0; font-size: 14px; padding-left: 30px; padding-right: 30px;">
+                        Confirmar Pago
+                    </button>
                 </div>
             </div>
         </div>
@@ -437,71 +457,9 @@
         .status-pill.start-end { background-color: #3498db; }
         .calendar-header { background-color: #337ab7; color: white; font-size: 1.5em; padding: 10px; text-align: center; }
         .calendar-header th { color: white; }
-        /* Estilo de la cabecera */
-        .modal-header {
-            background-color: #f8f9fa;
-            border-bottom: none;
-            text-align: center;
-            padding: 15px;
-        }
 
-        .modal-title {
-            font-size: 1.25rem;
-            font-weight: 600;
-            color: #333;
-            margin: 0 auto;
-        }
-
-        .modal-body {
-            text-align: center;
-            font-size: 1rem;
-            color: #555;
-            padding: 20px 30px;
-        }
-
-        /* Botones */
-        .modal-footer {
-            border-top: none;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding-bottom: 20px;
-        }
-
-        .btn-custom {
-            font-size: 1rem;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-weight: 500;
-            width: 130px;
-            transition: all 0.3s ease-in-out;
-        }
-
-        .btn-cancel {
-            background-color: #e0e0e0;
-            color: #333;
-            border: none;
-        }
-
-        .btn-cancel:hover {
-            background-color: #d6d6d6;
-        }
-
-        .btn-confirm {
-            background-color: #007bff;
-            color: white;
-            border: none;
-        }
-
-        .btn-confirm:hover {
-            background-color: #0056b3;
-        }
-
-        /* Ícono */
-        .modal-icon {
-            font-size: 3rem;
-            color: #007bff;
-            margin-bottom: 10px;
+        @keyframes spinner-border {
+            to { transform: rotate(360deg); }
         }
 
         /* ___________________________ */
@@ -744,19 +702,22 @@
             });
 
             $('#btn-confirm-payment').on('click', function() {
+                // Ocultar el paso de confirmación y el pie de página
                 $('#confirmation-step').hide();
-                $('#loading-step').show();
-                $(this).prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');
-                $('#btn-cancel-payment').hide();
-                $paymentModal.find('.close').hide();
+                $('.modal-footer').hide();
 
+                // Mostrar el indicador de carga
+                $('#loading-step').show();
+
+                // Enviar el formulario
                 $('#form-abonar-pago').submit();
             });
 
             $paymentModal.on('hidden.bs.modal', function () {
-                const $confirmBtn = $('#btn-confirm-payment');
-                $confirmBtn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> Confirmar y Pagar');
-                $paymentModal.find('.close').show();
+                // Restablecer el modal a su estado inicial cuando se cierra
+                $('#confirmation-step').show();
+                $('#loading-step').hide();
+                $('.modal-footer').show();
             });
 
             // =================================================================
