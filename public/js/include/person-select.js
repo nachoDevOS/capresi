@@ -38,7 +38,7 @@ var personSelected;
                 templateSelection: (opt) => {
                     window.personSelected = opt; // Guarda en variable global
                     // personSelected = opt;
-                    return opt.first_name?opt.first_name+' '+ (opt.middle_name?opt.middle_name+' ':'')+opt.paternal_surname+(opt.maternal_surname?' '+opt.maternal_surname:''):'<i class="fa fa-search"></i> Buscar... ';
+                    return opt.first_name?opt.first_name+' '+ (opt.last_name1?opt.last_name1:'')+(opt.last_name2?' '+opt.last_name2:''):'<i class="fa fa-search"></i> Buscar... ';
                 }
             }).change(function(){
                 if(window.personSelected){

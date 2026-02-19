@@ -58,8 +58,18 @@
                                 </div>
                                 <div class="row">
                                     <div class="form-group col-md-6">
-                                        <label class="control-label">Beneficiario del Préstamo</label>
-                                        <select name="people_id" class="form-control" id="select_people_id" required></select>
+                                        {{-- <label class="control-label">Beneficiario del Préstamo</label>
+                                        <select name="people_id" class="form-control" id="select_people_id" required></select> --}}
+
+                                        <label for="select_people_id">Propietario</label>
+                                        <div class="input-group">
+                                            <select name="people_id" id="select_people_id" required class="form-control"></select>
+                                            <span class="input-group-btn">
+                                                <button class="btn btn-primary" title="Nueva persona" data-target="#modal-create-person" data-toggle="modal" style="margin: 0px" type="button">
+                                                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                                </button>
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="form-group col-md-6">
                                         <label class="control-label">Garante</label>
