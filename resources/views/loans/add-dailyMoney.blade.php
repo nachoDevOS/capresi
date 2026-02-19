@@ -94,223 +94,108 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="panel-body table-responsive" id="imp1">
-                                <table width="100%" border="1" cellpadding="5" style="font-size: 12px">
+                            <div class="panel-body" id="imp1">
+                                @php
+                                    $meses = [1 => 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+                                    
+                                    $inicio = \Carbon\Carbon::parse($loan->loanDay->first()->date)->format('Y-m-d');
+                                    $fin = \Carbon\Carbon::parse($loan->loanDay->last()->date)->format('Y-m-d');
 
-                                    @php
-                                        $meses = [
-                                            1 => 'Enero',
-                                            'Febrero',
-                                            'Marzo',
-                                            'Abril',
-                                            'Mayo',
-                                            'Junio',
-                                            'Julio',
-                                            'Agosto',
-                                            'Septiembre',
-                                            'Octubre',
-                                            'Noviembre',
-                                            'Diciembre',
-                                        ];
+                                    $loanDaysByDate = $loanday->keyBy(function($item) {
+                                        return \Carbon\Carbon::parse($item->date)->format('Y-m-d');
+                                    });
+                                    
+                                    $today = \Carbon\Carbon::now()->format('Y-m-d');
+                                    
+                                    $cantMeses = count($cantMes);
+                                    $mes = 0;
+                                @endphp
 
-                                        $fechaInicio = \Carbon\Carbon::parse($loan->loanDay[0]->date);
-                                        $mesInicio = $fechaInicio->format('n'); //para saber desde que mes empiesa la cuota
-                                        $diaInicio = $fechaInicio->format('d'); //para saber en que dia se paga la cuota
-                                        $anoInicio = $fechaInicio->format('Y'); //para saber en que año empiesa la cuota
-                                        // dd($diaInicio);
-                                        $inicio =
-                                            $anoInicio .
-                                            '-' .
-                                            ($mesInicio <= 9 ? '0' . $mesInicio : '' . $mesInicio) .
-                                            '-' .
-                                            $diaInicio;
-                                        // dd($inicio);
-
-                                        $fechaFin = \Carbon\Carbon::parse($loan->loanDay[count($loanday) - 1]->date);
-                                        $mesFin = $fechaFin->format('n'); //para saber hasta que mes termina la cuota
-                                        $diaFin = $fechaFin->format('d'); //para saber hasta que dia termina la cuota
-                                        $anoFin = $fechaFin->format('Y'); //para saber hasta que año termina la cuota
-                                        // dd($fechaFin);
-                                        $fin =
-                                            $anoFin . '-' . ($mesFin <= 9 ? '0' . $mesFin : '' . $mesFin) . '-' . $diaFin;
-
-                                        // $aux <= 9 ? '-0'.$aux : '-'.$aux
-                                        // dd($fin);
-
-                                        $cantMeses = count($cantMes); //para la cantidad de meses que hay entre las dos fecha
-                                        $mes = 0;
-
-                                        $number = 0;
-                                        $cantNumber = count($loanday);
-
-                                        $okNumber = 0;
-                                        // dd($cantNumber);
-                                    @endphp
-
+                                <div class="payment-calendar">
                                     @while ($mes < $cantMeses)
-                                        <tr style="background-color: #666666; color: white; font-size: 18px">
-                                            <td colspan="7" style="text-align: center">
-                                                {{ $meses[intval($cantMes[$mes]->mes)] }} - {{ intval($cantMes[$mes]->ano) }}
-                                            </td>
-                                        </tr>
-                                        <tr style="background-color: #666666; color: white; font-size: 15px">
-                                            <td style="text-align: center; width: 15%">LUN</td>
-                                            <td style="text-align: center; width: 15%">MAR</td>
-                                            <td style="text-align: center; width: 15%">MIE</td>
-                                            <td style="text-align: center; width: 15%">JUE</td>
-                                            <td style="text-align: center; width: 15%">VIE</td>
-                                            <td style="text-align: center; width: 15%">SAB</td>
-                                            <td style="text-align: center; width: 10%">DOM</td>
-                                        </tr>
+                                        <table class="calendar-table">
+                                            <thead>
+                                                <tr class="calendar-header">
+                                                    <th colspan="7">
+                                                        {{ $meses[intval($cantMes[$mes]->mes)] }} - {{ intval($cantMes[$mes]->ano) }}
+                                                    </th>
+                                                </tr>
+                                                <tr>
+                                                    <th>LUN</th>
+                                                    <th>MAR</th>
+                                                    <th>MIE</th>
+                                                    <th>JUE</th>
+                                                    <th>VIE</th>
+                                                    <th>SAB</th>
+                                                    <th>DOM</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $currentMonth = \Carbon\Carbon::create(intval($cantMes[$mes]->ano), intval($cantMes[$mes]->mes), 1);
+                                                    $posicionPrimerFecha = $currentMonth->dayOfWeekIso; // 1 = Lunes, 7 = Domingo
+                                                    $ultimoDia = $currentMonth->endOfMonth()->day;
+                                                    $dia = 1;
+                                                @endphp
 
-                                        @php
-                                            $primerDia = date(
-                                                'd',
-                                                mktime(
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    intval($cantMes[$mes]->mes),
-                                                    1,
-                                                    intval($cantMes[$mes]->ano),
-                                                ),
-                                            ); //para obtener el primer dia del mes
-                                            $primerFecha =
-                                                intval($cantMes[$mes]->ano) .
-                                                '-' .
-                                                intval($cantMes[$mes]->mes) .
-                                                '-' .
-                                                $primerDia; // "20XX-XX-01"concatenamos el primer dia ma sel mes y el año del la primera cuota
-                                            $posicionPrimerFecha = \Carbon\Carbon::parse($primerFecha);
-                                            $posicionPrimerFecha = $posicionPrimerFecha->format('N'); //obtenemos la posicion de la fecha en que dia cahe pero en numero
-
-                                            $ultimoDia = date(
-                                                'd',
-                                                mktime(
-                                                    0,
-                                                    0,
-                                                    0,
-                                                    intval($cantMes[$mes]->mes) + 1,
-                                                    0,
-                                                    intval($cantMes[$mes]->ano),
-                                                ),
-                                            ); //para obtener el ultimo dia del mes
-                                            $ok = false;
-
-                                            $dia = 0;
-                                        @endphp
-
-                                        @for ($x = 1; $x <= 6; $x++)
-                                            <tr>
-                                                @for ($i = 1; $i <= 7; $i++)
-                                                    @if ($i == $posicionPrimerFecha && !$ok)
-                                                        @php
-                                                            $dia++;
-                                                            $ok = true;
-                                                            $fecha =
-                                                                $cantMes[$mes]->ano .
-                                                                '-' .
-                                                                $cantMes[$mes]->mes .
-                                                                ($dia <= 9 ? '-0' . $dia : '-' . $dia);
-                                                            // dd($fecha);
-                                                        @endphp
-                                                        <td @if ($i == 7) style="height: 80px; text-align: center; background-color: #CCCFD2" @endif
-                                                            @if (($fecha == $inicio || $fecha == $fin) && $i != 7) @php
-                                                                        $okNumber++;
-                                                                    @endphp
-                                                                    style="height: 80px; text-align: center; background-color: #F8FF07;"
-                                                                @else
-                                                                    style="height: 80px; text-align: center" @endif>
-                                                            {{-- ____________________________________________ --}}
-                                                            <small style="font-size: 18px;">{{ $dia }}</small>
-                                                            <br>
-
-
-                                                            @if (($okNumber == 1 || $okNumber == 2) && $i != 7)
+                                                @for ($semana = 0; $semana < 6; $semana++)
+                                                    @if ($dia > $ultimoDia)
+                                                        @break
+                                                    @endif
+                                                    <tr>
+                                                        @for ($diaSemana = 1; $diaSemana <= 7; $diaSemana++)
+                                                            @if ($semana === 0 && $diaSemana < $posicionPrimerFecha)
+                                                                <td class="day-cell empty"></td>
+                                                            @elseif ($dia > $ultimoDia)
+                                                                <td class="day-cell empty"></td>
+                                                            @else
                                                                 @php
-                                                                    if ($okNumber == 2) {
-                                                                        $okNumber++;
-                                                                    }
-                                                                    $number++;
+                                                                    $currentDate = \Carbon\Carbon::create(intval($cantMes[$mes]->ano), intval($cantMes[$mes]->mes), $dia);
+                                                                    $currentDateStr = $currentDate->format('Y-m-d');
+
+                                                                    $classes = ['day-cell'];
+                                                                    if ($diaSemana == 7) $classes[] = 'sunday';
+                                                                    if ($currentDateStr == $today) $classes[] = 'today';
+
+                                                                    $loanDayData = $loanDaysByDate->get($currentDateStr);
                                                                 @endphp
 
-                                                                @if ($loan->loanDay[$number - 1]->late == 1)
-                                                                    <img src="{{ asset('images/icon/atrazado.png') }}"
-                                                                        width="15px">
-                                                                @endif
-                                                                @if ($loan->loanDay[$number - 1]->debt == 0)
-                                                                    <img src="{{ asset('images/icon/pagado.png') }}"
-                                                                        width="50px">
-                                                                @endif
+                                                                <td class="{{ implode(' ', $classes) }}">
+                                                                    <div class="day-number">{{ $dia }}</div>
+                                                                    <div class="day-content">
+                                                                        @if ($loanDayData)
+                                                                            @if ($currentDateStr == $inicio)
+                                                                                <span class="status-pill start-end">Inicio</span>
+                                                                            @endif
+                                                                            @if ($currentDateStr == $fin)
+                                                                                <span class="status-pill start-end">Fin</span>
+                                                                            @endif
 
-                                                                @if ($loan->loanDay[$number - 1]->debt != $loan->loanDay[$number - 1]->amount && $loan->loanDay[$number - 1]->debt > 0)
-                                                                    <strong style="font-size: 20px; color:#440505">Bs.
-                                                                        {{ $loan->loanDay[$number - 1]->amount - $loan->loanDay[$number - 1]->debt }}</strong>
-                                                                @endif
+                                                                            @if ($loanDayData->debt == 0)
+                                                                                <span class="status-pill paid">Pagado</span>
+                                                                            @elseif ($loanDayData->debt < $loanDayData->amount && $loanDayData->debt > 0)
+                                                                                <span class="status-pill partial">Abono: {{ number_format($loanDayData->amount - $loanDayData->debt, 2) }}</span>
+                                                                            @endif
+
+                                                                            @if ($loanDayData->late == 1 && $loanDayData->debt > 0)
+                                                                                <span class="status-pill late">Atraso</span>
+                                                                            @endif
+                                                                        @endif
+                                                                    </div>
+                                                                </td>
+                                                                @php $dia++; @endphp
                                                             @endif
-                                                            {{-- <img src="{{ asset('images/icon/pagado.png') }}" width="80px"> --}}
-                                                        </td>
-                                                    @else
-                                                        @if ($ok && $dia < $ultimoDia)
-                                                            {{-- para que muestre hasta el ultimo dia del mes  --}}
-                                                            @php
-                                                                $dia++;
-                                                                $fecha =
-                                                                    $cantMes[$mes]->ano .
-                                                                    '-' .
-                                                                    $cantMes[$mes]->mes .
-                                                                    ($dia <= 9 ? '-0' . $dia : '-' . $dia);
-                                                            @endphp
-                                                            <td @if ($i == 7) style="height: 80px; text-align: center; background-color: #CCCFD2" @endif
-                                                                @if (($fecha == $inicio || $fecha == $fin) && $i != 7) @php
-                                                                            $okNumber++;
-                                                                        @endphp
-                                                                        style="height: 80px; text-align: center; background-color: #F8FF07;"
-                                                                    @else
-                                                                        style="height: 80px; text-align: center;" @endif>
-                                                                {{-- ____________________________________________ --}}
-                                                                <small style="font-size: 18px;">{{ $dia }}</small>
-                                                                <br>
-
-                                                                @if (($okNumber == 1 || $okNumber == 2) && $i != 7)
-                                                                    @php
-                                                                        if ($okNumber == 2) {
-                                                                            $okNumber++;
-                                                                        }
-                                                                        $number++;
-                                                                    @endphp
-
-                                                                    @if ($loan->loanDay[$number - 1]->late == 1)
-                                                                        <img src="{{ asset('images/icon/atrazado.png') }}"
-                                                                            width="15px">
-                                                                    @endif
-                                                                    @if ($loan->loanDay[$number - 1]->debt != $loan->loanDay[$number - 1]->amount && $loan->loanDay[$number - 1]->debt > 0)
-                                                                        <strong style="font-size: 20px; color:#440505">Bs.
-                                                                            {{ $loan->loanDay[$number - 1]->amount - $loan->loanDay[$number - 1]->debt }}</strong>
-                                                                    @endif
-                                                                    @if ($loan->loanDay[$number - 1]->debt == 0)
-                                                                        <img src="{{ asset('images/icon/pagado.png') }}"
-                                                                            width="50px">
-                                                                    @endif
-                                                                @endif
-                                                            </td>
-                                                        @else
-                                                            <td style="height: 80px; text-align: center"></td>
-                                                        @endif
-                                                    @endif
-                                                    @if ($dia == $ultimoDia)
-                                                        @php
-                                                            $x = 10;
-                                                        @endphp
-                                                    @endif
+                                                        @endfor
+                                                    </tr>
                                                 @endfor
-                                            </tr>
-                                        @endfor
-                                        @php
-                                            $mes++;
-                                        @endphp
+                                            </tbody>
+                                        </table>
+                                        @php $mes++; @endphp
+                                        @if ($mes < $cantMeses)
+                                            <br>
+                                        @endif
                                     @endwhile
-                                </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -410,12 +295,12 @@
                                 
                                 <div class="text-center">
                                     <h5 class="text-warning" style="font-weight: bold;">ATRASO</h5>
-                                            @php
-                                                $dias_deuda = '';
-                                                foreach ($loanday->where('debt', '>', 0)->where('late', 1) as $dia_deuda) {
-                                                    $dias_deuda .= date('d/m/Y', strtotime($dia_deuda->date)).', ';
-                                                }
-                                            @endphp
+                                    @php
+                                        $dias_deuda = '';
+                                        foreach ($loanday->where('debt', '>', 0)->where('late', 1) as $dia_deuda) {
+                                            $dias_deuda .= date('d/m/Y', strtotime($dia_deuda->date)).', ';
+                                        }
+                                    @endphp
                                     <h4 style="cursor: pointer" @if($dias_deuda) title="{{ $dias_deuda }}" @endif>
                                         {{ $loanday->where('debt', '>', 0)->where('late', 1)->count() }} Días
                                         <br>
@@ -509,6 +394,49 @@
 
 @section('css')
     <style>
+        /* Calendar Styles */
+        .payment-calendar {
+            /* border: 1px solid #ddd; */
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .calendar-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            border: 1px solid #ddd;
+        }
+        .calendar-table th {
+            background-color: #f8f9fa;
+            color: #666;
+            font-weight: 500;
+            padding: 10px 5px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        .calendar-table td {
+            height: 100px;
+            text-align: left;
+            vertical-align: top;
+            border: 1px solid #eee;
+            padding: 4px;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+        .calendar-table td:hover { background-color: #f5f5f5; }
+        .day-number { font-size: 14px; font-weight: 500; color: #333; text-align: right; }
+        .day-cell.empty { background-color: #fdfdfd; cursor: default; }
+        .day-cell.empty:hover { background-color: #fdfdfd; }
+        .day-cell.sunday .day-number { color: #e74c3c; }
+        .day-cell.today .day-number { background-color: #337ab7; color: white; border-radius: 50%; width: 28px; height: 28px; line-height: 28px; text-align: center; display: inline-block; float: right; }
+        .day-content { margin-top: 5px; display: flex; flex-direction: column; gap: 4px; }
+        .status-pill { padding: 3px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; color: white; text-align: center; }
+        .status-pill.paid { background-color: #2ecc71; }
+        .status-pill.partial { background-color: #f39c12; }
+        .status-pill.late { background-color: #e74c3c; }
+        .status-pill.start-end { background-color: #3498db; }
+        .calendar-header { background-color: #337ab7; color: white; font-size: 1.5em; padding: 10px; text-align: center; }
+        .calendar-header th { color: white; }
         /* Estilo de la cabecera */
         .modal-header {
             background-color: #f8f9fa;
@@ -695,16 +623,37 @@
 
         // Función de impresión global
         function imprim1(imp1) {
-            var printContents = document.getElementById('imp1').innerHTML;
-            var w = window.open('', 'Imprimir Calendario', 'height=600,width=800');
-            w.document.write('<html><head><title>Calendario de Pagos</title>');
-            // Opcional: añadir estilos para la impresión
-            w.document.write('<style> table { width: 100%; border-collapse: collapse; } td, th { border: 1px solid #ccc; padding: 5px; text-align: center; } .bg-gray { background-color: #f2f2f2; } </style>');
-            w.document.write('</head><body>' + printContents + '</body></html>');
-            w.document.close();
-            w.focus();
-            w.print();
-            return true;
+             var printContents = document.getElementById('imp1').innerHTML;
+             var w = window.open('', 'Imprimir Calendario', 'height=600,width=800');
+             w.document.write('<html><head><title>Calendario de Pagos</title>');
+
+             // Inject all necessary styles for a good print output
+             var styles = `
+                body { font-family: sans-serif; }
+                .payment-calendar { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+                .calendar-table { width: 100%; border-collapse: collapse; font-size: 10px; page-break-inside: auto; }
+                .calendar-table th, .calendar-table .calendar-header th { background-color: #f1f1f1 !important; color: #333 !important; font-weight: 500; padding: 8px 5px; text-align: center; border: 1px solid #ccc; -webkit-print-color-adjust: exact; }
+                .calendar-table td { height: 80px; text-align: left; vertical-align: top; border: 1px solid #ccc; padding: 4px; }
+                .day-number { font-size: 12px; font-weight: 500; color: #333; text-align: right; }
+                .day-cell.empty { background-color: #f9f9f9 !important; -webkit-print-color-adjust: exact; }
+                .day-cell.sunday .day-number { color: #e74c3c !important; }
+                .day-cell.today .day-number { background-color: #337ab7 !important; color: white !important; border-radius: 50%; width: 24px; height: 24px; line-height: 24px; text-align: center; display: inline-block; float: right; -webkit-print-color-adjust: exact; }
+                .day-content { margin-top: 5px; display: flex; flex-direction: column; gap: 3px; }
+                .status-pill { padding: 2px 5px; border-radius: 4px; font-size: 9px; font-weight: bold; color: white !important; text-align: center; -webkit-print-color-adjust: exact; }
+                .status-pill.paid { background-color: #2ecc71 !important; }
+                .status-pill.partial { background-color: #f39c12 !important; }
+                .status-pill.late { background-color: #e74c3c !important; }
+                .status-pill.start-end { background-color: #3498db !important; }
+                .calendar-header { background-color: #337ab7 !important; color: white !important; font-size: 1.4em; padding: 10px; text-align: center; -webkit-print-color-adjust: exact; }
+                .calendar-header th { color: white !important; }
+            `;
+
+             w.document.write('<style>' + styles + '</style>');
+             w.document.write('</head><body>' + printContents + '</body></html>');
+             w.document.close();
+             w.focus();
+             w.print();
+             return true;
         }
 
 
