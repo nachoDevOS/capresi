@@ -150,6 +150,31 @@
                 </div>
             </form>
         </div>
+
+        {{-- Modal para actualizar celular --}}
+        <div class="modal fade" id="modal-update-phone" tabindex="-1" role="dialog" aria-labelledby="modal-update-phone-label">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modal-update-phone-label">Confirmar Número de Celular</h4>
+                    </div>
+                    <div class="modal-body">
+                        <p>Por favor, confirma o actualiza el número de celular de <b id="person-name"></b>.</p>
+                        <div class="form-group">
+                            <label for="input-phone">Número de Celular</label>
+                            <input type="number" id="input-phone" class="form-control" placeholder="Escribe el número de celular">
+                            <input type="hidden" id="input-person-id">
+                        </div>
+                        <div class="alert alert-danger" id="phone-error" style="display: none;"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="btn-update-phone">Confirmar y Continuar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @stop
 
     @section('css')
@@ -159,10 +184,30 @@
     @endsection
 
     @section('javascript')
+        <script>
+            window.personListUrl = "{{ url('admin/loans/people/ajax') }}";
+            window.storagePath = "{{ asset('storage') }}/";
+            window.defaultImage = "{{ asset('images/default.jpg') }}";
+        </script>
         <script src="{{ asset('js/include/person-select.js') }}"></script>
         <script src="{{ asset('js/include/person-register.js') }}"></script>
         <script src="{{ asset('js/btn-submit.js') }}"></script>
         <script>
+
+            var phoneUpdateSuccess = false;
+
+            $('#modal-update-phone').on('show.bs.modal', function (e) {
+                phoneUpdateSuccess = false;
+                $('#phone-error').hide();
+            });
+
+            $('#modal-update-phone').on('hidden.bs.modal', function (e) {
+                if (!phoneUpdateSuccess) {
+                    $('#select_people_id').val(null).trigger('change');
+                    $('#input-dni').val('');
+                    toastr.warning('Debe registrar un número de celular válido para continuar.');
+                }
+            });
 
             $(document).ready(function(){
                 var productSelected;
@@ -214,6 +259,50 @@
                     }
                 });
             })
+
+            $('#btn-update-phone').click(function() {
+                let personId = $('#input-person-id').val();
+                let newPhone = $('#input-phone').val();
+                let errorDiv = $('#phone-error');
+
+                errorDiv.hide();
+
+                if (!newPhone || !/^\d{8}$/.test(newPhone)) {
+                    errorDiv.text('El número de celular debe tener 8 dígitos numéricos.').show();
+                    return;
+                }
+
+                $(this).text('Actualizando...').attr('disabled', true);
+
+                $.ajax({
+                    url: '{{ route("loans.person.update-phone") }}',
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        person_id: personId,
+                        phone: newPhone
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            phoneUpdateSuccess = true;
+                            $('#modal-update-phone').modal('hide');
+                            toastr.success('Número de celular actualizado correctamente.');
+                            $('#btn_submit').attr('disabled', false); // Habilitar el botón de guardar préstamo
+                            
+                            // Actualizar el objeto global si es necesario
+                            if(window.personSelected) {
+                                window.personSelected.cell_phone = newPhone;
+                            }
+                        }
+                    },
+                    error: function() {
+                        toastr.error('Ocurrió un error al actualizar el número.');
+                    },
+                    complete: function() {
+                        $('#btn-update-phone').text('Confirmar y Continuar').attr('disabled', false);
+                    }
+                });
+            });
 
             function funtion_type() {
                 let optradio = $('#optradio').val();

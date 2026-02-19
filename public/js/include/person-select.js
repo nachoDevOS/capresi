@@ -37,12 +37,22 @@ var personSelected;
                 templateResult: formatPersonResult,
                 templateSelection: (opt) => {
                     window.personSelected = opt; // Guarda en variable global
-                    // personSelected = opt;
                     return opt.first_name?opt.first_name+' '+ (opt.last_name1?opt.last_name1:'')+(opt.last_name2?' '+opt.last_name2:''):'<i class="fa fa-search"></i> Buscar... ';
                 }
-            }).change(function(){
-                if(window.personSelected){
-                    $('#input-dni').val(window.personSelected.ci ? window.personSelected.ci : '');
+            }).on('select2:select', function(e){
+                var data = e.params.data;
+                window.personSelected = data;
+
+                // Llenar CI
+                $('#input-dni').val(data.ci ? data.ci : '');
+
+                // Abrir modal para confirmar/actualizar celular si existe en la vista
+                if($('#modal-update-phone').length){
+                    $('#person-name').text(data.first_name + ' ' + (data.last_name1 || ''));
+                    $('#input-phone').val(data.cell_phone || '');
+                    $('#input-person-id').val(data.id);
+                    $('#modal-update-phone').modal('show');
+                    $('#btn_submit').attr('disabled', true); // Asegurarse que el botón principal esté deshabilitado
                 }
             });
         });

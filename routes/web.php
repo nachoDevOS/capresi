@@ -193,6 +193,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
     Route::get('loans/ajax/list/{type?}/{search?}', [LoanController::class, 'list']);
     Route::post('loans/update/payments-period', [LoanController::class, 'update_payments_period'])->name('loans.update.payments-period');
     Route::get('loans/people/ajax', [PeopleController::class, 'ajaxPeople']);//para obtener las personas o clientes para darles u prestamos
+    Route::post('loans/person/update-phone', [LoanController::class, 'updatePersonPhone'])->name('loans.person.update-phone');
 
     Route::get('loans/{loan}/decline', [LoanController::class, 'declineLoan'])->name('loans.decline'); //para rechazar  los perestamos
     // Route::delete('loans/{loan?}/cashierclose/destroy', [LoanController::class, 'destroyLoan'])->name('loans-cashierclose.destroy'); //para la destruccion de prestamo con caja cerrada

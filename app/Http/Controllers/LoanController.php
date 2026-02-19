@@ -13,6 +13,7 @@ use App\Models\LoanRoute;
 use App\Models\LoanRequirement;
 use App\Models\User;
 use Psy\CodeCleaner\ReturnTypePass;
+use Illuminate\Support\Facades\Validator;
 use Psy\TabCompletion\Matcher\FunctionsMatcher;
 use TCG\Voyager\Models\Role;
 use App\Models\Route;
@@ -1098,5 +1099,29 @@ class LoanController extends Controller
             $border;
 
         Log::channel('whatsappJob')->info($logMessage);
+    }
+
+    public function updatePersonPhone(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'person_id' => 'required|exists:people,id',
+            'phone' => 'required|numeric|digits_between:7,8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => 'Datos inválidos.', 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $person = People::findOrFail($request->person_id);
+            $person->cell_phone = $request->phone;
+            $person->save();
+
+            return response()->json(['success' => true, 'message' => 'Teléfono actualizado exitosamente.']);
+
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar teléfono de persona: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error en el servidor.'], 500);
+        }
     }
 }
