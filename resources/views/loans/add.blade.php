@@ -61,7 +61,7 @@
                                         {{-- <label class="control-label">Beneficiario del Préstamo</label>
                                         <select name="people_id" class="form-control" id="select_people_id" required></select> --}}
 
-                                        <label for="select_people_id">Propietario</label>
+                                        <label for="select_people_id">Beneficiario del Préstamo</label>
                                         <div class="input-group">
                                             <select name="people_id" id="select_people_id" required class="form-control"></select>
                                             <span class="input-group-btn">
