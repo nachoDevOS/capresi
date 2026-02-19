@@ -1,17 +1,17 @@
 <div class="col-md-12">
     <div class="table-responsive">
-        <table id="dataStyle" class="table table-bordered table-hover">
+        <table id="dataTable" class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th>N&deg;</th>
-                    <th>Codigo</th>
-                    <th>Persona</th>
-                    <th>Actículos</th>
-                    <th>Fecha</th>
-                    <th>Detalles</th>
-                    <th>Estado</th>
-                    <th>Registrado por</th>
-                    <th>Acciones</th>
+                    <th style="text-align: center">N&deg;</th>
+                    <th style="text-align: center">Codigo</th>
+                    <th style="text-align: center">Persona</th>
+                    <th style="text-align: center">Actículos</th>
+                    <th style="text-align: center">Fecha</th>
+                    <th style="text-align: center">Detalles</th>
+                    <th style="text-align: center">Estado</th>
+                    <th style="text-align: center">Registrado por</th>
+                    <th style="text-align: center; width: 15%">Acciones</th>
                 </tr>
             </thead>
             <tbody>
