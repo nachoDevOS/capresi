@@ -313,6 +313,7 @@
                                 </table>
                             </div>
                         </div>
+                    </div>
 
                     <!-- Columna Derecha: Formulario y Detalles -->
                     <div class="col-md-4">
@@ -335,8 +336,8 @@
                                                 <label for="amount">Monto a Pagar</label>
                                                 <div class="input-group">
                                                     <span class="input-group-addon">Bs.</span>
-                                                    <input type="number" name="amount" id="amount" min="0.1" step=".01"
-                                                        onchange="subTotal()" onkeyup="subTotal()" style="text-align: right; font-size: 20px; font-weight: bold;"
+                                                    <input type="number" name="amount" id="amount" min="0.01" step=".01"
+                                                        style="text-align: right; font-size: 20px; font-weight: bold;"
                                                         class="form-control" required placeholder="0.00">
                                                 </div>
                                                 <small class="text-danger" id="label-amount" style="display:none">El monto es incorrecto o excede la deuda.</small>
@@ -443,30 +444,47 @@
     </div>
 
 
-        <!-- Modal de confirmación -->
-    <div class="modal fade" id="confirmModal" tabindex="-1" data-backdrop="static" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+    <!-- Modal de confirmación de pago -->
+    <div class="modal fade" id="confirmPaymentModal" tabindex="-1" role="dialog" aria-labelledby="confirmPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="confirmModalLabel">Confirmar Pago</h5>
+                    <h4 class="modal-title" id="confirmPaymentModalLabel"><i class="fa-solid fa-circle-info"></i> Confirmación de Pago</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="modal-body">
-                    <div id="step-confirmation">
-                        <small style="font-size: 18px"><strong>{{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}</strong></small>
-                        <br>
-                        <small style="font-size: 20px"><strong id="modal-amount">0.00</strong></small>
-                        <small><p>Medio de pago seleccionado:</p></small>
-                        <h5 style="font-size: 20px" class="text-success"><strong id="modal-payment-method">Efectivo</strong></h5>
+                <div class="modal-body" style="padding: 20px 30px;">
+                    <!-- Step 1: Confirmation Details -->
+                    <div id="confirmation-step">
+                        <p class="text-center">Por favor, verifique los detalles del pago:</p>
+                        <div class="text-center" style="margin-bottom: 20px;">
+                            <h5 style="margin-bottom: 5px;"><strong>{{ $loan->people->first_name }} {{ $loan->people->last_name1 }} {{ $loan->people->last_name2 }}</strong></h5>
+                            <small class="text-muted">CI: {{ $loan->people->ci }}</small>
+                        </div>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Monto a Pagar
+                                <strong id="modal-payment-amount" style="font-size: 1.2em;">Bs. 0.00</strong>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Método de Pago
+                                <strong id="modal-payment-method">Efectivo</strong>
+                            </li>
+                        </ul>
+                        <p class="text-center text-muted" style="margin-top: 15px; font-size: 0.9em;">¿Desea continuar con la transacción?</p>
                     </div>
-                    <div id="step-loading" style="display: none; text-align: center; padding: 20px;">
-                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 5em; color: #28a745;"></i>
-                        <h4 class="mt-3" style="margin-top: 20px;">Procesando pago...</h4>
-                        <p class="text-muted">Por favor espere, estamos registrando la transacción.</p>
+
+                    <!-- Step 2: Loading Indicator -->
+                    <div id="loading-step" style="display: none; text-align: center; padding: 40px 0;">
+                        <i class="fa-solid fa-spinner fa-spin" style="font-size: 4em; color: #28a745;"></i>
+                        <h4 style="margin-top: 20px;">Procesando pago...</h4>
+                        <p class="text-muted">Por favor espere, no cierre esta ventana.</p>
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn-submit-cancel-modal btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                    <button type="button" id="btn-submit-confirm" class="btn-submit-confirm-modal btn btn-primary">Confirmar</button>
+                    <button type="button" id="btn-cancel-payment" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+                    <button type="button" id="btn-confirm-payment" class="btn btn-success"><i class="fa-solid fa-check-circle"></i> Confirmar y Pagar</button>
                 </div>
             </div>
         </div>
@@ -595,195 +613,49 @@
                 right: 20px;
             }
         }
+
+        /* Estilos para selección de método de pago */
+        .btn-group[data-toggle="buttons"] > .btn.active {
+            background-color: #337ab7; /* Color primario de Bootstrap */
+            color: white;
+            border-color: #2e6da4;
+            box-shadow: inset 0 3px 5px rgba(0, 0, 0, .125);
+        }
+        .btn-group[data-toggle="buttons"] > .btn.active .fa-solid {
+            color: white;
+        }
     </style>
 @endsection
 
 @section('javascript')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.1.4/Chart.bundle.min.js"></script>
-{{-- 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script> --}}
-
-    <!-- Incluir el nuevo archivo JS de impresión -->
     <script src="{{ asset('js/print.js') }}"></script>
 
 
     <script>
-        $(document).ready(function() {
-            $("#amount").on('paste', function(e) {
-                e.preventDefault();
-            })
-
-            $('#form-abonar-pago').submit(function(e) {
-                $('.btn-sumit').attr('disabled', true);
-            });
-        })
-        $(document).ready(function() {
-
-            const data = {
-                labels: [
-                    'Deuda Total',
-                    'Total Pagado'
-                ],
-                datasets: [{
-                    label: 'My First Dataset',
-                    data: ["{{ $loan->debt }}", "{{ $loan->amountTotal - $loan->debt }}"],
-                    backgroundColor: [
-                        'red',
-                        'rgb(54, 205, 1)'
-                    ],
-                    hoverOffset: 4
-                }]
-            };
-            const config = {
-                type: 'pie',
-                data: data,
-            };
-            var myChart = new Chart(
-                document.getElementById('myChart'),
-                config
-            );
-        });
-        document.addEventListener("DOMContentLoaded", function() {
-            const btnConfirm = document.getElementById("btn-sumit"); // Botón "Pagar"
-            const btnSubmitConfirm = document.getElementById("btn-submit-confirm"); // Botón "Confirmar" en el modal
-            const form = document.getElementById("form-abonar-pago"); // Formulario
-            const amountInput = document.getElementById("amount"); // Input del monto
-            const modalAmount = document.getElementById("modal-amount"); // Monto dentro del modal
-            const modalPaymentMethod = document.getElementById("modal-payment-method"); // Método de pago en el modal
-            const labelAmount = document.getElementById("label-amount"); // Mensaje de error
-
-            // Mostrar el modal con el monto y el método de pago
-            btnConfirm.addEventListener("click", function() {
-                const amountValue = parseFloat(amountInput.value).toFixed(2);
-                const selectedPaymentMethod = document.querySelector('input[name="qr"]:checked').value;
-
-                // Validar si el monto es correcto antes de abrir el modal
-                if (!amountValue || amountValue <= 0 || isNaN(amountValue)) {
-                    labelAmount.style.display = "block";
-                    return;
-                }
-
-                labelAmount.style.display = "none";
-                modalAmount.textContent = `Bs. ${amountValue}`; // Mostrar el monto
-                modalPaymentMethod.textContent = selectedPaymentMethod; // Mostrar el método de pago
-                $("#confirmModal").modal("show");
-            });
-
-            // Enviar el formulario cuando se confirme el pago
-            btnSubmitConfirm.addEventListener("click", function() {
-                // Ocultar botones de acción
-                btnSubmitConfirm.style.display = "none";
-                document.querySelector(".btn-submit-cancel-modal").style.display = "none";
-
-                // Mostrar animación de carga
-                document.getElementById("step-confirmation").style.display = "none";
-                document.getElementById("step-loading").style.display = "block";
-
-                // Enviar formulario inmediatamente
-                form.submit();
-            });
-        });
-
-
-        function subTotal() {
-            let amount = $(`#amount`).val() ? parseFloat($(`#amount`).val()) : 0;
-            let debt = {{ $loan->debt }}
-            if (amount <= 0 || amount > debt) {
-                $('#btn-sumit').attr('disabled', 'disabled');
-                $('#label-amount').css('display', 'block');
-            } else {
-                $('#btn-sumit').removeAttr('disabled');
-                $('#label-amount').css('display', 'none');
-            }
-        }
-
-        let loan_id = 0;
-        let transaction_id = 0;
-        $(document).ready(function() {
-
-            // @if (session('data'))
-            //     printTicket('{{ setting('servidores.print') }}', @json(json_decode(session('data'), true)), '{{ url('admin/loans/daily/money/print') }}', 'LoanPayment');
-            // @endif
-
-            
-            
-
-            // Ocultar popup de impresión
-            setTimeout(() => {
-                $('#popup-button').fadeOut('fast');
-            }, 8000);
-        });
-
-        // function printDailyMoney() {
-        //     window.open("{{ url('admin/loans/daily/money/print') }}/" + loan_id + "/" + transaction_id, "Recibo",
-        //         `width=700, height=700`)
-        // }
-
-        function imprSelec(nombre) {
-            var ficha = document.getElementById(nombre);
-            var ventimp = window.open(' ', 'popimpr');
-            ventimp.document.write(ficha.innerHTML);
-            ventimp.document.close();
-            ventimp.print();
-            ventimp.close();
-        }
-
-        function imprim1(imp1) {
-            var printContents = document.getElementById('imp1').innerHTML;
-            w = window.open();
-            w.document.write(printContents);
-            w.document.close(); // necessary for IE >= 10
-            w.focus(); // necessary for IE >= 10
-            w.print();
-            // w.close();
-            return true;
-        }
-    </script>
-
-    <script>
+        // Funciones de Geolocalización (mantenerlas accesibles globalmente si es necesario)
         function obtenerUbicacionForzada() {
-            // 1. Verificar soporte de geolocalización
             if (!navigator.geolocation) {
                 mostrarError("Tu navegador no soporta geolocalización");
                 return;
             }
-        
-            // 2. Configuración estricta del GPS
             const opcionesGPS = {
-                enableHighAccuracy: true,  // Forzar alta precisión (GPS)
-                timeout: 15000,            // 15 segundos de espera
-                maximumAge: 0              // No usar datos cacheados
+                enableHighAccuracy: true,
+                timeout: 15000,
+                maximumAge: 0
             };
-        
-            // 3. Solicitar ubicación
             navigator.geolocation.getCurrentPosition(
                 function(posicion) {
-                    const campoPre = document.querySelector('[name="precision"], #precision, input.precision');
-                    campoPre.value =`¡Ubicación obtenida correctamente!`;
-
-
-                    // Validar precisión
+                    const campoPre = $('#precision');
                     if (posicion.coords.accuracy > 100) {
-                        mostrarAdvertencia(`Precisión baja (${Math.round(posicion.coords.accuracy)}m). Usando igualmente los datos.`);
-                        campoPre.value =`Precisión baja (${Math.round(posicion.coords.accuracy)}m).`;
-                    }
-                    // Asignar valores a los campos
-                    const campoLat = document.querySelector('[name="latitude"], #latitude, input.latitude');
-                    const campoLng = document.querySelector('[name="longitude"], #longitude, input.longitude');
-
-
-                    // alert(campoLat)
-
-                    
-                    if (campoLat && campoLng) {
-                        campoLat.value = posicion.coords.latitude.toFixed(6);
-                        campoLng.value = posicion.coords.longitude.toFixed(6);
-                        mostrarExito("¡Ubicación obtenida correctamente!");
+                        mostrarAdvertencia(`Precisión baja (${Math.round(posicion.coords.accuracy)}m).`);
+                        campoPre.val(`Precisión baja (${Math.round(posicion.coords.accuracy)}m).`);
                     } else {
-                        mostrarError("No se encontraron campos para coordenadas");
-                        campoPre.value =`No se encontraron campos para coordenadas.`;
+                        mostrarExito("¡Ubicación obtenida correctamente!");
+                        campoPre.val(`Precisión: ${Math.round(posicion.coords.accuracy)}m`);
                     }
+                    $('#latitudeField').val(posicion.coords.latitude.toFixed(6));
+                    $('#longitudeField').val(posicion.coords.longitude.toFixed(6));
                 },
                 function(error) {
                     manejarErrorGPS(error);
@@ -791,59 +663,165 @@
                 opcionesGPS
             );
         }
-        
-        // Funciones auxiliares
+
         function manejarErrorGPS(error) {
             const errores = {
                 1: "Permiso denegado. Debes activar la ubicación en los ajustes de tu dispositivo.",
                 2: "No se puede obtener la ubicación. Verifica que el GPS esté activado.",
                 3: "Tiempo de espera agotado. El GPS está respondiendo lentamente."
             };
-            
             mostrarError(errores[error.code] || "Error desconocido al obtener la ubicación");
         }
-        
-        function mostrarExito(mensaje) {
-            // alert(mensaje); // Puedes reemplazar con un toast o notificación bonita
-            toastr.success(mensaje, 'GPS');
-            console.log("Éxito: " + mensaje);
-        }
-        
-        function mostrarAdvertencia(mensaje) {
-            // alert(mensaje);
-            toastr.warning(mensaje, 'Advertencia GPS');
-            console.warn(mensaje);
-        }
-        
-        function mostrarError(mensaje) {
-            // alert("ERROR: " + mensaje);
-            toastr.error(mensaje, 'Error GPS');
 
-            console.error(mensaje);
+        function mostrarExito(mensaje) {
+            toastr.success(mensaje, 'GPS');
+        }
+
+        function mostrarAdvertencia(mensaje) {
+            toastr.warning(mensaje, 'Advertencia GPS');
+        }
+
+        function mostrarError(mensaje) {
+            toastr.error(mensaje, 'Error GPS');
+            $('#precision').val(mensaje);
         }
         
-        // Ejecutar al cargar la página
-        document.addEventListener('DOMContentLoaded', function() {
-            // Esperar 1 segundo para que Voyager cargue completamente los campos
-            setTimeout(obtenerUbicacionForzada, 1000);
-        });
-        
-        // Opcional: Botón para reintentar
         function agregarBotonReintento() {
-            const boton = document.createElement('button');
-            boton.textContent = 'Obtener Ubicación';
-            boton.className = 'btn btn-primary';
-            boton.style.margin = '10px 0';
-            boton.onclick = obtenerUbicacionForzada;
-            
-            const contenedor = document.querySelector('.form-group.latitude') || 
-                            document.querySelector('.form-content');
-            if (contenedor) {
-                contenedor.appendChild(boton);
-            }
+            const boton = $('<button type="button" class="btn btn-info btn-sm btn-block"><i class="voyager-refresh"></i> Reintentar Ubicación</button>');
+            boton.on('click', obtenerUbicacionForzada);
+            // Insertar después del grupo de botones de tipo de pago
+            $('.form-group.text-center').after($('<div class="form-group"></div>').append(boton));
         }
-        
-        // Llamar a la función para agregar el botón
-        agregarBotonReintento();
+
+        // Función de impresión global
+        function imprim1(imp1) {
+            var printContents = document.getElementById('imp1').innerHTML;
+            var w = window.open('', 'Imprimir Calendario', 'height=600,width=800');
+            w.document.write('<html><head><title>Calendario de Pagos</title>');
+            // Opcional: añadir estilos para la impresión
+            w.document.write('<style> table { width: 100%; border-collapse: collapse; } td, th { border: 1px solid #ccc; padding: 5px; text-align: center; } .bg-gray { background-color: #f2f2f2; } </style>');
+            w.document.write('</head><body>' + printContents + '</body></html>');
+            w.document.close();
+            w.focus();
+            w.print();
+            return true;
+        }
+
+
+        $(document).ready(function() {
+            // =================================================================
+            // Lógica de Gráfico y UI inicial
+            // =================================================================
+            
+            $("#amount").on('paste', function(e) {
+                e.preventDefault();
+                toastr.warning('No se permite pegar en este campo.', 'Advertencia');
+            });
+
+            $('#form-abonar-pago').on('submit', function() {
+                $('#btn-sumit').prop('disabled', true);
+                $('#btn-confirm-payment').prop('disabled', true);
+            });
+
+            const debtData = {
+                labels: ['Deuda Pendiente', 'Total Pagado'],
+                datasets: [{
+                    data: ["{{ $loan->debt }}", "{{ $loan->amountTotal - $loan->debt }}"],
+                    backgroundColor: ['#e74c3c', '#2ecc71'],
+                    hoverOffset: 4
+                }]
+            };
+            new Chart($('#myChart'), {
+                type: 'pie',
+                data: debtData,
+                options: {
+                    legend: { position: 'bottom' }
+                }
+            });
+
+            setTimeout(() => {
+                $('#popup-button').fadeOut('fast');
+            }, 8000);
+
+            // =================================================================
+            // Lógica de Validación y Pago
+            // =================================================================
+            const debt = parseFloat('{{ $loan->debt }}');
+            const $amountInput = $('#amount');
+            const $submitBtn = $('#btn-sumit');
+            const $amountLabel = $('#label-amount');
+            const $paymentModal = $('#confirmPaymentModal');
+
+            function validateAmount() {
+                let amount = parseFloat($amountInput.val());
+                if (isNaN(amount) || amount <= 0 || amount > debt) {
+                    $submitBtn.prop('disabled', true);
+                    if (amount > debt) {
+                        $amountLabel.text('El monto excede la deuda.').show();
+                    } else if (amount <= 0) {
+                        $amountLabel.text('El monto debe ser mayor a cero.').show();
+                    } else {
+                        $amountLabel.text('El monto es incorrecto.').show();
+                    }
+                    return false;
+                } else {
+                    $submitBtn.prop('disabled', false);
+                    $amountLabel.hide();
+                    return true;
+                }
+            }
+
+            $amountInput.on('keyup change input', validateAmount);
+
+            $amountInput.on('keypress', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    if (validateAmount()) {
+                        $submitBtn.click();
+                    }
+                }
+            });
+
+            $submitBtn.on('click', function(e) {
+                e.preventDefault();
+                if (validateAmount()) {
+                    const amount = parseFloat($amountInput.val()).toFixed(2);
+                    const paymentMethod = $('input[name="qr"]:checked').val();
+
+                    $('#modal-payment-amount').text(`Bs. ${amount}`);
+                    $('#modal-payment-method').text(paymentMethod);
+                    
+                    $('#confirmation-step').show();
+                    $('#loading-step').hide();
+                    $('#btn-cancel-payment, #btn-confirm-payment').show();
+
+                    $paymentModal.modal('show');
+                }
+            });
+
+            $('#btn-confirm-payment').on('click', function() {
+                $('#confirmation-step').hide();
+                $('#loading-step').show();
+                $(this).prop('disabled', true).html('<i class="fa-solid fa-spinner fa-spin"></i> Procesando...');
+                $('#btn-cancel-payment').hide();
+                $paymentModal.data('bs.modal')._config.backdrop = 'static';
+                $paymentModal.find('.close').hide();
+
+                $('#form-abonar-pago').submit();
+            });
+
+            $paymentModal.on('hidden.bs.modal', function () {
+                const $confirmBtn = $('#btn-confirm-payment');
+                $confirmBtn.prop('disabled', false).html('<i class="fa-solid fa-check-circle"></i> Confirmar y Pagar');
+                $paymentModal.data('bs.modal')._config.backdrop = true;
+                $paymentModal.find('.close').show();
+            });
+
+            // =================================================================
+            // Lógica de Geolocalización
+            // =================================================================
+            setTimeout(obtenerUbicacionForzada, 1000);
+            agregarBotonReintento();
+        });
     </script>
 @stop

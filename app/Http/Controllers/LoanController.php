@@ -957,7 +957,7 @@ class LoanController extends Controller
 
         // 1. CONTROL DE LÍMITE DIARIO (Seguridad anti-bloqueo)
         $limitKey = 'whatsapp_daily_count_' . now()->format('Y-m-d');
-        $dailyLimit = 150; // Límite conservador. Cuentas nuevas deberían empezar con 100-200.
+        $dailyLimit = 225; // Límite conservador. Cuentas nuevas deberían empezar con 100-200.
         $currentCount = Cache::get($limitKey, 0);
 
         if ($currentCount >= $dailyLimit) {
