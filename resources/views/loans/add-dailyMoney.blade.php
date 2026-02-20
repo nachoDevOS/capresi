@@ -116,8 +116,10 @@
                                         <table class="calendar-table">
                                             <thead>
                                                 <tr class="calendar-header">
-                                                    <th colspan="7">
-                                                        {{ $meses[intval($cantMes[$mes]->mes)] }} - {{ intval($cantMes[$mes]->ano) }}
+                                                    <th colspan="7" style="color: #2e6da4 !important; font-weight: bold;">
+                                                        <strong>
+                                                            {{ $meses[intval($cantMes[$mes]->mes)] }} - {{ intval($cantMes[$mes]->ano) }}
+                                                        </strong>
                                                     </th>
                                                 </tr>
                                                 <tr>
