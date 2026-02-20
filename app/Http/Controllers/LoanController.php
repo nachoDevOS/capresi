@@ -14,8 +14,8 @@ use App\Models\LoanRequirement;
 use App\Models\User;
 use Psy\CodeCleaner\ReturnTypePass;
 use Illuminate\Support\Facades\Validator;
-use Psy\TabCompletion\Matcher\FunctionsMatcher;
-use TCG\Voyager\Models\Role;
+// use Psy\TabCompletion\Matcher\FunctionsMatcher;
+// use TCG\Voyager\Models\Role;
 use App\Models\Route;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
@@ -24,22 +24,22 @@ use Illuminate\Support\Facades\Cache;
 
 use App\Http\Controllers\FileController;
 use App\Models\LoanDayAgent;
-use Illuminate\Support\Composer;
-use PhpParser\Node\Stmt\TryCatch;
-use App\Models\Cashier;
-use App\Models\CashierMovement;
-use PhpParser\Node\Stmt\Return_;
-use PHPUnit\Framework\MockObject\Stub\ReturnReference;
-use ReturnTypeWillChange;
+// use Illuminate\Support\Composer;
+// use PhpParser\Node\Stmt\TryCatch;
+// use App\Models\Cashier;
+// use App\Models\CashierMovement;
+// use PhpParser\Node\Stmt\Return_;
+// use PHPUnit\Framework\MockObject\Stub\ReturnReference;
+// use ReturnTypeWillChange;
 
-use function PHPSTORM_META\type;
-use function PHPUnit\Framework\returnSelf;
+// use function PHPSTORM_META\type;
+// use function PHPUnit\Framework\returnSelf;
 
 // Models
 use App\Models\PaymentsPeriod;
 
 // Queues
-use App\Jobs\SendRecipe;
+// use App\Jobs\SendRecipe;
 use App\Jobs\WhatsappJob;
 
 class LoanController extends Controller
@@ -51,12 +51,7 @@ class LoanController extends Controller
 
     public function index()
     {
-        $collector = User::with([
-            'role' => function ($q) {
-                $q->where('name', 'cobrador');
-            },
-        ])->get();
-        return view('loans.browse', compact('collector'));
+        return view('loans.browse');
     }
 
     public function list($type, $search = null)
@@ -68,7 +63,7 @@ class LoanController extends Controller
         $type ? ($status = "status = '$type'") : 1;
         $type == 'pagado' ? ($status = 'debt = 0') : 1;
 
-        $data = Loan::with(['loanDay', 'loanRoute', 'loanRequirement', 'people', 'manager', 'agentDelivered'])
+        $data = Loan::with(['people', 'manager'])
             ->where(function ($query) use ($search) {
                 if ($search) {
                     $query
@@ -81,7 +76,6 @@ class LoanController extends Controller
             })
             ->where('deleted_at', null)
             ->whereRaw($status ? $status : 1)
-            // ->whereRaw($type=='pagado'? "debt == 0":1)
             ->orderBy('code', 'DESC')
             ->paginate($paginate);
 

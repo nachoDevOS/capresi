@@ -72,52 +72,6 @@
     </div>
 
 
-
-
-    <div class="modal modal-primary fade" data-backdrop="static" tabindex="-1" id="agent-modal" role="dialog">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title"><span class="icon fa-solid fa-person-digging"></span> Agente</h4>
-                </div>
-                <div class="modal-body">
-                    <form action="#" id="agent_form" method="POST">
-                        {{ csrf_field() }}
-                    <div class="row">
-                        <div class="form-group col-md-6">
-                            <small>Cobrador Asignado al Prestamo</small>
-                            <select name="loan_id" id="loan_id" class="form-control select2" required>
-                                <option value="" disabled selected>-- Selecciona a la persona --</option>
-                                @foreach ($collector as $item)
-                                    @if ($item->role)
-                                        <option value="{{$item->id}}">{{$item->name}}</option>                                                
-                                    @endif
-                                @endforeach
-                            </select>
-                        </div> 
-                    </div>
-                    <div class="row">
-                        <div class="form-group col-md-12">
-                            {{-- <label for="observation"></label> --}}
-                            <small>Observación</small>
-                            <textarea name="observation" id="observation" class="form-control text" cols="30" rows="5"></textarea>
-                        </div>                                  
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <form action="#" id="agent_form" method="POST">
-                        {{ csrf_field() }}
-                        
-                        <input type="submit" class="btn btn-dark pull-right delete-confirm" value="Sí, cambiar">
-                    </form>
-                    <button type="button" class="btn btn-default pull-right" data-dismiss="modal">Cancelar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
     @include('partials.modal-delete')
     @include('partials.modal-deliverMoney')
     @include('partials.modal-decline')
