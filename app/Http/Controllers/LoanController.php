@@ -356,7 +356,7 @@ class LoanController extends Controller
     }
 
     // funcion para entregar dinero al beneficiario
-    public function moneyDeliver(Request $request, $loan)
+    public function moneyDeliver($loan)
     {
         $global_cashier = $this->availableMoney(Auth::user()->id, 'user')->original;
         if (!$global_cashier['cashier']) {
@@ -378,12 +378,7 @@ class LoanController extends Controller
         }
         DB::beginTransaction();
         try {
-            // $user = Auth::user();
-
-            // $date = date("d-m-Y",strtotime(date('y-m-d h:i:s')."+ 1 days"));
-
-            // $date = Carbon::parse($request->fechass);
-            // $date = date("Y-m-d", strtotime($date));
+  
             $date = date('Y-m-d');
             $date = date('d-m-Y', strtotime($date . '+ 1 days'));
 
@@ -401,9 +396,6 @@ class LoanController extends Controller
                         'number' => $i,
                         'debt' => $loan->amountTotal / $loan->day,
                         'amount' => $loan->amountTotal / $loan->day,
-
-                        'register_userId' => Auth::user()->id,
-                        'register_agentType' => Auth::user()->role->name,
 
                         'date' => $date,
                     ]);
@@ -448,9 +440,6 @@ class LoanController extends Controller
                         'debt' => $debA,
                         'amount' => $debA,
 
-                        'register_userId' => Auth::user()->id,
-                        'register_agentType' => Auth::user()->role->name,
-
                         'date' => $date,
                     ]);
                     $date = date('d-m-Y', strtotime($date . '+ 1 days'));
@@ -464,7 +453,6 @@ class LoanController extends Controller
                 'status' => 'entregado',
                 'delivered' => 'Si',
                 'dateDelivered' => Carbon::now(),
-                // 'dateDelivered' => $request->dateDelivered,
             ]);
 
             if ($loan->typeLoan == 'diario') {
@@ -480,10 +468,6 @@ class LoanController extends Controller
                 ->where('id', $loan->id)
                 ->where('deleted_at', null)
                 ->first();
-            
-
-
-
             DB::commit();
 
             return redirect()
@@ -496,33 +480,6 @@ class LoanController extends Controller
                 ->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
         }
     }
-
-    // function server_prinf($id)
-    // {
-    //     $loan = Loan::with(['people', 'agentDelivered', 'loanDay'])
-    //         ->where('id', $id)
-    //         ->first();
-
-    //     $data = [
-    //         'template' => 'voucherLoan', // Asegúrate de usar 'template' en lugar de 'templeate'
-    //         'code' => $loan->code,
-    //         'ci' => $loan->people->ci ? $loan->people->ci : 'Sin CI',
-    //         'customer' => $loan->people->first_name . ' ' . $loan->people->last_name1 . ' ' . $loan->people->last_name2,
-    //         'dateLoan' => Carbon::parse($loan->dateDelivered)->format('d/m/Y'),
-
-    //         'register' => $loan->agentDelivered->name,
-    //         'dateStart' => Carbon::parse($loan->loanDay->first()->date)->format('d/m/Y'),
-    //         'dateFinish' => Carbon::parse($loan->loanDay->last()->date)->format('d/m/Y'),
-    //         'amountLoan' => $loan->amountLoan,
-    //         'amountPorcentage' => $loan->amountPorcentage,
-    //         'amountTotal' => $loan->amountTotal,
-    //     ];
-
-    //     Http::withHeaders([
-    //         'Content-Type' => 'application/json',
-    //         'Accept' => 'application/json',
-    //     ])->post(setting('servidores.prinf'), $data);
-    // }
 
     
 

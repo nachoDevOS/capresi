@@ -162,19 +162,7 @@
 @section('css')
     <style>
 
-        .progress {
-            height: 20px;
-            background-color: #f3f3f3;
-            border-radius: 5px;
-            overflow: hidden;
-        }
 
-        .progress-bar {
-            background-color: #42d17f !important; /* Color verde */
-            height: 100%;
-            transition: width 0.3s;
-        }
-    
     
     </style>
 @stop
@@ -182,6 +170,7 @@
 @section('javascript')
     <!-- Incluir el nuevo archivo JS de impresión -->
     <script src="{{ asset('js/print.js') }}"></script>
+    <script src="{{ asset('js/btn-submit.js') }}"></script>
 
     <script>
         //para inpresion cuando es entregado elñ prestamo para que imprima
@@ -224,39 +213,6 @@
 
     </script>
     <script>
-
-        $(document).ready(function(){
-            document.getElementById('btn-submit-delivered').addEventListener('click', function() {
-                    $('.btn-cancel-delivered').attr('disabled', true);
-                    $('.close-delivered').attr('disabled', true);
-                    this.textContent = 'Guardando...';
-                    this.disabled = true;
-                    this.closest('form').submit();
-
-                    const progressContainer = document.getElementById('progress-container');
-                    const progressBar = document.getElementById('progress-bar');
-                    progressContainer.style.display = 'block';
-
-                    // Simular progreso
-                    let progress = 0;
-                    const interval = setInterval(function () {
-                        progress += 10;
-                        progressBar.style.width = progress + '%';
-                        progressBar.setAttribute('aria-valuenow', progress);
-
-                        // Finalizar progreso
-                        if (progress >= 100) {
-                            clearInterval(interval);
-
-                            // Simular finalización del proceso (ejemplo: cerrar modal)
-                            setTimeout(() => {
-                                $('#confirm-modal').modal('hide');
-                            }, 500);
-                        }
-                    }, 30);
-            });
-        })
-
         var countPage = 10, order = 'id', typeOrder = 'desc';
 
         $(document).ready(() => {

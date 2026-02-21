@@ -29,8 +29,8 @@ class CreateLoanDaysTable extends Migration
 
             $table->smallInteger('status')->default(1);
             $table->timestamps();
-            $table->foreignId('register_userId')->nullable()->constrained('users');
-            $table->string('register_agentType')->nullable();
+            // $table->foreignId('register_userId')->nullable()->constrained('users');
+            // $table->string('register_agentType')->nullable();
 
             $table->softDeletes();
             $table->foreignId('deleted_userId')->nullable()->constrained('users');

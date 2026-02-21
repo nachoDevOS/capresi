@@ -341,29 +341,7 @@
             $('#code_form').attr('action', url);
         }
 
-        // function deliverItem(url, id, amountTotal){
-        //     // alert(id)
-        //     $('#deliver_form').attr('action', url);
-        //     loanC = id;
-        //     if(amountTotal > balance && cashier_id!=0)
-        //     {
-        //         // $('#btn-submit-delivered').attr('disabled', 'disabled');
-        //         $('#btn-submit-delivered').css('display', 'none');
-
-        //         Swal.fire({
-        //             target: document.getElementById('deliver_form'),
-        //             icon: 'error',
-        //             title: 'Oops...',
-        //             text: 'Su saldo disponible de Caja es insuficiente!',
-        //             // footer: '<a href="">Why do I have this issue?</a>'
-        //         })
-        //     }
-        //     if(amountTotal < balance && cashier_id!=0)
-        //     {
-                
-        //         $('#btn-submit-delivered').css('display', 'block');
-        //     }
-        // }
+     
     </script>
 @stop
 @endif

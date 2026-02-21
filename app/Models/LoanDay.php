@@ -22,8 +22,6 @@ class LoanDay extends Model
         'payment_day',
 
         'status',
-        'register_userId',
-        'register_agentType',
 
         'deleted_at',
         'deleted_userId',

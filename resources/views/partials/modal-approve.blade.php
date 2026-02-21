@@ -1,15 +1,11 @@
-<form action="#" id="approve_form" method="GET">
+<form action="#" class="form-edit-add" id="approve_form" method="GET">
     {{ csrf_field() }}
-    <div class="modal modal-success fade" tabindex="-1" id="approve-modal" role="dialog">
-        <div class="modal-dialog modal-dialog-centered">
+    <div class="modal modal-success fade" data-backdrop="static" id="approve-modal" role="dialog">
+        <div class="modal-dialog">
             <div class="modal-content">
-                <div class="modal-header" style="background-color: #2ecc71; color: white; border-bottom: none;">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar" style="color: white; opacity: 1;">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    <h4 class="modal-title" style="font-weight: bold;">
-                        <i class="fa-solid fa-check-circle"></i> Aprobación de Préstamo
-                    </h4>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" style="color:rgb(255, 255, 255) !important"><i class="fa-solid fa-check-circle"></i> Aprobación de Préstamo</h4>
                 </div>
                 <div class="modal-body" style="padding: 30px;">
                     <div class="text-center">
@@ -30,23 +26,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer" style="border-top: 1px solid #f1f1f1; padding: 15px 30px;">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" style="margin-right: 10px;">
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-cancel" data-dismiss="modal" style="margin-right: 10px;">
                         Cancelar
                     </button>
-                    <button type="submit" class="btn btn-success btn-approve-submit" style="background-color: #2ecc71; border-color: #2ecc71; font-weight: bold; padding-left: 20px; padding-right: 20px;">
-                        <i class="fa-solid fa-check"></i> Sí, Aprobar
+                    <button type="submit" class="btn btn-success btn-submit">
+                        Sí, Aprobar
                     </button>
                 </div>
             </div>
         </div>
     </div>
 </form>
-
-<script>
-    document.getElementById('approve_form').addEventListener('submit', function() {
-        var btn = this.querySelector('.btn-approve-submit');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Aprobando...';
-    });
-</script>

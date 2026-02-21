@@ -1,30 +1,38 @@
-<form action="#" id="deliverMoney_form" method="POST">
+<form action="#" class="form-edit-add" id="deliverMoney_form" method="GET">
     {{ csrf_field() }}
     <div class="modal modal-success fade" data-backdrop="static" id="deliver-modal" role="dialog">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title"><i class="fa-solid fa-money-check-dollar"></i> Entregar Dinero</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" style="color:rgb(255, 255, 255) !important"><i class="fa-solid fa-check-circle"></i> Entrega de Dinero</h4>
                 </div>
-                <div class="modal-footer">    
-                    <div class="text-center" style="text-transform:uppercase">
-                        <i class="fa-solid fa-money-check-dollar" style="color: rgb(68, 68, 68); font-size: 5em;"></i>
-                        <br>
-                            
-                        <p><b>Desea entregar el dinero al cliente?</b></p>
-                        {{-- <br>
-                        <label for="dateDelivered">Fecha de entrega</label>
-                        <input type="date" name="dateDelivered" class="form-control" required>
-                        <br> --}}
-                    </div>
-                    <div id="progress-container" style="display: none; margin-top: 15px;">
-                        <small>Procesando...</small>
-                        <div class="progress">
-                            <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                <div class="modal-body" style="padding: 30px;">
+                    <div class="text-center">
+                        <div style="width: 80px; height: 80px; background: #e8f8f5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                            <i class="fa-solid fa-hand-holding-dollar" style="font-size: 40px; color: #2ecc71;"></i>
+                        </div>
+                        
+                        <h3 style="margin-top: 0; margin-bottom: 10px; color: #333; font-weight: 600;">
+                            ¿Confirmar Entrega?
+                        </h3>
+                        
+                        <p class="text-muted" style="font-size: 14px; margin-bottom: 20px;">
+                            Esta acción registrará la salida de dinero de su caja y marcará el préstamo como entregado.
+                        </p>
+
+                        <div class="alert alert-warning" style="font-size: 12px; text-align: left; margin-bottom: 0; background-color: #fcf8e3; border-color: #faebcc; color: #8a6d3b;">
+                            <i class="fa-solid fa-triangle-exclamation"></i> <strong>Importante:</strong> Verifique que el cliente haya firmado el contrato antes de entregar el efectivo.
                         </div>
                     </div>
-                    <button type="submit" id="btn-submit-delivered" style="display:block" class="btn btn-success pull-right delete-confirm">Sí, entregar</button>
-                    <button type="button" class="btn btn-default pull-right btn-cancel-delivered" data-dismiss="modal">Cancelar</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-cancel" data-dismiss="modal" style="margin-right: 10px;">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success btn-submit">
+                        Sí, Entregar
+                    </button>
                 </div>
             </div>
         </div>

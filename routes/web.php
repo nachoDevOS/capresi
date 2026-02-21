@@ -200,7 +200,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
     Route::get('loans/{loan}/list/transaction', [TransactionController::class, 'listTransaction'])->name('loans-list.transaction');
     Route::get('loans/{loan?}/print/calendar', [LoanController::class, 'printCalendar'])->name('loans-print.calendar');
 
-    Route::post('loans/{loan?}/money/deliver', [LoanController::class, 'moneyDeliver'])->name('loans-money.deliver');
+    Route::get('loans/{loan?}/money/deliver', [LoanController::class, 'moneyDeliver'])->name('loans-money.deliver');
     Route::get('loans/contract/daily/{loan?}', [LoanController::class, 'printContracDaily']);
     Route::get('loans/{loan}/approve', [LoanController::class, 'approveLoan'])->name('loans.approve'); //Para aprobar el prestamos para que pueda ser entregado al cliente
     Route::post('loans/{loan?}/agent/update', [LoanController::class, 'updateAgent'])->name('loans-agent.update');
