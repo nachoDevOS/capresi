@@ -196,14 +196,10 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
     Route::post('loans/person/update-phone', [LoanController::class, 'updatePersonPhone'])->name('loans.person.update-phone');
 
     Route::get('loans/{loan}/decline', [LoanController::class, 'declineLoan'])->name('loans.decline'); //para rechazar  los perestamos
-    // Route::delete('loans/{loan?}/cashierclose/destroy', [LoanController::class, 'destroyLoan'])->name('loans-cashierclose.destroy'); //para la destruccion de prestamo con caja cerrada
-    // Route::get('loans/ajax/notPeople/{id?}', [LoanController::class, 'ajaxNotPeople'])->name('loans-ajax.notpeople');
+
     Route::get('loans/{loan}/list/transaction', [TransactionController::class, 'listTransaction'])->name('loans-list.transaction');
     Route::get('loans/{loan?}/print/calendar', [LoanController::class, 'printCalendar'])->name('loans-print.calendar');
-    Route::get('loans/{loan?}/requirement/daily/create', [LoanController::class, 'createDaily'])->name('loans-requirement-daily.create');
-    Route::post('loans/{loan?}/requirement/daily/store', [LoanController::class, 'storeRequirement'])->name('loans-requirement-daily.store');
-    Route::get('loans/daily/{loan?}/requirement/delete/{col?}', [LoanController::class, 'deleteRequirement'])->name('loans-daily-requirement.delete');
-    Route::get('loans/daily/{loan?}/requirement/success', [LoanController::class, 'successRequirement'])->name('loans-daily-requirement.success');
+
     Route::post('loans/{loan?}/money/deliver', [LoanController::class, 'moneyDeliver'])->name('loans-money.deliver');
     Route::get('loans/contract/daily/{loan?}', [LoanController::class, 'printContracDaily']);
     Route::get('loans/{loan}/approve', [LoanController::class, 'approveLoan'])->name('loans.approve'); //Para aprobar el prestamos para que pueda ser entregado al cliente

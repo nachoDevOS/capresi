@@ -2,20 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
-// Models
-use App\Models\Loan;
-use App\Models\LoanDay;
-use App\Models\LoanDayAgent;
-use App\Models\LoanRoute;
-use App\Models\LoanRequirement;
 use App\Models\Transaction;
-use App\Models\People;
 
 class TransactionController extends Controller
 {

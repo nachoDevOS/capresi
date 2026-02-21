@@ -146,11 +146,11 @@
                             </a>
                         @endif
 
-                        @if($item->status != 'rechazado' && !auth()->user()->hasRole('cobrador'))
+                        {{-- @if($item->status != 'rechazado' && !auth()->user()->hasRole('cobrador'))
                             <a href="{{ route('loans-requirement-daily.create', ['loan' => $item->id]) }}" title="Requisitos" class="btn btn-sm btn-warning">
                                 <i class="fa-solid fa-file"></i><span class="hidden-xs hidden-sm"></span>
                             </a>
-                        @endif
+                        @endif --}}
                         
                         @if ($item->status=='verificado' && auth()->user()->hasPermission('successLoan_loans') && $item->status != 'rechazado')
                             <a title="Aprobar prestamo" class="btn btn-sm btn-dark" onclick="approveItem('{{ route('loans.approve', ['loan' => $item->id]) }}')" data-toggle="modal" data-target="#approve-modal">

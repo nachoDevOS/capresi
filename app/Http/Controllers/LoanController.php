@@ -10,35 +10,19 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Loan;
 use App\Models\LoanDay;
 use App\Models\LoanRoute;
-use App\Models\LoanRequirement;
-use App\Models\User;
-use Psy\CodeCleaner\ReturnTypePass;
-use Psy\TabCompletion\Matcher\FunctionsMatcher;
-use TCG\Voyager\Models\Role;
+
 use App\Models\Route;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Validator;
 
 use App\Http\Controllers\FileController;
 use App\Models\LoanDayAgent;
-use Illuminate\Support\Composer;
-use PhpParser\Node\Stmt\TryCatch;
-use App\Models\Cashier;
-use App\Models\CashierMovement;
-use PhpParser\Node\Stmt\Return_;
-use PHPUnit\Framework\MockObject\Stub\ReturnReference;
-use ReturnTypeWillChange;
-
-use function PHPSTORM_META\type;
-use function PHPUnit\Framework\returnSelf;
-
 // Models
 use App\Models\PaymentsPeriod;
 
-// Queues
-use App\Jobs\SendRecipe;
 use App\Jobs\WhatsappJob;
 
 class LoanController extends Controller
@@ -50,12 +34,7 @@ class LoanController extends Controller
 
     public function index()
     {
-        $collector = User::with([
-            'role' => function ($q) {
-                $q->where('name', 'cobrador');
-            },
-        ])->get();
-        return view('loans.browse', compact('collector'));
+        return view('loans.browse');
     }
 
     public function list($type, $search = null)
@@ -67,7 +46,7 @@ class LoanController extends Controller
         $type ? ($status = "status = '$type'") : 1;
         $type == 'pagado' ? ($status = 'debt = 0') : 1;
 
-        $data = Loan::with(['loanDay', 'loanRoute', 'loanRequirement', 'people', 'manager', 'agentDelivered'])
+        $data = Loan::with(['people', 'manager'])
             ->where(function ($query) use ($search) {
                 if ($search) {
                     $query
@@ -92,133 +71,6 @@ class LoanController extends Controller
         $routes = Route::where('deleted_at', null)->where('status', 1)->orderBy('name')->get();
 
         return view('loans.add', compact('routes'));
-    }
-
-    public function createDaily($id)
-    {
-        $requirement = LoanRequirement::where('loan_id', $id)->first();
-
-        $ok = LoanRequirement::where('loan_id', $id)->where('ci', '!=', null)->where('luz', '!=', null)->where('croquis', '!=', null)->where('business', '!=', null)->select('*')->first();
-        return view('requirement.daily.add', compact('requirement', 'ok'));
-    }
-
-    public function storeRequirement(Request $request, $loan)
-    {
-        DB::beginTransaction();
-        try {
-            $imageObj = new FileController();
-            $ok = LoanRequirement::where('loan_id', $loan)->first();
-            $file = $request->file('ci');
-            if ($file) {
-                if ($file->getClientOriginalExtension() == 'pdf') {
-                    $ci = $imageObj->file($file, $loan, 'Loan/requirement/daily/ci');
-                    // return 0;
-                } else {
-                    $ci = $imageObj->image($file, $loan, 'Loan/requirement/daily/ci');
-                    // return 1;
-                }
-                $ok->update(['ci' => $ci]);
-            }
-
-            $file = $request->file('luz');
-            if ($file) {
-                if ($file->getClientOriginalExtension() == 'pdf') {
-                    $luz = $imageObj->file($file, $loan, 'Loan/requirement/daily/luz');
-                } else {
-                    $luz = $imageObj->image($file, $loan, 'Loan/requirement/daily/luz');
-                }
-                $ok->update(['luz' => $luz]);
-            }
-
-            $file = $request->file('croquis');
-            if ($file) {
-                if ($file->getClientOriginalExtension() == 'pdf') {
-                    $croquis = $imageObj->file($file, $loan, 'Loan/requirement/daily/croquis');
-                } else {
-                    $croquis = $imageObj->image($file, $loan, 'Loan/requirement/daily/croquis');
-                }
-
-                $ok->update(['croquis' => $croquis]);
-            }
-
-            $file = $request->file('business');
-            if ($file) {
-                if ($file->getClientOriginalExtension() == 'pdf') {
-                    $business = $imageObj->file($file, $loan, 'Loan/requirement/daily/business');
-                } else {
-                    $business = $imageObj->image($file, $loan, 'Loan/requirement/daily/business');
-                }
-
-                $ok->update(['business' => $business]);
-            }
-
-            if ($request->lat) {
-                $ok->update(['latitude' => $request->lat]);
-            }
-            if ($request->lng) {
-                $ok->update(['longitude' => $request->lng]);
-            }
-
-            DB::commit();
-            return redirect()
-                ->route('loans-requirement-daily.create', ['loan' => $loan])
-                ->with(['message' => 'Requisitos registrado exitosamente.', 'alert-type' => 'success']);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return $th;
-            return redirect()
-                ->route('loans-requirement-daily.create', ['loan' => $loan])
-                ->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
-        }
-    }
-
-    public function deleteRequirement($loan, $col)
-    {
-        DB::beginTransaction();
-        try {
-            $requirement = LoanRequirement::where('loan_id', $loan)->first();
-
-            if ($col == 0) {
-                $requirement->update(['ci' => null]);
-            }
-            if ($col == 1) {
-                $requirement->update(['luz' => null]);
-            }
-            if ($col == 2) {
-                $requirement->update(['croquis' => null]);
-            }
-            if ($col == 3) {
-                $requirement->update(['business' => null]);
-            }
-            DB::commit();
-            return redirect()
-                ->route('loans-requirement-daily.create', ['loan' => $loan])
-                ->with(['message' => 'Requisitos eliminado exitosamente.', 'alert-type' => 'success']);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return redirect()
-                ->route('loans-requirement-daily.create', ['loan' => $loan])
-                ->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
-        }
-    }
-
-    public function successRequirement($loan)
-    {
-        DB::beginTransaction();
-        try {
-            Loan::where('id', $loan)->update(['inspector_userId' => Auth::user()->id, 'inspector_agentType' => Auth::user()->role->name, 'status' => 'verificado']);
-            LoanRequirement::where('loan_id', $loan)->update(['status' => '1', 'success_userId' => Auth::user()->id, 'success_agentType' => Auth::user()->role->name]);
-
-            DB::commit();
-            return redirect()
-                ->route('loans-requirement-daily.create', ['loan' => $loan])
-                ->with(['message' => 'Requisitos aprobado exitosamente.', 'alert-type' => 'success']);
-        } catch (\Throwable $th) {
-            DB::rollBack();
-            return redirect()
-                ->route('loans-requirement-daily.create', ['loan' => $loan])
-                ->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
-        }
     }
 
     public function store(Request $request)
@@ -247,17 +99,15 @@ class LoanController extends Controller
                 'status' => 'pendiente',
             ]);
 
-            $loan->update(['code' => 'CP-' . str_pad($loan->id, 5, '0', STR_PAD_LEFT)]);
+            $loan->update([
+                'code' => 'CP-' . str_pad($loan->id, 5, '0', STR_PAD_LEFT),
+                'status' => 'verificado'
+            ]);
+
             LoanRoute::create([
                 'loan_id' => $loan->id,
                 'route_id' => $request->route_id,
                 'observation' => 'Primer ruta',
-                'register_userId' => Auth::user()->id,
-                'register_agentType' => Auth::user()->role->name,
-            ]);
-
-            LoanRequirement::create([
-                'loan_id' => $loan->id,
                 'register_userId' => Auth::user()->id,
                 'register_agentType' => Auth::user()->role->name,
             ]);
@@ -273,6 +123,9 @@ class LoanController extends Controller
                 ->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
         }
     }
+   
+
+    
 
     public function show($id)
     {
@@ -289,7 +142,7 @@ class LoanController extends Controller
 
         // Para imprimir el calendario Nuevo
         $id = $id;
-        $loan = Loan::with(['loanDay', 'loanRoute', 'loanRequirement', 'people', 'guarantor'])
+        $loan = Loan::with(['loanDay', 'loanRoute', 'people', 'guarantor'])
             ->where('deleted_at', null)
             ->where('id', $id)
             ->first();
@@ -693,7 +546,7 @@ class LoanController extends Controller
     // para ver el prestamos y poder abonar o pagar el dinero
     public function dailyMoney($loan)
     {
-        $loan = Loan::with(['loanDay', 'loanRoute', 'loanRequirement', 'people', 'guarantor'])
+        $loan = Loan::with(['loanDay', 'loanRoute', 'people', 'guarantor'])
             ->where('deleted_at', null)
             ->where('id', $loan)
             ->first();
@@ -1208,5 +1061,29 @@ class LoanController extends Controller
             " 3. Agradecimiento: " . ($sendAt3 ? $sendAt3->format('Y-m-d H:i:s') : 'OMITIDO') . "\n" .
             $border;
         Log::channel('whatsappJob')->info($logMessage);
+    }
+
+    public function updatePersonPhone(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'person_id' => 'required|exists:people,id',
+            'phone' => 'required|numeric|digits_between:7,8',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => 'Datos inválidos.', 'errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $person = People::findOrFail($request->person_id);
+            $person->cell_phone = $request->phone;
+            $person->save();
+
+            return response()->json(['success' => true, 'message' => 'Teléfono actualizado exitosamente.']);
+
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar teléfono de persona: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Ocurrió un error en el servidor.'], 500);
+        }
     }
 }

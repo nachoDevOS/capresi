@@ -21,54 +21,55 @@
                             <div class="panel-heading"><h6 id="h4" class="panel-title">Requisitos Para el Prestamos</h6></div>
                             <div class="panel-body">
                                 @if ($requirement->status == 2)
+                                <h1>Hola</h1>
                                 <form id="agent" action="{{route('loans-requirement-daily.store', ['loan'=>$requirement->loan_id])}}" method="POST" enctype="multipart/form-data">
                                     @csrf
-                                <div class="row">
-                                    <div class="form-group col-md-6">
-                                        <div class="row">
-                                            <div class="form-group col-md-6">
-                                                <input type="hidden" class="form-control" placeholder="lat" name="lat" id="lat" value="{{$requirement->latitude}}">
+                                    <div class="row">
+                                        <div class="form-group col-md-6">
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <input type="hidden" class="form-control" placeholder="lat" name="lat" id="lat" value="{{$requirement->latitude}}">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <input type="hidden" class="form-control" placeholder="lng" name="lng" id="lng" value="{{$requirement->longitude}}">
+                                                </div>
                                             </div>
-                                            <div class="form-group col-md-6">
-                                                <input type="hidden" class="form-control" placeholder="lng" name="lng" id="lng" value="{{$requirement->longitude}}">
-                                            </div>
+                                
+                                            <div id="map" style="height:400px;" class="my-3"></div>
                                         </div>
-                            
-                                        <div id="map" style="height:400px;" class="my-3"></div>
-                                    </div>
-                                    <div class="form-group col-md-6">
-                                        
-                                        <div class="row">
-                                            <div class="form-group col-md-6">
-                                                <small>Fot. CI (imagen)</small>
-                                                <input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" name="ci" id="ci" class="form-control text imageLength">
+                                        <div class="form-group col-md-6">
+                                            
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <small>Fot. CI (imagen)</small>
+                                                    <input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" name="ci" id="ci" class="form-control text imageLength">
+                                                </div>
+                                                <div class="form-group col-md-6">
+                                                    <small>Fot. Luz o Agua (imagen)</small>
+                                                    <input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" name="luz" id="luz" class="form-control text imageLength">
+                                                </div>
                                             </div>
-                                            <div class="form-group col-md-6">
-                                                <small>Fot. Luz o Agua (imagen)</small>
-                                                <input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" name="luz" id="luz" class="form-control text imageLength">
+                                            <br>
+                                            <br>
+                                            <div class="row">
+                                                <div class="form-group col-md-6">
+                                                    <small>Foto Croquis (imagen)</small>
+                                                    <input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" name="croquis" id="croquis" class="form-control text imageLength">
+                                                </div>
+                                                
+                                                <div class="form-group col-md-6">
+                                                    <small>Foto Empresa (imagen)</small>
+                                                    <input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" name="business" id="business" class="form-control text imageLength">
+                                                </div>
                                             </div>
-                                        </div>
-                                        <br>
-                                        <br>
-                                        <div class="row">
-                                            <div class="form-group col-md-6">
-                                                <small>Foto Croquis (imagen)</small>
-                                                <input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" name="croquis" id="croquis" class="form-control text imageLength">
+                                            <div class="row">
+                                                <div class="col-md-12 text-right">
+                                                    <button type="submit" class="btn btn-primary">Actualizar</button>
+                                                </div>
                                             </div>
                                             
-                                            <div class="form-group col-md-6">
-                                                <small>Foto Empresa (imagen)</small>
-                                                <input type="file" accept="image/jpeg,image/jpg,image/png,application/pdf" name="business" id="business" class="form-control text imageLength">
-                                            </div>
                                         </div>
-                                        <div class="row">
-                                            <div class="col-md-12 text-right">
-                                                <button type="submit" class="btn btn-primary">Actualizar</button>
-                                            </div>
-                                        </div>
-                                        
                                     </div>
-                                </div>
                                 </form> 
 
                                 {{-- <div class="mapform" > --}}
@@ -125,12 +126,7 @@
                                                         @if ($requirement->status == 2)                                                        
                                                         <td class="no-sort no-click bread-actions text-right">
                                                             @if ($requirement->ci)
-                                                                <form action="{{ route('loans-daily-requirement.delete', ['loan'=>$requirement->loan_id, 'col'=>0]) }}" method="GET">
-                                                                    {{ csrf_field() }}
-                                                                    <button type="submit" title="Borrar" class="btn btn-sm btn-danger delete" >
-                                                                        <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
-                                                                    </button>
-                                                                </form>
+                                                                
                                                             @endif                                                            
                                                         </td>
                                                         @endif
@@ -149,12 +145,7 @@
                                                         @if ($requirement->status == 2)
                                                         <td class="no-sort no-click bread-actions text-right">
                                                             @if ($requirement->luz)
-                                                                <form action="{{ route('loans-daily-requirement.delete', ['loan'=>$requirement->loan_id, 'col'=>1]) }}" method="GET">
-                                                                    {{ csrf_field() }}
-                                                                    <button type="submit" title="Borrar" class="btn btn-sm btn-danger delete" >
-                                                                        <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
-                                                                    </button>
-                                                                </form>
+                                                                
                                                             @endif                                                            
                                                         </td>
                                                         @endif
@@ -173,12 +164,7 @@
                                                         @if ($requirement->status == 2)
                                                         <td class="no-sort no-click bread-actions text-right">
                                                             @if ($requirement->croquis)
-                                                                <form action="{{ route('loans-daily-requirement.delete', ['loan'=>$requirement->loan_id, 'col'=>2]) }}" method="GET">
-                                                                    {{ csrf_field() }}
-                                                                    <button type="submit" title="Borrar" class="btn btn-sm btn-danger delete" >
-                                                                        <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
-                                                                    </button>
-                                                                </form>
+                                                                
                                                             @endif                                                            
                                                         </td>
                                                         @endif
@@ -197,12 +183,7 @@
                                                         @if ($requirement->status == 2)
                                                         <td class="no-sort no-click bread-actions text-right">
                                                             @if ($requirement->business)
-                                                                <form action="{{ route('loans-daily-requirement.delete', ['loan'=>$requirement->loan_id, 'col'=>3]) }}" method="GET">
-                                                                    {{ csrf_field() }}
-                                                                    <button type="submit" title="Borrar" class="btn btn-sm btn-danger delete" >
-                                                                        <i class="voyager-trash"></i> <span class="hidden-xs hidden-sm">Borrar</span>
-                                                                    </button>
-                                                                </form>
+                                                                
                                                             @endif                                                            
                                                         </td>
                                                         @endif

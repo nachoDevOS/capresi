@@ -93,10 +93,7 @@ class Loan extends Model
         return $this->hasOne(LoanRoute::class, 'loan_id', 'id')->where('deleted_at', NULL);
     }
 
-    public function loanRequirement()
-    {
-        return $this->hasMany(LoanRequirement::class);
-    }
+
     
     //para ver que persona es la que entrega el prestamo al beneficiario
     public function agentDelivered()

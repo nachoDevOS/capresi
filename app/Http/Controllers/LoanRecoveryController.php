@@ -23,7 +23,7 @@ class LoanRecoveryController extends Controller
         $user = Auth::user();
         $paginate = request('paginate') ?? 10;
 
-        $data = Loan::with(['loanDay', 'loanRoute', 'loanRequirement', 'people', 'payments_period'])
+        $data = Loan::with(['loanDay', 'loanRoute', 'people', 'payments_period'])
                 ->where(function($query) use ($search){
                 if($search){
                     $query->OrwhereHas('people', function($query) use($search){
@@ -72,7 +72,7 @@ class LoanRecoveryController extends Controller
     public function listPrint()
     {
         
-        $data = Loan::with(['loanDay', 'loanRoute', 'loanRequirement', 'people', 'payments_period'])
+        $data = Loan::with(['loanDay', 'loanRoute', 'people', 'payments_period'])
             ->where('deleted_at', NULL)
             ->where('status', 'entregado')
             ->where('debt', '!=', 0)

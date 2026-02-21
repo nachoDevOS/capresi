@@ -194,7 +194,7 @@
                                     $amount_close += $detail->cash_value * $detail->quantity;
                                 }
 
-                                $loans = \App\Models\Loan::with(['loanDay', 'loanRoute', 'loanRequirement', 'people'])
+                                $loans = \App\Models\Loan::with(['loanDay', 'loanRoute', 'people'])
                                     ->where('status', 'entregado')
                                     ->where('cashier_id', $cashier->id)
                                     ->get();
