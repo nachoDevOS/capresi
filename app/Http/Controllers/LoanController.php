@@ -953,15 +953,28 @@ class LoanController extends Controller
         $lastScheduled = $lastScheduled ? Carbon::parse($lastScheduled) : now();
         Log::channel('whatsappJob')->info("Whatsapp: Última hora en cache: {$lastScheduled}");
 
+        // Asegurar que trabajamos con el día actual (evitar colas de días anteriores o futuros)
+        if (!$lastScheduled->isSameDay(now())) {
+            $lastScheduled = now();
+            Log::channel('whatsappJob')->info("Whatsapp: Fecha cache distinta a hoy. Reiniciando a NOW.");
+        }
+
         // Si la última hora programada ya pasó, reiniciamos a 'ahora'
         if ($lastScheduled < now()) { 
             $lastScheduled = now(); 
             Log::channel('whatsappJob')->info("Whatsapp: Reiniciando hora base a NOW.");
         }
 
-        // Si la hora base supera las 23:00, omitimos el envío para evitar bloqueos
-        if ($lastScheduled->hour >= 23) {
-            Log::channel('whatsappJob')->info("Whatsapp: Hora límite (23:00) excedida. Se omitió el envío a {$phone}.");
+        // RESTRICCIÓN DE HORARIO (08:00 - 23:30)
+        // Si es antes de las 08:00, programar para las 08:00 del mismo día
+        if ($lastScheduled->format('H:i') < '08:00') {
+            $lastScheduled->setTime(8, 0, 0);
+            Log::channel('whatsappJob')->info("Whatsapp: Hora ajustada al inicio de jornada (08:00).");
+        }
+
+        // Si la hora base supera las 23:30, omitimos el envío para evitar bloqueos
+        if ($lastScheduled->format('H:i') > '23:30') {
+            Log::channel('whatsappJob')->info("Whatsapp: Hora límite (23:30) excedida. Se omitió el envío a {$phone}.");
             return;
         }
 
