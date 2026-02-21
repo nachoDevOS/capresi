@@ -107,24 +107,25 @@
                     </td>
 
                     <td style="vertical-align: middle">
-                        <div style="font-size: 13px;">
-                            <div style="margin-bottom: 4px;">
-                                <b>Tipo:</b>
+                        <div style="font-size: 14px;">
+                            <div style="margin-bottom: 4px; text-align: center;">
+                                <small class="text-muted">Tipo:
                                 @if ($item->typeLoan == 'diario')
-                                    Diario {{ $item->payments_period_id }}
+                                    Diario
                                 @elseif ($item->typeLoan == 'diarioespecial')
                                     Diario Especial
                                 @endif
+                                </small>
                                 @if ($item->payments_period_id)
                                     <span class="label label-default" style="background-color: {{ $item->payments_period->color }}; color: #fff;">{{ $item->payments_period->name }}</span>
                                 @endif
                             </div>
-                            <div style="margin-bottom: 2px;">
-                                <i class="fa-regular fa-calendar" title="Fecha Solicitud"></i> <span class="text-muted">F. Solicitud:</span> {{ date("d-m-Y", strtotime($item->date)) }}
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 2px;">
+                                <span><i class="fa-regular fa-calendar" title="Fecha Solicitud"></i> <small class="text-muted">F. Solicitud:</small></span> <b>{{ date("d-m-Y", strtotime($item->date)) }}</b>
                             </div>
                             @if($item->dateDelivered)
-                                <div>
-                                    <i class="fa-solid fa-calendar-check text-success" title="Fecha Entrega"></i> <span class="text-muted">F. Entrega:</span> {{ date("d-m-Y", strtotime($item->dateDelivered)) }}
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span><i class="fa-solid fa-calendar-check text-success" title="Fecha Entrega"></i> <small class="text-muted">F. Entrega:</small></span> <b>{{ date("d-m-Y", strtotime($item->dateDelivered)) }}</b>
                                 </div>
                             @endif
                         </div>

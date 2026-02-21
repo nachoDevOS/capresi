@@ -53,7 +53,7 @@
                                     @if (!auth()->user()->hasRole('cobrador'))
                                         <option value="aprobado">Por Entregar</option>
                                         <option value="verificado">Por Aprobar</option>
-                                        <option value="pendiente">Pendientes</option>
+                                        {{-- <option value="pendiente">Pendientes</option> --}}
                                         <option value="rechazado">Rechazados</option>
                                     @endif
                                     <option value="pagado">Pagados</option>
