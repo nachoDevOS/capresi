@@ -1065,6 +1065,12 @@ class LoanController extends Controller
             Log::channel('whatsappJob')->info("Whatsapp: Reiniciando hora base a NOW.");
         }
 
+        // Si la hora base supera las 23:00, omitimos el envío para evitar bloqueos
+        if ($lastScheduled->hour >= 23) {
+            Log::channel('whatsappJob')->info("Whatsapp: Hora límite (23:00) excedida. Se omitió el envío a {$phone}.");
+            return;
+        }
+
         // Calculamos el tiempo tentativo (cola secuencial + delay aleatorio)
         $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 15));
 
