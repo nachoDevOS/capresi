@@ -1035,7 +1035,27 @@ class LoanController extends Controller
             "Aquí tiene el detalle de su transacción 🧾:",
             "Comprobante listo 👇:",
             "Su constancia de pago digital ✅:",
-            "Adjunto el recibo correspondiente 📎:"
+            "Adjunto el recibo correspondiente 📎:",
+            "Su comprobante ha sido generado correctamente 📄:",
+            "Aquí le envío la constancia de su pago 📨:",
+            "Recibo de pago listo para descargar 📥:",
+            "Confirmación de pago adjunta ✅:",
+            "Detalle de la transacción completada 📝:",
+            "Su documento de pago está listo 👍:",
+            "Le paso la imagen de su comprobante 🖼️:",
+            "Transacción exitosa, aquí su recibo 🧾:",
+            "Comprobante de operación bancaria 👇:",
+            "Ya puede ver su recibo digital aquí 📲:",
+            "Comprobante de pago generado exitosamente 📄:",
+            "Aquí tiene el comprobante de su transacción 👇:",
+            "Le envío el detalle de su pago realizado ✅:",
+            "Su recibo ha sido emitido correctamente 🧾:",
+            "Adjunto la constancia de su pago 📎:",
+            "Comprobante listo para su revisión 🧐:",
+            "Aquí está su comprobante digital 📱:",
+            "Le comparto la imagen de su recibo 🖼️:",
+            "Transacción completada, aquí su comprobante 👍:",
+            "Su pago ha sido procesado, aquí el recibo 📨:"
         ];
         $msg2 = $receiptTexts[array_rand($receiptTexts)];
 
