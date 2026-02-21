@@ -1,3 +1,42 @@
+<style>
+.debt-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+.debt-svg-wrap {
+    position: relative;
+    width: 60px;
+    height: 60px;
+}
+.debt-svg-wrap svg {
+    transform: rotate(-90deg);
+}
+.debt-center-label {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 9px;
+    font-weight: 700;
+    line-height: 1.1;
+    text-align: center;
+    pointer-events: none;
+}
+.debt-center-label span {
+    display: block;
+    font-size: 8px;
+    font-weight: 400;
+    color: #888;
+}
+.debt-badge {
+    font-size: 10px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+</style>
+
 <div class="col-md-12">
     <div class="table-responsive">
         <table id="dataTable" class="table table-bordered table-hover">
@@ -13,14 +52,31 @@
             </thead>
             <tbody>
                 @forelse ($data as $item)
+                @php
+                    /* ── Cálculo del arco SVG (hecho en PHP, sin JS) ── */
+                    $total     = $item->amountTotal > 0 ? $item->amountTotal : 1;
+                    $paid      = max(0, $total - $item->debt);
+                    $pctPaid   = round(($paid / $total) * 100);
+
+                    /* Parámetros del círculo SVG */
+                    $r         = 24;          /* radio */
+                    $cx        = 30; $cy = 30;
+                    $circ      = round(2 * M_PI * $r, 2);   /* 150.8 */
+                    $dashPaid  = round($circ * $pctPaid / 100, 2);
+                    $dashDebt  = round($circ - $dashPaid, 2);
+
+                    /* Color del arco según porcentaje pagado */
+                    if ($pctPaid >= 100)       $arcColor = '#28a745';
+                    elseif ($pctPaid >= 60)    $arcColor = '#17a2b8';
+                    elseif ($pctPaid >= 30)    $arcColor = '#ffc107';
+                    else                       $arcColor = '#dc3545';
+                @endphp
                 <tr>
                     <td style="text-align: center; vertical-align: middle">
-                        <small>
-                            {{ $item->code }}
-                        </small>
+                        <small>{{ $item->code }}</small>
                         <br>
                         @if ($item->status=='entregado' && !auth()->user()->hasRole('cobrador'))
-                            <a href="#" data-toggle="modal" data-target="#enableNotification-modal" onclick="loanNotification('{{ route('notificationAutomatic', ['loan' => $item->id]) }} ')" title="Notificación " class="btn btn-sm">
+                            <a href="#" data-toggle="modal" data-target="#enableNotification-modal" onclick="loanNotification('{{ route('notificationAutomatic', ['loan' => $item->id]) }} ')" title="Notificación" class="btn btn-sm">
                                 @if ($item->notification == 'si')
                                     <i class="fa-regular fa-bell" style="font-size: 20px; color: #000000"></i>
                                 @else
@@ -49,8 +105,9 @@
                             </div>
                         </div>
                     </td>
+
                     <td style="vertical-align: middle">
-                        <div style="font-size: 12px;">
+                        <div style="font-size: 13px;">
                             <div style="margin-bottom: 4px;">
                                 <b>Tipo:</b>
                                 @if ($item->typeLoan == 'diario')
@@ -63,17 +120,18 @@
                                 @endif
                             </div>
                             <div style="margin-bottom: 2px;">
-                                <i class="fa-regular fa-calendar" title="Fecha Solicitud"></i> <span class="text-muted">Sol:</span> {{ date("d-m-Y", strtotime($item->date)) }}
+                                <i class="fa-regular fa-calendar" title="Fecha Solicitud"></i> <span class="text-muted">F. Solicitud:</span> {{ date("d-m-Y", strtotime($item->date)) }}
                             </div>
                             @if($item->dateDelivered)
                                 <div>
-                                    <i class="fa-solid fa-calendar-check text-success" title="Fecha Entrega"></i> <span class="text-muted">Ent:</span> {{ date("d-m-Y", strtotime($item->dateDelivered)) }}
+                                    <i class="fa-solid fa-calendar-check text-success" title="Fecha Entrega"></i> <span class="text-muted">F. Entrega:</span> {{ date("d-m-Y", strtotime($item->dateDelivered)) }}
                                 </div>
                             @endif
                         </div>
                     </td>
+
                     <td style="text-align: right; vertical-align: middle">
-                        <div style="font-size: 12px;">
+                        <div style="font-size: 14px;">
                             <div style="display: flex; justify-content: space-between"><small class="text-muted">Prestado:</small> <b>{{ number_format($item->amountLoan, 2) }}</b></div>
                             <div style="display: flex; justify-content: space-between"><small class="text-muted">Interés:</small> <b>{{ number_format($item->amountPorcentage, 2) }}</b></div>
                             <div style="border-top: 1px solid #eee; margin-top: 2px; padding-top: 2px; display: flex; justify-content: space-between">
@@ -81,36 +139,74 @@
                             </div>
                         </div>
                     </td>
-                    <td style="text-align: center; vertical-align: middle">
-                        <div style="margin-bottom: 5px">
-                            @if ($item->debt == 0)
+
+                    {{-- ── CELDA DE DEUDA con mini donut chart SVG ── --}}
+                    <td style="text-align: center; vertical-align: middle; padding: 6px 4px;">
+                        <div class="debt-widget">
+
+                            {{-- Donut chart SVG puro, 100% PHP, sin JS ni librerías --}}
+                            <div class="debt-svg-wrap">
+                                <svg width="60" height="60" viewBox="0 0 60 60">
+                                    {{-- Track gris (fondo) --}}
+                                    <circle
+                                        cx="{{ $cx }}" cy="{{ $cy }}" r="{{ $r }}"
+                                        fill="none"
+                                        stroke="#e9ecef"
+                                        stroke-width="7"
+                                    />
+                                    {{-- Arco de lo PAGADO --}}
+                                    @if($pctPaid > 0)
+                                    <circle
+                                        cx="{{ $cx }}" cy="{{ $cy }}" r="{{ $r }}"
+                                        fill="none"
+                                        stroke="{{ $arcColor }}"
+                                        stroke-width="7"
+                                        stroke-linecap="round"
+                                        stroke-dasharray="{{ $dashPaid }} {{ $dashDebt }}"
+                                        stroke-dashoffset="0"
+                                    />
+                                    @endif
+                                </svg>
+                                {{-- Porcentaje al centro --}}
+                                <div class="debt-center-label">
+                                    <strong style="color: {{ $arcColor }}; font-size: 10px;">{{ $pctPaid }}%</strong>
+                                    <span>pagado</span>
+                                </div>
+                            </div>
+
+                            {{-- Estado de deuda --}}
+                            @if ($item->debt != 0)
+                                <span class="label label-danger debt-badge">Bs. {{ number_format($item->debt, 2) }}</span>
+                            @endif
+                            {{-- @if ($item->debt == 0)
                                 <span class="label label-success">PAGADO</span>
                             @else
-                                <span class="label label-danger" style="font-size: 12px">Bs. {{ number_format($item->debt, 2) }}</span>
-                            @endif
-                        </div>
-                        <div>
-                            @if ($item->status == 'pendiente')
-                                <span class="label label-danger">PENDIENTE</span>
-                            @elseif ($item->status == 'verificado')
-                                <span class="label label-warning">VERIFICADO</span>
-                            @elseif ($item->status == 'aprobado')
-                                <span class="label label-primary">APROBADO</span>
-                            @elseif ($item->status == 'entregado')
-                                <span class="label label-success">ACTIVO</span>
-                            @elseif ($item->status == 'rechazado')
-                                <span class="label label-danger">RECHAZADO</span>
-                            @endif
+                                <span class="label label-danger debt-badge">Bs. {{ number_format($item->debt, 2) }}</span>
+                            @endif --}}
+
+                            {{-- Estado del préstamo --}}
+                            {{-- <div>
+                                @if ($item->status == 'pendiente')
+                                    <span class="label label-danger">PENDIENTE</span>
+                                @elseif ($item->status == 'verificado')
+                                    <span class="label label-warning">VERIFICADO</span>
+                                @elseif ($item->status == 'aprobado')
+                                    <span class="label label-primary">APROBADO</span>
+                                @elseif ($item->status == 'entregado')
+                                    <span class="label label-success">ACTIVO</span>
+                                @elseif ($item->status == 'rechazado')
+                                    <span class="label label-danger">RECHAZADO</span>
+                                @endif
+                            </div> --}}
                         </div>
                     </td>
-                    {{-- <td class="no-sort no-click bread-actions text-right" style="vertical-align: middle"> --}}
+
                     <td style="width: 18%" class="no-sort no-click bread-actions text-right">
                         @if ($item->status == 'entregado' && $item->status != 'rechazado')
-                            <a href="{{ route('loans-daily.money', ['loan' => $item->id]) }}" title="Pagar"  class="btn btn-sm btn-success">
+                            <a href="{{ route('loans-daily.money', ['loan' => $item->id]) }}" title="Pagar" class="btn btn-sm btn-success">
                                 <i class="fa-solid fa-calendar-days"></i>
                             </a>
                         @endif
-
 
                         @if ($item->status == 'aprobado')
                             @if (auth()->user()->hasPermission('deliverMoney_loans'))
@@ -120,12 +216,9 @@
                             @endif
                         @endif
 
-
-                        
-
                         @if(!auth()->user()->hasRole('cobrador') && !auth()->user()->hasRole('cajeros'))
                             <a href="{{ route('loan-routeOld.index', ['loan' => $item->id]) }}" title="Rutas del Prestamo" class="btn btn-sm btn-dark">
-                                <i class="fa-solid fa-route"></i><span class="hidden-xs hidden-sm"></span>
+                                <i class="fa-solid fa-route"></i>
                             </a>
                         @endif
                         
@@ -134,6 +227,7 @@
                                 <i class="fa-solid fa-money-check-dollar"></i><span class="hidden-xs hidden-sm"> Aprobar</span>
                             </a>
                         @endif
+
                         @if($item->status != 'rechazado')
                             <div class="btn-group" style="margin-right: 3px">
                                 <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
@@ -141,17 +235,18 @@
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right" role="menu">
                                     @if ($item->status == 'entregado' && $item->delivered == 'Si')
-                                        <li><a href="{{ route('loans-list.transaction', ['loan'=>$item->id])}}" class="btn-transaction" data-toggle="modal" title="Imprimir Calendario" ><i class="fa-solid fa-money-bill-transfer"></i> Transacciones</a></li> 
+                                        <li><a href="{{ route('loans-list.transaction', ['loan'=>$item->id])}}" class="btn-transaction" data-toggle="modal" title="Imprimir Calendario"><i class="fa-solid fa-money-bill-transfer"></i> Transacciones</a></li> 
                                     @endif
                                     @if ($item->status != 'pendiente' && $item->status != 'verificado' && !auth()->user()->hasRole('cobrador'))
-                                        <li><a href="{{ route('loans-print.calendar', ['loan'=>$item->id])}}" data-toggle="modal" target="_blank" title="Imprimir Calendario" ><i class="fa-solid fa-print"></i> Imprimir Calendario</a></li>
-                                        <li><a style="cursor: pointer" onclick="loan({{$item->id}})" data-toggle="modal" title="Imprimir Contrato" ><i class="fa-solid fa-print"></i> Imprimir Contrato</a></li>
-                                        <li><a style="cursor: pointer" onclick="handlePrintClick(this, '{{ setting('servidores.print') }}',{{ json_encode($item) }}, '{{ url('admin/loans/comprobante/print') }}')" data-toggle="modal" title="Imprimir Comprobante de Entrega de Prestamos" ><i class="fa-solid fa-print"></i> Imprimir Comprobante Entrega</a></li>
-                                        <li><a href="#" class="btn-payments-period" data-id="{{ $item->id }}" data-toggle="modal" data-target="#payments-period-modal" title="Cambiar periodo de pago" ><i class="voyager-calendar"></i> Cambiar periodo de pago</a></li>
+                                        <li><a href="{{ route('loans-print.calendar', ['loan'=>$item->id])}}" data-toggle="modal" target="_blank" title="Imprimir Calendario"><i class="fa-solid fa-print"></i> Imprimir Calendario</a></li>
+                                        <li><a style="cursor: pointer" onclick="loan({{$item->id}})" data-toggle="modal" title="Imprimir Contrato"><i class="fa-solid fa-print"></i> Imprimir Contrato</a></li>
+                                        <li><a style="cursor: pointer" onclick="handlePrintClick(this, '{{ setting('servidores.print') }}',{{ json_encode($item) }}, '{{ url('admin/loans/comprobante/print') }}')" data-toggle="modal" title="Imprimir Comprobante de Entrega de Prestamos"><i class="fa-solid fa-print"></i> Imprimir Comprobante Entrega</a></li>
+                                        <li><a href="#" class="btn-payments-period" data-id="{{ $item->id }}" data-toggle="modal" data-target="#payments-period-modal" title="Cambiar periodo de pago"><i class="voyager-calendar"></i> Cambiar periodo de pago</a></li>
                                     @endif                      
                                 </ul>
                             </div>
                         @endif
+
                         @if (auth()->user()->hasPermission('delete_loans'))
                             @if ($item->status != 'rechazado' && $item->status != 'entregado')
                                 <button title="Rechazar" class="btn btn-sm btn-dark" onclick="declineItem('{{ route('loans.decline', ['loan' => $item->id]) }}')" data-toggle="modal" data-target="#decline-modal">
@@ -188,8 +283,7 @@
 </div>
 
 <script>
-   
-   var page = "{{ request('page') }}";
+    var page = "{{ request('page') }}";
     $(document).ready(function(){
         $('.page-link').click(function(e){
             e.preventDefault();
