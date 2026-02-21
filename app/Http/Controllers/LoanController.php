@@ -13,9 +13,8 @@ use App\Models\LoanRoute;
 use App\Models\LoanRequirement;
 use App\Models\User;
 use Psy\CodeCleaner\ReturnTypePass;
-use Illuminate\Support\Facades\Validator;
-// use Psy\TabCompletion\Matcher\FunctionsMatcher;
-// use TCG\Voyager\Models\Role;
+use Psy\TabCompletion\Matcher\FunctionsMatcher;
+use TCG\Voyager\Models\Role;
 use App\Models\Route;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transaction;
@@ -24,22 +23,22 @@ use Illuminate\Support\Facades\Cache;
 
 use App\Http\Controllers\FileController;
 use App\Models\LoanDayAgent;
-// use Illuminate\Support\Composer;
-// use PhpParser\Node\Stmt\TryCatch;
-// use App\Models\Cashier;
-// use App\Models\CashierMovement;
-// use PhpParser\Node\Stmt\Return_;
-// use PHPUnit\Framework\MockObject\Stub\ReturnReference;
-// use ReturnTypeWillChange;
+use Illuminate\Support\Composer;
+use PhpParser\Node\Stmt\TryCatch;
+use App\Models\Cashier;
+use App\Models\CashierMovement;
+use PhpParser\Node\Stmt\Return_;
+use PHPUnit\Framework\MockObject\Stub\ReturnReference;
+use ReturnTypeWillChange;
 
-// use function PHPSTORM_META\type;
-// use function PHPUnit\Framework\returnSelf;
+use function PHPSTORM_META\type;
+use function PHPUnit\Framework\returnSelf;
 
 // Models
 use App\Models\PaymentsPeriod;
 
 // Queues
-// use App\Jobs\SendRecipe;
+use App\Jobs\SendRecipe;
 use App\Jobs\WhatsappJob;
 
 class LoanController extends Controller
@@ -51,7 +50,12 @@ class LoanController extends Controller
 
     public function index()
     {
-        return view('loans.browse');
+        $collector = User::with([
+            'role' => function ($q) {
+                $q->where('name', 'cobrador');
+            },
+        ])->get();
+        return view('loans.browse', compact('collector'));
     }
 
     public function list($type, $search = null)
@@ -63,7 +67,7 @@ class LoanController extends Controller
         $type ? ($status = "status = '$type'") : 1;
         $type == 'pagado' ? ($status = 'debt = 0') : 1;
 
-        $data = Loan::with(['people', 'manager'])
+        $data = Loan::with(['loanDay', 'loanRoute', 'loanRequirement', 'people', 'manager', 'agentDelivered'])
             ->where(function ($query) use ($search) {
                 if ($search) {
                     $query
@@ -76,6 +80,7 @@ class LoanController extends Controller
             })
             ->where('deleted_at', null)
             ->whereRaw($status ? $status : 1)
+            // ->whereRaw($type=='pagado'? "debt == 0":1)
             ->orderBy('code', 'DESC')
             ->paginate($paginate);
 
@@ -977,7 +982,7 @@ class LoanController extends Controller
             "¡Qué tal{$nameStr}! 😃",
             "Hola{$nameStr}, espero que tengas un excelente día ☀️",
             "¡Buenas! {$nameStr} 👋",
-            "Saludos cordiales{$nameStr} 🎩",
+            "Saludos cordiales{$nameStr}",
             "¡Hola! {$nameStr}, un placer saludarte 😊"
         ];
         $preludes = [
@@ -1061,21 +1066,24 @@ class LoanController extends Controller
         }
 
         // Calculamos el tiempo tentativo (cola secuencial + delay aleatorio)
-        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 25));
+        $sendAt1 = $lastScheduled->copy()->addMinutes(rand(5, 15));
 
         // --- ENVÍO 1: Saludo ---
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
         WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
 
         // --- ENVÍO 2: Comprobante (2-5 min después del saludo) ---
-        $sendAt2 = $sendAt1->copy()->addMinutes(rand(1, 3));
+        $sendAt2 = $sendAt1->copy()->addMinutes(rand(1, 2));
         Cache::put('last_whatsapp_schedule', $sendAt2, now()->addDay());
         WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt2);
 
         // --- ENVÍO 3: Agradecimiento (1-3 min después del comprobante) ---
-        $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 2));
-        Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
-        WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
+        $sendAt3 = null;
+        if (rand(0, 1)) {
+            $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 2));
+            Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
+            WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
+        }
 
         // --- LOG UNIFICADO Y ESTRUCTURADO ---
         $clientInfo = $name ? "{$name} ({$phone})" : $phone;
@@ -1089,33 +1097,8 @@ class LoanController extends Controller
             str_repeat('-', 60) . "\n" .
             " 1. Saludo:         " . $sendAt1->format('Y-m-d H:i:s') . "\n" .
             " 2. Comprobante:    " . $sendAt2->format('Y-m-d H:i:s') . "\n" .
-            " 3. Agradecimiento: " . $sendAt3->format('Y-m-d H:i:s') . "\n" .
+            " 3. Agradecimiento: " . ($sendAt3 ? $sendAt3->format('Y-m-d H:i:s') : 'OMITIDO') . "\n" .
             $border;
-
         Log::channel('whatsappJob')->info($logMessage);
-    }
-
-    public function updatePersonPhone(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'person_id' => 'required|exists:people,id',
-            'phone' => 'required|numeric|digits_between:7,8',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'message' => 'Datos inválidos.', 'errors' => $validator->errors()], 422);
-        }
-
-        try {
-            $person = People::findOrFail($request->person_id);
-            $person->cell_phone = $request->phone;
-            $person->save();
-
-            return response()->json(['success' => true, 'message' => 'Teléfono actualizado exitosamente.']);
-
-        } catch (\Exception $e) {
-            Log::error('Error al actualizar teléfono de persona: ' . $e->getMessage());
-            return response()->json(['success' => false, 'message' => 'Ocurrió un error en el servidor.'], 500);
-        }
     }
 }
