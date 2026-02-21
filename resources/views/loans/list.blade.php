@@ -74,9 +74,9 @@
                     </td>
                     <td style="text-align: right; vertical-align: middle">
                         <div style="font-size: 12px;">
-                            <div><small class="text-muted">Prestado:</small> <b>{{ number_format($item->amountLoan, 2) }}</b></div>
-                            <div><small class="text-muted">Interés:</small> <b>{{ number_format($item->amountPorcentage, 2) }}</b></div>
-                            <div style="border-top: 1px solid #eee; margin-top: 2px; padding-top: 2px;">
+                            <div style="display: flex; justify-content: space-between"><small class="text-muted">Prestado:</small> <b>{{ number_format($item->amountLoan, 2) }}</b></div>
+                            <div style="display: flex; justify-content: space-between"><small class="text-muted">Interés:</small> <b>{{ number_format($item->amountPorcentage, 2) }}</b></div>
+                            <div style="border-top: 1px solid #eee; margin-top: 2px; padding-top: 2px; display: flex; justify-content: space-between">
                                 <small class="text-muted">Total:</small> <b class="text-primary" style="font-size: 14px;">{{ number_format($item->amountTotal, 2) }}</b>
                             </div>
                         </div>
