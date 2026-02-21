@@ -18,7 +18,6 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
-use App\Http\Controllers\FileController;
 use App\Models\LoanDayAgent;
 // Models
 use App\Models\PaymentsPeriod;
@@ -96,7 +95,6 @@ class LoanController extends Controller
 
                 'register_userId' => Auth::user()->id,
                 'register_agentType' => Auth::user()->role->name,
-                'status' => 'pendiente',
             ]);
 
             $loan->update([
@@ -113,24 +111,13 @@ class LoanController extends Controller
             ]);
 
             DB::commit();
-            return redirect()
-                ->route('loans.index')
-                ->with(['message' => 'Registrado exitosamente.', 'alert-type' => 'success']);
+            return redirect()->route('loans.index')->with(['message' => 'Registrado exitosamente.', 'alert-type' => 'success']);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return redirect()
-                ->route('loans.index')
-                ->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
+            return redirect()->route('loans.index')->with(['message' => 'Ocurrió un error.', 'alert-type' => 'error']);
         }
     }
    
-
-    
-
-    public function show($id)
-    {
-        // return view('loans.read');
-    }
 
     public function printCalendar($id)
     {
@@ -503,7 +490,7 @@ class LoanController extends Controller
     // para ver el prestamos y poder abonar o pagar el dinero
     public function dailyMoney($loan)
     {
-        $loan = Loan::with(['loanDay', 'loanRoute', 'people', 'guarantor'])
+        $loan = Loan::with([ 'people', 'guarantor'])
             ->where('deleted_at', null)
             ->where('id', $loan)
             ->first();
@@ -518,9 +505,8 @@ class LoanController extends Controller
             ->where('deleted_at', null)
             ->first();
 
-        $register = Auth::user();
         $date = date('Y-m-d');
-        return view('loans.add-dailyMoney', compact('loan', 'route', 'loanday', 'register', 'date', 'cantMes'));
+        return view('loans.add-dailyMoney', compact('loan', 'route', 'loanday', 'date', 'cantMes'));
     }
 
     // funcion para guardar el dinero diario en cada prestamos
@@ -636,7 +622,6 @@ class LoanController extends Controller
             $servidor = setting('servidores.whatsapp');
             $session = setting('servidores.whatsapp-session');
 
-            // sleep(15); // Esperamos 5 segundos para asegurarnos de que la imagen esté disponible
             if($loan->people->cell_phone && is_numeric($loan->people->cell_phone) && $servidor && $session)
             {
                 $this->whatsapp($servidor, $session, '591', $loan->people->cell_phone, $url, 'Automatico - Comprobante de pago', $loan->people->first_name);

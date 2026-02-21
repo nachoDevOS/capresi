@@ -230,14 +230,6 @@
                                                 <small class="text-danger" id="label-amount" style="display:none">El monto es incorrecto o excede la deuda.</small>
                                             </div>
                                             
-                                            <div class="form-group">
-                                                <label>Agente</label>
-                                                <select name="agent_id" id="agent_id" class="form-control select2" required>
-                                                    <option value="{{ $register->id }}" selected>{{ $register->name }} -
-                                                        {{ $register->role->name }}</option>
-                                                </select>
-                                            </div>
-                                            
                                             <div class="form-group text-center">
                                                 <div class="btn-group" data-toggle="buttons" style="width: 100%;">
                                                     <label class="btn btn-default active" style="width: 50%;">
