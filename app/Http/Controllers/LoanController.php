@@ -1008,7 +1008,17 @@ class LoanController extends Controller
             "Su pago está siendo procesado, en breve tendrá su comprobante 🚀.",
             "Confirmado, en unos segundos le llega su recibo ✅.",
             "Estamos preparando su documento de pago, gracias por esperar 🙏.",
-            "Transacción aprobada, ya le envío el detalle 📝."
+            "Transacción aprobada, ya le envío el detalle 📝.",
+            "Su pago se ha registrado con éxito, en breve le paso el comprobante 💫.",
+            "Estamos verificando su transacción, un momento por favor 🧐.",
+            "Todo correcto, enseguida le envío su recibo digital 📲.",
+            "Procesando... en unos instantes tendrá su comprobante ⏳.",
+            "Gracias por su pago, ya le estoy generando el recibo 📃.",
+            "Unos instantes y le comparto la imagen del comprobante 🖼️.",
+            "Pago validado, procedo a enviarle su constancia ✅.",
+            "Estamos listos, en breve recibe su comprobante de pago 📨.",
+            "Su operación fue exitosa, aguarde un momento para el recibo 👍.",
+            "Generando su constancia de pago, por favor espere 🕒."
         ];
         $msg1 = $greetings[array_rand($greetings)] . " " . $preludes[array_rand($preludes)];
         
