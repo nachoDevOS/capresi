@@ -3,7 +3,7 @@
         <table id="dataTable" class="table table-bordered table-hover">
             <thead>
                 <tr>
-                    <th style="text-align: center">Codigo</th>
+                    <th style="text-align: center; width: 5%">Codigo</th>
                     <th style="text-align: center">Nombre Cliente</th>    
                     <th style="text-align: center">Detalles</th>
                     <th style="text-align: center">Monto Prestado</th>             
@@ -14,7 +14,7 @@
             <tbody>
                 @forelse ($data as $item)
                 <tr>
-                    <td style="vertical-align: middle">
+                    <td style="text-align: center; vertical-align: middle">
                         <small>
                             {{ $item->code }}
                         </small>
@@ -81,7 +81,7 @@
                             </div>
                         </div>
                     </td>
-                    <td style="text-align: right; vertical-align: middle">
+                    <td style="text-align: center; vertical-align: middle">
                         <div style="margin-bottom: 5px">
                             @if ($item->debt == 0)
                                 <span class="label label-success">PAGADO</span>
@@ -121,6 +121,19 @@
                         @endif
 
 
+                        
+
+                        @if(!auth()->user()->hasRole('cobrador') && !auth()->user()->hasRole('cajeros'))
+                            <a href="{{ route('loan-routeOld.index', ['loan' => $item->id]) }}" title="Rutas del Prestamo" class="btn btn-sm btn-dark">
+                                <i class="fa-solid fa-route"></i><span class="hidden-xs hidden-sm"></span>
+                            </a>
+                        @endif
+                        
+                        @if ($item->status=='verificado' && auth()->user()->hasPermission('successLoan_loans') && $item->status != 'rechazado')
+                            <a title="Aprobar prestamo" class="btn btn-sm btn-dark" onclick="approveItem('{{ route('loans.approve', ['loan' => $item->id]) }}')" data-toggle="modal" data-target="#approve-modal">
+                                <i class="fa-solid fa-money-check-dollar"></i><span class="hidden-xs hidden-sm"> Aprobar</span>
+                            </a>
+                        @endif
                         @if($item->status != 'rechazado')
                             <div class="btn-group" style="margin-right: 3px">
                                 <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
@@ -138,24 +151,6 @@
                                     @endif                      
                                 </ul>
                             </div>
-                        @endif
-
-                        @if(!auth()->user()->hasRole('cobrador') && !auth()->user()->hasRole('cajeros'))
-                            <a href="{{ route('loan-routeOld.index', ['loan' => $item->id]) }}" title="Rutas del Prestamo" class="btn btn-sm btn-dark">
-                                <i class="fa-solid fa-route"></i><span class="hidden-xs hidden-sm"></span>
-                            </a>
-                        @endif
-
-                        {{-- @if($item->status != 'rechazado' && !auth()->user()->hasRole('cobrador'))
-                            <a href="{{ route('loans-requirement-daily.create', ['loan' => $item->id]) }}" title="Requisitos" class="btn btn-sm btn-warning">
-                                <i class="fa-solid fa-file"></i><span class="hidden-xs hidden-sm"></span>
-                            </a>
-                        @endif --}}
-                        
-                        @if ($item->status=='verificado' && auth()->user()->hasPermission('successLoan_loans') && $item->status != 'rechazado')
-                            <a title="Aprobar prestamo" class="btn btn-sm btn-dark" onclick="approveItem('{{ route('loans.approve', ['loan' => $item->id]) }}')" data-toggle="modal" data-target="#approve-modal">
-                                <i class="fa-solid fa-money-check-dollar"></i><span class="hidden-xs hidden-sm"> Aprobar Prestamos</span>
-                            </a>
                         @endif
                         @if (auth()->user()->hasPermission('delete_loans'))
                             @if ($item->status != 'rechazado' && $item->status != 'entregado')
