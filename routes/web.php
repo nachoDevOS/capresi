@@ -70,11 +70,6 @@ Route::get('/', function () {
 })->name('login');
 
 
-Route::post('/api/verificar-ubicacion', function (Request $request) {
-    // Aquí podrías validar si está dentro de una zona permitida, por ejemplo
-    return response()->json(['ok' => true]);
-});
-
 Route::get('/gpsBlockAccess', function () {
     return view('error.gpsBlockAccess');
 });

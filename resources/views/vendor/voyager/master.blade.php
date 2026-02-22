@@ -461,24 +461,6 @@
                 iniciarVerificacionContinua();
             });
 
-
-
-            // setInterval(function () {
-            //     navigator.geolocation.getCurrentPosition(function (position) {
-            //         fetch('/api/verificar-ubicacion', {
-            //             method: 'POST',
-            //             headers: {
-            //                 'Content-Type': 'application/json',
-            //                 'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            //             },
-            //             body: JSON.stringify({
-            //                 lat: position.coords.latitude,
-            //                 lng: position.coords.longitude
-            //             })
-            //         });
-            //     });
-            // }, 60000); // cada minuto
-
         </script>
     
     
