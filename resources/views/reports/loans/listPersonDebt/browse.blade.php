@@ -32,6 +32,16 @@
                                         <small>Clientes</small>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <div class="form-line">
+                                        <select name="type_debt" class="form-control select2">
+                                            <option value="todos" selected>Todos</option>
+                                            <option value="vigente">Vigente</option>
+                                            <option value="mora">Mora</option>
+                                        </select>
+                                        <small>Tipo de Deudas</small>
+                                    </div>
+                                </div>
                                 
                                 <div class="text-right">
                                     <button type="submit" class="btn btn-primary" style="padding: 5px 10px"> <i class="voyager-settings"></i> Generar</button>

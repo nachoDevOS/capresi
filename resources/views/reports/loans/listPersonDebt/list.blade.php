@@ -1,4 +1,25 @@
 
+@php
+$count = 1;
+$totalCapital = 0;
+$totalInteres = 0;
+$total = 0;
+$totalDeuda = 0;
+$personTotalCapital = 0;
+$personTotalInteres = 0;
+$personTotal = 0;
+$personTotalDeuda = 0;
+
+foreach ($people as $person) {
+    foreach ($person->loans as $loan) {
+        $totalCapital += $loan->amountLoan;
+        $totalInteres += $loan->amountPorcentage;
+        $total += $loan->amountTotal;
+        $totalDeuda += $loan->debt;
+    }
+}
+@endphp
+
 <div class="col-md-12 text-right">
     <button type="button" onclick="report_print()" class="btn btn-dark"><i class="glyphicon glyphicon-print"></i> Imprimir</button>
 </div>
@@ -6,8 +27,31 @@
 <div class="col-md-12">
     <div class="panel panel-bordered">
         <div class="panel-body">
+            <table style="width:100%" id="dataTable" class="table table-bordered">
+                <tr style="background-color: #e8e8e8;">
+                    <th colspan="2" style="text-align: left"><strong>TOTAL GENERAL</strong></th>
+                    <th style="text-align: center; width: 8%"><strong>CAPITAL</strong></th>
+                    <th style="text-align: center; width: 8%"><strong>INTERÉS</strong></th>
+                    <th style="text-align: center; width: 8%"><strong>TOTAL</strong></th>
+                    <th style="text-align: center; width: 8%"><strong>DEUDA</strong></th>
+                </tr>
+                <tr>
+                    <td colspan="2"></td>
+                    <td style="text-align: right">{{ number_format($totalCapital, 2, ',','.') }}</td>
+                    <td style="text-align: right">{{ number_format($totalInteres, 2, ',','.') }}</td>
+                    <td style="text-align: right">{{ number_format($total, 2, ',','.') }}</td>
+                    <td style="text-align: right">{{ number_format($totalDeuda, 2, ',','.') }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12">
+    <div class="panel panel-bordered">
+        <div class="panel-body">
             <div class="table-responsive">
-                <table id="dataStyle" style="width:100%" class="table table-bordered table-striped table-sm">
+                <table id="dataTable" style="width:100%" class="table table-bordered table-striped table-sm">
                     <thead>
                         <tr>
                             <th style="width:5px">N&deg;</th>
@@ -16,10 +60,10 @@
                             <th style="text-align: center">FECHA ENTREGA</th>
                             <th style="text-align: center">ESTADO</th>
                             <th style="text-align: center">RUTA</th>
-                            <th style="text-align: center">CAPITAL</th>
-                            <th style="text-align: center">INTER&Eacute;S</th>
-                            <th style="text-align: center">TOTAL</th>
-                            <th style="text-align: center">DEUDA</th>
+                            <th style="text-align: center; width: 8%">CAPITAL</th>
+                            <th style="text-align: center; width: 8%">INTER&Eacute;S</th>
+                            <th style="text-align: center; width: 8%">TOTAL</th>
+                            <th style="text-align: center; width: 8%">DEUDA</th>
                         </tr>
                     </thead>
                     <tbody>
