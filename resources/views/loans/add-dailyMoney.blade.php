@@ -439,7 +439,7 @@
             border-bottom: 1px solid #ddd;
         }
         .calendar-table td {
-            height: 100px;
+            height: 80px;
             text-align: left;
             vertical-align: top;
             border: 1px solid #eee;
