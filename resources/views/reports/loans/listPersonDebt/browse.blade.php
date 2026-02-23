@@ -1,7 +1,7 @@
 @extends('voyager::master')
 
 @section('page_title', 'Reporte de Prestamos')
-@if(auth()->user()->hasPermission('browse_printloanRangeGestion'))
+@if(auth()->user()->hasPermission('browse_printloanGestion'))
 
 
 @section('page_header')
@@ -13,58 +13,23 @@
                     <div class="panel-body" style="padding: 0px">
                         <div class="col-md-8" style="padding: 0px">
                             <h1 class="page-title">
-                                <i class="voyager-calendar"></i> Reporte de Prestamos Por Rango de Gestión
+                                <i class="voyager-calendar"></i> Reporte de Lista de Personas Deudoras
                             </h1>
                         </div>
                         <div class="col-md-4" style="margin-top: 30px">
-                            <form name="form_search" id="form-search" action="{{ route('reports-loans.loanRangeGestions.list') }}" method="post">
+                            {{-- <form name="form_search" id="form-search" action="{{ route('bonusCollectionList') }}" method="post"> --}}
+                            <form name="form_search" id="form-search" action="{{ route('reports-loans.loanGestions.list') }}" method="post">
                                 @csrf
-                                <input type="hidden" name="print">
-                                
-
-
-                                {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.css">
-                                <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.6.1/nouislider.min.js"></script>
-                                
-                                <div id="slider-rango"></div>
-                                <input type="hidden" id="inicio" name="inicio">
-                                <input type="hidden" id="fin" name="fin">
-                                
-                                <script>
-                                    const slider = document.getElementById('slider-rango');
-                                    noUiSlider.create(slider, { 
-                                        start: [7, 21], // Valores iniciales [inicio, fin]
-                                        connect: true,   // Muestra una barra conectada
-                                        range: {
-                                            'min': 1,
-                                            'max': 24
-                                        },
-                                        step: 1,        // Incrementos de 1 en 1
-                                    });
-                                
-                                    // Actualiza los inputs ocultos al mover el slider
-                                    slider.noUiSlider.on('update', function(values) {
-                                        document.getElementById('inicio').value = parseInt(values[0]);
-                                        document.getElementById('fin').value = parseInt(values[1]);
-                                    });
-                                </script> --}}
-
-
-
-
-
-                                
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <input type="date"  class="form-control text" required id="start" name="start">
-                                        <small>Inicio</small>
-                                    </div> 
-                                </div>
-                                <div class="form-group">
-                                    <div class="form-line">
-                                        <input type="date"  class="form-control text" required id="finish" name="finish">
-                                        <small>Fin</small>
-                                    </div> 
+                                        <select name="group_by" class="form-control">
+                                            <option value="" selected>Todos</option>
+                                            @foreach ($collection as $item)
+                                                
+                                            @endforeach
+                                        </select>
+                                        <small>Clientes</small>
+                                    </div>
                                 </div>
                                 
                                 <div class="text-right">

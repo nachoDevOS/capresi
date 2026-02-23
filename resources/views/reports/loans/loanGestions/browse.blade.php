@@ -19,8 +19,6 @@
                         <div class="col-md-4" style="margin-top: 30px">
                             {{-- <form name="form_search" id="form-search" action="{{ route('bonusCollectionList') }}" method="post"> --}}
                             <form name="form_search" id="form-search" action="{{ route('reports-loans.loanGestions.list') }}" method="post">
-
-
                                 @csrf
                                 <input type="hidden" name="print">
                                 

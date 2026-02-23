@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Loan;
+use App\Models\People;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 
@@ -16,7 +17,7 @@ class ReportLoanController extends Controller
 
     // ######################       Prestamos Actuales vigentes       ######################
     public function currentLoans()
-    {        
+    {   
         return view('reports.loans.currentLoans.browse');
     }
 
@@ -290,5 +291,40 @@ class ReportLoanController extends Controller
     }
 
 
+    // ######################       Lista de persona deudoras #############################
+
+    public function listPersonDebt()
+    {
+        // $this->custom_authorize('browse_printloanRangeGestion');
+        $people = People::where('deleted_at', null)->get();
+    
+        return view('reports.loans.listPersonDebt.browse', compact('people'));
+    }
+
+    public function listPersonDebtList(Request $request)
+    {
+        $people_id = $request->people_id;
+
+        $peopleQuery = People::with(['loans' => function($q) {
+                $q->where('status', 'entregado')->where('debt', '>', 0)->where('deleted_at', null)
+                ->with(['current_loan_route.route', 'loanDay']);
+            }])
+            ->whereHas('loans', function($q) {
+                $q->where('status', 'entregado')->where('debt', '>', 0)->where('deleted_at', null);
+            })
+            ->where('deleted_at', null);
+
+        if ($people_id && $people_id != 'todos') {
+            $peopleQuery->where('id', $people_id);
+        }
+
+        $people = $peopleQuery->orderBy('first_name')->get();
+
+        if($request->print){
+            return view('reports.loans.listPersonDebt.print', compact('people'));
+        }else{
+            return view('reports.loans.listPersonDebt.list', compact('people'));
+        }
+    }
 
 }
