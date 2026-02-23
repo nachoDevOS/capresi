@@ -84,8 +84,7 @@
                                 @endphp
                             @endforeach
                             <tr style="background-color: #f9f9f9;">
-                                <td colspan="5" style="text-align: left"><strong>Total {{ $person->first_name }} {{ $person->last_name1 }}</strong></td>
-                                <td colspan="2"></td>
+                                <td colspan="6" style="text-align: left"><strong>Total {{ $person->first_name }} {{ $person->last_name1 }}</strong></td>
                                 <td style="text-align: right"><strong>{{ number_format($personTotalCapital, 2, ',','.') }}</strong></td>
                                 <td style="text-align: right"><strong>{{ number_format($personTotalInteres, 2, ',','.') }}</strong></td>
                                 <td style="text-align: right"><strong>{{ number_format($personTotal, 2, ',','.') }}</strong></td>
@@ -97,8 +96,7 @@
                             </tr>
                         @endforelse
                         <tr style="background-color: #e8e8e8;">
-                            <td colspan="5" style="text-align: left"><strong>TOTAL GENERAL</strong></td>
-                            <td colspan="2"></td>
+                            <td colspan="6" style="text-align: left"><strong>TOTAL GENERAL</strong></td>
                             <td style="text-align: right"><strong>{{ number_format($totalCapital, 2, ',','.') }}</strong></td>
                             <td style="text-align: right"><strong>{{ number_format($totalInteres, 2, ',','.') }}</strong></td>
                             <td style="text-align: right"><strong>{{ number_format($total, 2, ',','.') }}</strong></td>
