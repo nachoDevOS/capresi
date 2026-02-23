@@ -1,100 +1,76 @@
 
 <div class="col-md-12 text-right">
-    {{-- <button type="button" onclick="report_excel()" class="btn btn-success"><i class="fa-solid fa-file-excel"></i> Excel</button> --}}
     <button type="button" onclick="report_print()" class="btn btn-dark"><i class="glyphicon glyphicon-print"></i> Imprimir</button>
-
 </div>
+
 <div class="col-md-12">
-<div class="panel panel-bordered">
-    <div class="panel-body">
-        <div class="table-responsive">
-            <table id="dataStyle" style="width:100%"  class="table table-bordered table-striped table-sm">
-                <thead>
-                    <tr>
-                        <th rowspan="2" style="width:5px">N&deg;</th>
-                        <th rowspan="2" style="text-align: center">MES</th>
-                        <th rowspan="2" style="text-align: center">CAPITAL</th>                        
-                        <th rowspan="2" style="text-align: center">INTERES</th>
-                        <th rowspan="2" style="text-align: center">K + INT. GENERADO Bs.</th>
-                        <th colspan="3" style="text-align: center">Bs.</th>
-                        <th colspan="3" style="text-align: center">%</th>
-                    </tr>
-                    <tr>
-                        <th style="text-align: center">PAGADO</th>
-                        <th style="text-align: center">DEUDA</th>
-                        <th style="text-align: center">MORA</th>
-
-                        <th style="text-align: center">PAGADO</th>
-                        <th style="text-align: center">DEUDA</th>
-                        <th style="text-align: center">MORA</th>
-                        
-                    </tr>
-                   
-                </thead>
-                <tbody>
-                    @php
-                        $count = 1;
-                        $months = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');   
-                        $amountLoan =0; 
-                        $amountPorcentage=0;
-                        $capitalPorcentage=0;
-                        $pagado = 0;
-                        $deuda = 0;
-                        $mora = 0;
-                    @endphp
-                    @forelse ($datas as $item)
+    <div class="panel panel-bordered">
+        <div class="panel-body">
+            <div class="table-responsive">
+                <table id="dataStyle" style="width:100%" class="table table-bordered table-striped table-sm">
+                    <thead>
                         <tr>
-                            <td>{{ $count }}</td>
-                            <td style="text-align: left">{{ $item->monthDate ? $months[$item->monthDate].'-' : '' }}{{$item->yearDate}}</td>
-                            <td style="text-align: right">{{ number_format($item->amountLoan, 2, ',','.') }}</td>
-                            <td style="text-align: right">{{ number_format($item->amountPorcentage, 2, ',','.') }}</td>
-                            <td style="text-align: right">{{ number_format($item->capitalPorcentage, 2, ',','.') }}</td>
-
-                            <td style="text-align: right">{{ number_format($item->pagado, 2, ',','.') }}</td>
-                            <td style="text-align: right">{{ number_format($item->deuda, 2, ',','.') }}</td>
-                            <td style="text-align: right">{{ number_format($item->mora, 2, ',','.') }}</td>
-
-                            <td style="text-align: right">{{ number_format(($item->pagado / $item->capitalPorcentage)*100, 2, ',','.') }} %</td>
-                            <td style="text-align: right">{{ number_format(($item->deuda / $item->capitalPorcentage)*100, 2, ',','.') }} %</td>
-                            <td style="text-align: right">{{ number_format(($item->mora / $item->capitalPorcentage)*100, 2, ',','.') }} %</td>
-
+                            <th style="width:5px">N&deg;</th>
+                            <th style="text-align: center">CLIENTE</th>
+                            <th style="text-align: center">C&Oacute;DIGO PR&Eacute;STAMO</th>
+                            <th style="text-align: center">FECHA ENTREGA</th>
+                            <th style="text-align: center">CAPITAL</th>
+                            <th style="text-align: center">INTER&Eacute;S</th>
+                            <th style="text-align: center">TOTAL</th>
+                            <th style="text-align: center">DEUDA</th>
+                            <th style="text-align: center">RUTA</th>
                         </tr>
+                    </thead>
+                    <tbody>
                         @php
-                            $count++;
-                            $amountLoan+=$item->amountLoan;
-                            $amountPorcentage+=$item->amountPorcentage;
-                            $capitalPorcentage+=$item->capitalPorcentage;
-                            $pagado+=$item->pagado;
-                            $deuda+=$item->deuda;
-                            $mora+=$item->mora;
+                            $count = 1;
+                            $totalCapital = 0;
+                            $totalInteres = 0;
+                            $total = 0;
+                            $totalDeuda = 0;
                         @endphp
-                    @empty
-                        <tr style="text-align: center">
-                            <td colspan="11">No se encontraron registros.</td>
+                        @forelse ($people as $person)
+                            @foreach($person->loans as $loan)
+                                <tr>
+                                    <td>{{ $count }}</td>
+                                    <td>{{ $person->first_name }} {{ $person->last_name1 }} {{ $person->last_name2 }}</td>
+                                    <td style="text-align: center">{{ $loan->code }}</td>
+                                    <td style="text-align: center">{{ \Carbon\Carbon::parse($loan->dateDelivered)->format('d/m/Y') }}</td>
+                                    <td style="text-align: right">{{ number_format($loan->amountLoan, 2, ',','.') }}</td>
+                                    <td style="text-align: right">{{ number_format($loan->amountPorcentage, 2, ',','.') }}</td>
+                                    <td style="text-align: right">{{ number_format($loan->amountTotal, 2, ',','.') }}</td>
+                                    <td style="text-align: right">{{ number_format($loan->debt, 2, ',','.') }}</td>
+                                    <td style="text-align: center">{{ $loan->current_loan_route->route->name ?? 'N/A' }}</td>
+                                </tr>
+                                @php
+                                    $count++;
+                                    $totalCapital += $loan->amountLoan;
+                                    $totalInteres += $loan->amountPorcentage;
+                                    $total += $loan->amountTotal;
+                                    $totalDeuda += $loan->debt;
+                                @endphp
+                            @endforeach
+                        @empty
+                            <tr style="text-align: center">
+                                <td colspan="9">No se encontraron registros.</td>
+                            </tr>
+                        @endforelse
+                        <tr>
+                            <td colspan="4" style="text-align: left"><strong>Total</strong></td>
+                            <td style="text-align: right"><strong>{{ number_format($totalCapital, 2, ',','.') }}</strong></td>
+                            <td style="text-align: right"><strong>{{ number_format($totalInteres, 2, ',','.') }}</strong></td>
+                            <td style="text-align: right"><strong>{{ number_format($total, 2, ',','.') }}</strong></td>
+                            <td style="text-align: right"><strong>{{ number_format($totalDeuda, 2, ',','.') }}</strong></td>
+                            <td></td>
                         </tr>
-                    @endforelse
-                    <tr>
-                        <td colspan="2" style="text-align: left">Total</td>
-                        <td style="text-align: right">{{ number_format($amountLoan, 2, ',','.') }}</td>
-                        <td style="text-align: right">{{ number_format($amountPorcentage, 2, ',','.') }}</td>
-                        <td style="text-align: right">{{ number_format($capitalPorcentage, 2, ',','.') }}</td>
-                        
-                        <td style="text-align: right">{{ number_format($pagado, 2, ',','.') }}</td>
-                        <td style="text-align: right">{{ number_format($deuda, 2, ',','.') }}</td>
-                        <td style="text-align: right">{{ number_format($mora, 2, ',','.') }}</td>
-                        <td style="text-align: right"></td>
-                        <td style="text-align: right"></td>
-                        <td style="text-align: right"></td>
-                    </tr>
-                </tbody>
-            </table>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-</div>
 
 <script>
-$(document).ready(function(){
-
-})
+    $(document).ready(function() {
+    })
 </script>

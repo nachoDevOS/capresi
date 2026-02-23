@@ -52,4 +52,9 @@ class People extends Model
     {
         return $this->hasMany(Contract::class);
     }
+
+    public function loans()
+    {
+        return $this->hasMany(Loan::class, 'people_id');
+    }
 }
