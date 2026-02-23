@@ -18,14 +18,15 @@
                         </div>
                         <div class="col-md-4" style="margin-top: 30px">
                             {{-- <form name="form_search" id="form-search" action="{{ route('bonusCollectionList') }}" method="post"> --}}
-                            <form name="form_search" id="form-search" action="{{ route('reports-loans.loanGestions.list') }}" method="post">
+                            <form name="form_search" id="form-search" action="{{ route('reports-loans.listPersonDebt.list') }}" method="post">
                                 @csrf
+                                <input type="hidden" name="print">
                                 <div class="form-group">
                                     <div class="form-line">
-                                        <select name="group_by" class="form-control">
-                                            <option value="" selected>Todos</option>
+                                        <select name="people_id" class="form-control select2">
+                                            <option value="todos" selected>Todos</option>
                                             @foreach ($people as $item)
-                                                <select name="">{{}}</select>
+                                                <option value="{{ $item->id }}">{{ $item->first_name }} {{ $item->last_name1 }} {{ $item->last_name2 }} @if($item->deleted_at) (Eliminado) @endif</option>
                                             @endforeach
                                         </select>
                                         <small>Clientes</small>
@@ -147,6 +148,8 @@
 
         $(document).ready(function() {
 
+            $('.select2').select2();
+
             $('#form-search').on('submit', function(e){
                 e.preventDefault();
                 $('#div-results').loading({message: 'Cargando...'});
@@ -167,7 +170,7 @@
 
         function report_print(){
             $('#form-search').attr('target', '_blank');
-            $('#form-search input[name="print"]').val(1);
+            $('#form-search input[name="print"]').val('1');
             window.form_search.submit();
             $('#form-search').removeAttr('target');
             $('#form-search input[name="print"]').val('');

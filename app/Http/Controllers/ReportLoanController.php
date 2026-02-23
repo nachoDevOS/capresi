@@ -296,7 +296,9 @@ class ReportLoanController extends Controller
     public function listPersonDebt()
     {
         // $this->custom_authorize('browse_printloanRangeGestion');
-        $people = People::withTrashed()->get();
+        $people = People::withTrashed()
+            ->orderBy('first_name', 'ASC')
+            ->get();
     
         return view('reports.loans.listPersonDebt.browse', compact('people'));
     }
