@@ -24,8 +24,8 @@
                                     <div class="form-line">
                                         <select name="group_by" class="form-control">
                                             <option value="" selected>Todos</option>
-                                            @foreach ($collection as $item)
-                                                
+                                            @foreach ($people as $item)
+                                                <select name="">{{}}</select>
                                             @endforeach
                                         </select>
                                         <small>Clientes</small>

@@ -296,7 +296,7 @@ class ReportLoanController extends Controller
     public function listPersonDebt()
     {
         // $this->custom_authorize('browse_printloanRangeGestion');
-        $people = People::where('deleted_at', null)->get();
+        $people = People::withTrashed()->get();
     
         return view('reports.loans.listPersonDebt.browse', compact('people'));
     }
@@ -312,7 +312,7 @@ class ReportLoanController extends Controller
             ->whereHas('loans', function($q) {
                 $q->where('status', 'entregado')->where('debt', '>', 0)->where('deleted_at', null);
             })
-            ->where('deleted_at', null);
+            ->withTrashed();
 
         if ($people_id && $people_id != 'todos') {
             $peopleQuery->where('id', $people_id);

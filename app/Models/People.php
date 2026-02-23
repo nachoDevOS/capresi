@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class People extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
     protected $fillable = [
         'ci',
