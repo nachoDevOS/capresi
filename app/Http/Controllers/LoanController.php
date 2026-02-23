@@ -978,9 +978,9 @@ class LoanController extends Controller
         // --- ENVÍO 3: Agradecimiento (1-3 min después del comprobante) ---
         $sendAt3 = null;
         if (rand(0, 1)) {
-            $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 2));
-            Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
-            WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
+            // $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 2));
+            // Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
+            // WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
         }
 
         // --- LOG UNIFICADO Y ESTRUCTURADO ---
@@ -995,7 +995,7 @@ class LoanController extends Controller
             str_repeat('-', 60) . "\n" .
             " 1. Saludo:         " . $sendAt1->format('Y-m-d H:i:s') . "\n" .
             " 2. Comprobante:    " . $sendAt2->format('Y-m-d H:i:s') . "\n" .
-            " 3. Agradecimiento: " . ($sendAt3 ? $sendAt3->format('Y-m-d H:i:s') : 'OMITIDO') . "\n" .
+            // " 3. Agradecimiento: " . ($sendAt3 ? $sendAt3->format('Y-m-d H:i:s') : 'OMITIDO') . "\n" .
             $border;
         Log::channel('whatsappJob')->info($logMessage);
     }
