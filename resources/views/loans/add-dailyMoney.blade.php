@@ -179,7 +179,7 @@
                                                                                 <span class="status-pill partial">Abono: {{ number_format($loanDayData->amount - $loanDayData->debt, 2) }}</span>
                                                                             @endif
 
-                                                                            @if ($loanDayData->late == 1 && $loanDayData->debt > 0)
+                                                                            @if ($loanDayData->late == 1)
                                                                                 <span class="status-pill late">Atraso</span>
                                                                             @endif
                                                                         @endif
