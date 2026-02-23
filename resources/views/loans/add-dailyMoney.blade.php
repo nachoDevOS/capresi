@@ -114,6 +114,15 @@
                                 <div class="payment-calendar">
                                     @while ($mes < $cantMeses)
                                         <table class="calendar-table">
+                                            <colgroup>
+                                                <col style="width: 15.5%">
+                                                <col style="width: 15.5%">
+                                                <col style="width: 15.5%">
+                                                <col style="width: 15.5%">
+                                                <col style="width: 15.5%">
+                                                <col style="width: 15.5%">
+                                                <col style="width: 7%">
+                                            </colgroup>
                                             <thead>
                                                 <tr class="calendar-header">
                                                     <th colspan="7" style="color: #2e6da4 !important; font-weight: bold;">
@@ -416,6 +425,7 @@
         }
         .calendar-table {
             width: 100%;
+            table-layout: fixed;
             border-collapse: collapse;
             font-size: 12px;
             border: 1px solid #ddd;
@@ -583,7 +593,7 @@
              var styles = `
                 body { font-family: sans-serif; }
                 .payment-calendar { border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
-                .calendar-table { width: 100%; border-collapse: collapse; font-size: 10px; page-break-inside: auto; }
+                .calendar-table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 10px; page-break-inside: auto; }
                 .calendar-table th, .calendar-table .calendar-header th { background-color: #f1f1f1 !important; color: #333 !important; font-weight: 500; padding: 8px 5px; text-align: center; border: 1px solid #ccc; -webkit-print-color-adjust: exact; }
                 .calendar-table td { height: 80px; text-align: left; vertical-align: top; border: 1px solid #ccc; padding: 4px; }
                 .day-number { font-size: 12px; font-weight: 500; color: #333; text-align: right; }
