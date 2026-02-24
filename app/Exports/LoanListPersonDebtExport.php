@@ -25,13 +25,13 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
     {
         $data = [];
         $count = 1;
+        $totalCapital = 0;
+        $totalInteres = 0;
+        $total = 0;
+        $totalDeuda = 0;
         
         foreach ($this->people as $person) {
             $personName = trim($person->first_name . ' ' . $person->last_name1 . ' ' . $person->last_name2);
-            $personTotalCapital = 0;
-            $personTotalInteres = 0;
-            $personTotal = 0;
-            $personTotalDeuda = 0;
             
             foreach ($person->loans as $loan) {
                 $loanDays = $loan->loanDay->sortBy('date');
@@ -55,30 +55,28 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
                     'interes' => $loan->amountPorcentage,
                     'total' => $loan->amountTotal,
                     'deuda' => $loan->debt,
-                    'person_total' => null,
                 ];
                 
-                $personTotalCapital += $loan->amountLoan;
-                $personTotalInteres += $loan->amountPorcentage;
-                $personTotal += $loan->amountTotal;
-                $personTotalDeuda += $loan->debt;
+                $totalCapital += $loan->amountLoan;
+                $totalInteres += $loan->amountPorcentage;
+                $total += $loan->amountTotal;
+                $totalDeuda += $loan->debt;
                 $count++;
             }
-            
-            $data[] = [
-                'nro' => '',
-                'cliente' => '',
-                'codigo_prestamo' => '',
-                'fecha_entrega' => '',
-                'estado' => '',
-                'ruta' => 'Total ' . $personName,
-                'capital' => $personTotalCapital,
-                'interes' => $personTotalInteres,
-                'total' => $personTotal,
-                'deuda' => $personTotalDeuda,
-                'person_total' => true,
-            ];
         }
+        
+        $data[] = [
+            'nro' => '',
+            'cliente' => '',
+            'codigo_prestamo' => '',
+            'fecha_entrega' => '',
+            'estado' => '',
+            'ruta' => 'TOTAL GENERAL',
+            'capital' => $totalCapital,
+            'interes' => $totalInteres,
+            'total' => $total,
+            'deuda' => $totalDeuda,
+        ];
         
         return collect($data);
     }
@@ -108,10 +106,10 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
             $row['fecha_entrega'],
             $row['estado'],
             $row['ruta'],
-            $row['capital'] ? number_format($row['capital'], 2, ',', '.') : '',
-            $row['interes'] ? number_format($row['interes'], 2, ',', '.') : '',
-            $row['total'] ? number_format($row['total'], 2, ',', '.') : '',
-            $row['deuda'] ? number_format($row['deuda'], 2, ',', '.') : '',
+            $row['capital'] !== '' ? number_format($row['capital'], 2, ',', '.') : '',
+            $row['interes'] !== '' ? number_format($row['interes'], 2, ',', '.') : '',
+            $row['total'] !== '' ? number_format($row['total'], 2, ',', '.') : '',
+            $row['deuda'] !== '' ? number_format($row['deuda'], 2, ',', '.') : '',
         ];
     }
 
@@ -184,12 +182,12 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
                 $sheet->getStyle("G6:J{$lastRowData}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
                 for ($i = 6; $i <= $lastRowData; $i++) {
-                    if ($sheet->getCell("F{$i}")->getValue() && strpos($sheet->getCell("F{$i}")->getValue(), 'Total') !== false) {
+                    if ($sheet->getCell("F{$i}")->getValue() && strpos($sheet->getCell("F{$i}")->getValue(), 'TOTAL GENERAL') !== false) {
                         $sheet->getStyle("A{$i}:J{$i}")->applyFromArray([
                             'font' => ['bold' => true],
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
-                                'startColor' => ['rgb' => 'F2F2F2']
+                                'startColor' => ['rgb' => 'E8E8E8']
                             ],
                         ]);
                     } elseif ($i % 2 == 0) {
