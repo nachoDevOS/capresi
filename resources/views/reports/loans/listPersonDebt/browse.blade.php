@@ -42,6 +42,26 @@
                                         <small>Tipo de Deudas</small>
                                     </div>
                                 </div>
+                                <div class="form-group">
+                                    <label class="radio-inline"><input type="radio" name="date_type" value="todo" checked>Todo</label>
+                                    <label class="radio-inline"><input type="radio" name="date_type" value="rango">Rango de fechas</label>
+                                </div>
+                                <div class="form-group" id="div-date" style="display: none">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-line">
+                                                <input type="date" name="start" class="form-control" value="">
+                                                <small>Inicio</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-line">
+                                                <input type="date" name="finish" class="form-control" value="">
+                                                <small>Fin</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 
                                 <div class="text-right">
                                     <button type="submit" class="btn btn-primary" style="padding: 5px 10px"> <i class="voyager-settings"></i> Generar</button>
@@ -159,6 +179,18 @@
         $(document).ready(function() {
 
             $('.select2').select2();
+
+            $('input[name="date_type"]').change(function(){
+                if($(this).val() == 'rango'){
+                    $('#div-date').fadeIn();
+                    $('input[name="start"]').attr('required', 'required');
+                    $('input[name="finish"]').attr('required', 'required');
+                }else{
+                    $('#div-date').fadeOut();
+                    $('input[name="start"]').removeAttr('required');
+                    $('input[name="finish"]').removeAttr('required');
+                }
+            });
 
             $('#form-search').on('submit', function(e){
                 e.preventDefault();
