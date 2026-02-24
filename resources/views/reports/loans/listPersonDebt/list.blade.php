@@ -91,7 +91,7 @@ foreach ($people as $person) {
                             @foreach($person->loans as $loan)
                                 <tr>
                                     <td>{{ $count }}</td>
-                                    <td>{{ $loop->first ? $person->first_name . ' ' . $person->last_name1 . ' ' . $person->last_name2 : '' }}</td>
+                                    <td>{{ $person->first_name . ' ' . $person->last_name1 . ' ' . $person->last_name2 }}</td>
                                     <td style="text-align: center">{{ $loan->code }}</td>
                                     <td style="text-align: center">{{ \Carbon\Carbon::parse($loan->dateDelivered)->format('d/m/Y') }}</td>
                                     <td style="text-align: center">
@@ -130,13 +130,6 @@ foreach ($people as $person) {
                                     $personTotalDeuda += $loan->debt;
                                 @endphp
                             @endforeach
-                            <tr style="background-color: #f9f9f9;">
-                                <td colspan="6" style="text-align: right"><strong>Total</strong></td>
-                                <td style="text-align: right"><strong>{{ number_format($personTotalCapital, 2, ',','.') }}</strong></td>
-                                <td style="text-align: right"><strong>{{ number_format($personTotalInteres, 2, ',','.') }}</strong></td>
-                                <td style="text-align: right"><strong>{{ number_format($personTotal, 2, ',','.') }}</strong></td>
-                                <td style="text-align: right"><strong>{{ number_format($personTotalDeuda, 2, ',','.') }}</strong></td>
-                            </tr>
                         @empty
                             <tr style="text-align: center">
                                 <td colspan="10">No se encontraron registros.</td>
