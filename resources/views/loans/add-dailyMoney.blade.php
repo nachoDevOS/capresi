@@ -68,6 +68,9 @@
                                     <div style="margin-top: 10px;">
                                         @php
                                             $percent = ($loan->amountTotal > 0) ? (($loan->amountTotal - $loan->debt) / $loan->amountTotal) * 100 : 0;
+                                            if ($loan->debt > 0 && $percent > 99) {
+                                                $percent = 99;
+                                            }
                                         @endphp
                                         <div class="progress" style="height: 8px; margin-bottom: 5px;">
                                             <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{ $percent }}%;" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
