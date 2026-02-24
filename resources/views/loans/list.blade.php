@@ -56,7 +56,14 @@
                     /* ── Cálculo del arco SVG (hecho en PHP, sin JS) ── */
                     $total     = $item->amountTotal > 0 ? $item->amountTotal : 1;
                     $paid      = max(0, $total - $item->debt);
-                    $pctPaid   = round(($paid / $total) * 100);
+                    $pctPaid   = ($paid / $total) * 100;
+
+                    // Si hay deuda pendiente, el porcentaje no puede ser 100%
+                    if ($item->debt > 0 && $pctPaid > 99) {
+                        $pctPaid = 99;
+                    } else {
+                        $pctPaid = round($pctPaid);
+                    }
 
                     /* Parámetros del círculo SVG */
                     $r         = 24;          /* radio */
