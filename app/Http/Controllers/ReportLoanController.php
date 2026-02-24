@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\LoanListPersonDebtExport;
 use Illuminate\Http\Request;
 use App\Models\Loan;
 use App\Models\People;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class ReportLoanController extends Controller
 {
@@ -306,6 +309,8 @@ class ReportLoanController extends Controller
     public function listPersonDebtList(Request $request)
     {
         $people_id = $request->people_id;
+        $type_debt = $request->type_debt;
+        $today = Carbon::now()->format('Y-m-d');
 
         $peopleQuery = People::with(['loans' => function($q) {
                 $q->where('status', 'entregado')->where('debt', '>', 0)->where('deleted_at', null)
@@ -322,9 +327,41 @@ class ReportLoanController extends Controller
 
         $people = $peopleQuery->orderBy('first_name')->get();
 
+        if ($type_debt && $type_debt != 'todos') {
+            $people = $people->map(function ($person) use ($type_debt, $today) {
+                $person->loans = $person->loans->filter(function ($loan) use ($type_debt, $today) {
+                    $loanDays = $loan->loanDay->sortBy('date');
+                    $lastDate = $loanDays->last()->date ?? null;
+                    
+                    if ($type_debt == 'mora') {
+                        return $lastDate && $today > $lastDate;
+                    } elseif ($type_debt == 'vigente') {
+                        return !$lastDate || $today <= $lastDate;
+                    }
+                    return true;
+                });
+                return $person;
+            })->filter(function ($person) {
+                return $person->loans->isNotEmpty();
+            })->values();
+        }
+
         if($request->print){
             return view('reports.loans.listPersonDebt.print', compact('people'));
         }else{
+            return view('reports.loans.listPersonDebt.list', compact('people'));
+        }
+
+        if($request->print == 'print'){
+            return view('reports.loans.listPersonDebt.print', compact('people'));
+        }else if($request->print == 'excel'){
+            return Excel::download(
+                new LoanListPersonDebtExport($datas, $startDate, $endDate), 
+                'servicios_mascotas_' . $startDate . '_' . $endDate . '.xlsx'
+            );
+
+        }else
+        {
             return view('reports.loans.listPersonDebt.list', compact('people'));
         }
     }

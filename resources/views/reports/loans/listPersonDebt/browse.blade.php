@@ -180,9 +180,16 @@
 
         function report_print(){
             $('#form-search').attr('target', '_blank');
-            $('#form-search input[name="print"]').val('1');
+            $('#form-search input[name="print"]').val('print');
             window.form_search.submit();
             $('#form-search').removeAttr('target');
+            $('#form-search input[name="print"]').val('');
+        }
+        function report_excel()
+        {
+            $('#form-search input[name="print"]').val('excel');
+            window.form_search.submit();
+             $('#form-search').removeAttr('target');
             $('#form-search input[name="print"]').val('');
         }
     </script>

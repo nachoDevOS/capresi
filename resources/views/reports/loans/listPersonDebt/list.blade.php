@@ -20,9 +20,12 @@ foreach ($people as $person) {
 }
 @endphp
 
+
 <div class="col-md-12 text-right">
     <button type="button" onclick="report_print()" class="btn btn-dark"><i class="glyphicon glyphicon-print"></i> Imprimir</button>
+    <button type="button" onclick="report_excel()" class="btn btn-success"><i class="fa-solid fa-file-excel"></i> Excel</button>
 </div>
+
 
 <div class="col-md-12">
     <div class="panel panel-bordered">
