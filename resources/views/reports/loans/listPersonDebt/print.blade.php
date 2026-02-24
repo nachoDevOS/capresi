@@ -50,7 +50,7 @@
                 @foreach($person->loans as $loan)
                     <tr>
                         <td>{{ $count }}</td>
-                        <td>{{ $loop->first ? $person->first_name . ' ' . $person->last_name1 . ' ' . $person->last_name2 : '' }}</td>
+                        <td>{{ $person->first_name . ' ' . $person->last_name1 . ' ' . $person->last_name2 }}</td>
                         <td style="text-align: center">{{ $loan->code }}</td>
                         <td style="text-align: center" data-order="{{ \Carbon\Carbon::parse($loan->dateDelivered)->format('Y-m-d') }}">
                             {{ \Carbon\Carbon::parse($loan->dateDelivered)->format('d/m/Y') }}
