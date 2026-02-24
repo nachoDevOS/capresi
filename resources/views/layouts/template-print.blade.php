@@ -4,20 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>@yield('page_title') | {{ env('APP_NAME', 'CAPRESI') }}</title>
+
+    <title>{{Voyager::setting('admin.title') }}</title>
     <!-- Favicon -->
     <?php $admin_favicon = Voyager::setting('admin.icon_image', ''); ?>
     @if($admin_favicon == '')
-        <link rel="shortcut icon" href="{{ asset('images/icon.png') }}" type="image/png">
+        <link rel="shortcut icon" href="{{ asset('images/icon.png')}}" type="image/png">
     @else
         <link rel="shortcut icon" href="{{ Voyager::image($admin_favicon) }}" type="image/png">
     @endif
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
-        table tr {
-            page-break-inside: avoid; /* Evita que las filas se dividan entre páginas */
-        }
-
         body{
             margin: 0px auto;
             font-family: Arial, sans-serif;
@@ -71,8 +68,16 @@
             <button class="btn-print" onclick="window.print()"> Imprimir <i class="fa fa-print"></i></button>
         </div>
         <div class="sheet">
+            <?php 
+                $admin_favicon = Voyager::setting('admin.icon_image', '');
+            ?>
             {{-- <div id="watermark">
-                <img src="{{ asset('images/icon.png') }}" /> 
+                
+                @if($admin_favicon == '')
+                    <img src="{{ asset('images/icon.png') }}" /> 
+                @else
+                    <img src="{{ Voyager::image($admin_favicon) }}" /> 
+                @endif
             </div> --}}
             <div class="content">
                 @yield('content')
