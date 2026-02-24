@@ -44,8 +44,6 @@
                                 </div>
                                 
                                 <div class="text-right">
-                                    <button type="button" onclick="report_excel()" class="btn btn-success" style="padding: 5px 10px; margin-right: 5px;"> <i class="voyager-dollar"></i> Excel</button>
-                                    <button type="button" onclick="report_print()" class="btn btn-dark" style="padding: 5px 10px; margin-right: 5px;"> <i class="glyphicon glyphicon-print"></i> Imprimir</button>
                                     <button type="submit" class="btn btn-primary" style="padding: 5px 10px"> <i class="voyager-settings"></i> Generar</button>
                                 </div>
                             </form>
