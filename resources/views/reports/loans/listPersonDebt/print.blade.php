@@ -17,6 +17,14 @@
             .dataTables_paginate {
                 display: none !important;
             }
+            table.dataTable thead th.sorting::after,
+            table.dataTable thead th.sorting_asc::after,
+            table.dataTable thead th.sorting_desc::after,
+            table.dataTable thead th.sorting::before,
+            table.dataTable thead th.sorting_asc::before,
+            table.dataTable thead th.sorting_desc::before {
+                display: none !important;
+            }
             .dataTables_wrapper {
                 margin: 0 !important;
                 padding: 0 !important;
