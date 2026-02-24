@@ -2,6 +2,60 @@
 
 @section('page_title', 'Reporte de Lista de Personas Deudoras')
 
+@section('css')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <style>
+        table, th, td {
+            border-collapse: collapse;
+        }
+        .dataTables_paginate {
+            display: none;
+        }
+        @media print {
+            .dataTables_length,
+            .dataTables_info,
+            .dataTables_paginate {
+                display: none !important;
+            }
+            .dataTables_wrapper {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
+@stop
+
+@section('script')
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                ordering: true,
+                paging: false,
+                dom: 't',
+                order: [[0, 'asc']],
+                language: {
+                    search: "Buscar:",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    infoEmpty: "Mostrando 0 a 0 de 0 registros",
+                    infoFiltered: "(filtrado de _MAX_ registros totales)",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    zeroRecords: "No se encontraron registros",
+                    emptyTable: "No hay datos disponibles",
+                    thousands: ".",
+                    decimal: ",",
+                    orderHeader: {
+                        0: "Activar para ordenar",
+                        1: "Activar para ordenar ascendente",
+                        2: "Activar para ordenar descendente"
+                    }
+                }
+            });
+        });
+    </script>
+@stop
+
 @section('content')
     @php
         $months = array('', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre');
@@ -34,14 +88,14 @@
             <tr style="background-color: #e8e8e8;">
                 <th style="width:5px">N&deg;</th>
                 <th style="text-align: center">CLIENTE</th>
-                <th style="text-align: center">C&Oacute;DIGO PR&Eacute;STAMO</th>
-                <th style="text-align: center">FECHA ENTREGA</th>
+                <th style="text-align: center; width: 8%">C&Oacute;DIGO PR&Eacute;STAMO</th>
+                <th style="text-align: center; width: 8%">FECHA ENTREGA</th>
                 <th style="text-align: center">ESTADO</th>
                 <th style="text-align: center">RUTA</th>
-                <th style="text-align: center">CAPITAL</th>
-                <th style="text-align: center">INTER&Eacute;S</th>
-                <th style="text-align: center">TOTAL</th>
-                <th style="text-align: center">DEUDA</th>
+                <th style="text-align: center; width: 8%">CAPITAL</th>
+                <th style="text-align: center; width: 8%">INTER&Eacute;S</th>
+                <th style="text-align: center; width: 8%">TOTAL</th>
+                <th style="text-align: center; width: 8%">DEUDA</th>
             </tr>
         </thead>
         <tbody>
@@ -84,32 +138,6 @@
             @endforelse
         </tbody>
     </table>
-
-    <script>
-        $(document).ready(function() {
-            $('#dataTable').DataTable({
-                ordering: true,
-                paging: false,
-                order: [[0, 'asc']],
-                language: {
-                    search: "Buscar:",
-                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-                    infoEmpty: "Mostrando 0 a 0 de 0 registros",
-                    infoFiltered: "(filtrado de _MAX_ registros totales)",
-                    lengthMenu: "Mostrar _MENU_ registros",
-                    zeroRecords: "No se encontraron registros",
-                    emptyTable: "No hay datos disponibles",
-                    thousands: ".",
-                    decimal: ",",
-                    orderHeader: {
-                        0: "Activar para ordenar",
-                        1: "Activar para ordenar ascendente",
-                        2: "Activar para ordenar descendente"
-                    }
-                }
-            });
-        });
-    </script>
 
 @endsection
 
