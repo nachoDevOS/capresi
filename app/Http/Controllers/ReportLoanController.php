@@ -310,14 +310,23 @@ class ReportLoanController extends Controller
     {
         $people_id = $request->people_id;
         $type_debt = $request->type_debt;
+        $date_type = $request->date_type;
+        $start = $request->start;
+        $finish = $request->finish;
         $today = Carbon::now()->format('Y-m-d');
 
-        $peopleQuery = People::with(['loans' => function($q) {
+        $peopleQuery = People::with(['loans' => function($q) use ($date_type, $start, $finish) {
                 $q->where('status', 'entregado')->where('debt', '>', 0)->where('deleted_at', null)
                 ->with(['current_loan_route.route', 'loanDay']);
+                if($date_type == 'rango'){
+                    $q->whereDate('dateDelivered', '>=', $start)->whereDate('dateDelivered', '<=', $finish);
+                }
             }])
-            ->whereHas('loans', function($q) {
+            ->whereHas('loans', function($q) use ($date_type, $start, $finish) {
                 $q->where('status', 'entregado')->where('debt', '>', 0)->where('deleted_at', null);
+                if($date_type == 'rango'){
+                    $q->whereDate('dateDelivered', '>=', $start)->whereDate('dateDelivered', '<=', $finish);
+                }
             })
             ->withTrashed();
 
