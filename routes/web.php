@@ -495,7 +495,7 @@ Route::group(['prefix' => 'admin', 'middleware' => ['loggin', 'block.after.hours
     Route::post('reports/loans/loanrangegestions/list', [ReportLoanController::class, 'loanRangeGestionsList'])->name('reports-loans.loanRangeGestions.list');
 
     // Para obtener la lista de personas deudoras
-    Route::get('reports/loans/listpersondebt', [ReportLoanController::class, 'listPersonDebt'])->name('reports-loans.listPersonDebt');
+    Route::get('reports/loans/listpersondebt', [ReportLoanController::class, 'listPersonDebt'])->name('reports-loans.listpersondebt');
     Route::post('reports/loans/listpersondebt/list', [ReportLoanController::class, 'listPersonDebtList'])->name('reports-loans.listPersonDebt.list');
 
 

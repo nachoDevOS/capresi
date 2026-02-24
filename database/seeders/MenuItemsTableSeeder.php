@@ -1059,6 +1059,22 @@ class MenuItemsTableSeeder extends Seeder
                 'route' => 'reports-loans.loanRangeGestions',
                 'parameters' => NULL,
             ),
+            65 => 
+            array (
+                'id' => 96,
+                'menu_id' => 1,
+                'title' => 'Clientes Deudores',
+                'url' => '',
+                'target' => '_self',
+                'icon_class' => 'fa-solid fa-print',
+                'color' => '#000000',
+                'parent_id' => 92,
+                'order' => 4,
+                'created_at' => '2026-02-23 22:47:00',
+                'updated_at' => '2026-02-23 22:47:40',
+                'route' => 'reports-loans.listpersondebt',
+                'parameters' => 'null',
+            ),
         ));
         
         
