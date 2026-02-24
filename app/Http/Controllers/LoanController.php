@@ -745,97 +745,6 @@ class LoanController extends Controller
     {
         Log::channel('whatsappJob')->info("Whatsapp: Iniciando programación de mensajes para {$phone}. Tipo: {$type}");
 
-        // --- 1. MENSAJE DE SALUDO (Aviso de envío) ---
-        $nameStr = $name ? " ".ucfirst(strtolower($name)) : "";
-        $greetings = [
-            "Hola{$nameStr} 👋", 
-            "Saludos{$nameStr} ✨", 
-            "Estimado cliente{$nameStr} 🤝", 
-            "Buen día{$nameStr} ☀️", 
-            "Hola{$nameStr}, ¿cómo estás? 😊", 
-            "Buenas{$nameStr} 🙋‍♂️",
-            "¡Hola{$nameStr}! Espero que estés bien 🌟",
-            "Un gusto saludarte{$nameStr} 👋",
-            "¡Qué tal{$nameStr}! 😃",
-            "Hola{$nameStr}, espero que tengas un excelente día ☀️",
-            "¡Buenas! {$nameStr} 👋",
-            "Saludos cordiales{$nameStr}",
-            "¡Hola! {$nameStr}, un placer saludarte 😊",
-            "¡Hola{$nameStr}! Qué bueno saludarte 👋",
-            "Espero que te encuentres muy bien, {$nameStr} ✨",
-            "¡Buenas buenas{$nameStr}! 😃",
-            "Hola{$nameStr}, paso por aquí para saludarte 👋",
-            "¡Qué tal todo{$nameStr}! Espero que genial 🌟",
-            "Un cordial saludo para ti, {$nameStr} 🤝",
-            "¡Hola hola{$nameStr}! 😊",
-            "Es un gusto escribirte, {$nameStr} ✨",
-            "¡Saludos{$nameStr}! Espero que tu día vaya excelente ☀️",
-            "Hola{$nameStr}, deseándote lo mejor hoy 🙌",
-            "¡Buenas{$nameStr}! Espero que todo marche bien 👍",
-            "¡Hola{$nameStr}! Aquí reportándome 👋",
-            "Saludos{$nameStr}, espero no interrumpir 🤝",
-            "¡Hola{$nameStr}! Qué alegría saludarte hoy 😊",
-            "¡Buenas vibras para ti{$nameStr}! ✨",
-            "Hola{$nameStr}, espero que estés teniendo un gran día 🌟",
-            "¡Qué tal{$nameStr}! Un saludo especial 👋",
-            "Hola{$nameStr}, un gusto contactarte nuevamente 😃",
-            "¡Saludos{$nameStr}! Espero que estés de maravilla ✨",
-            "Hola{$nameStr}, te envío un cordial saludo 🤝",
-            "¡Buenas{$nameStr}! Qué gusto saludarte por aquí 👋",
-            "Hola{$nameStr}, espero que todo esté en orden 👍",
-            "¡Hola{$nameStr}! Te deseo un feliz día ☀️",
-            "Saludos{$nameStr}, espero que te encuentres bien 😊",
-            "¡Hola{$nameStr}! Un placer saludarte como siempre ✨",
-            "¡Buenas{$nameStr}! Espero que estés disfrutando tu día 🌟",
-            "Hola{$nameStr}, paso a dejarte un saludo 👋",
-            "¡Qué tal{$nameStr}! Espero que todo vaya excelente 😃",
-            "Saludos{$nameStr}, un gusto saludarte hoy 🤝",
-            "¡Hola{$nameStr}! Espero que estés teniendo una jornada productiva 🚀",
-            "¡Buenas{$nameStr}! Te mando un saludo 👋",
-            "Hola{$nameStr}, espero que estés muy bien hoy ✨",
-            "¡Hola{$nameStr}! Qué bueno poder saludarte 😊",
-            "Saludos{$nameStr}, espero que tengas un día genial 🌟",
-            "¡Hola{$nameStr}! Un gusto saludarte nuevamente 👋",
-            "¡Buenas{$nameStr}! Espero que todo esté perfecto 👍",
-            "Hola{$nameStr}, te deseo mucho éxito hoy 🍀"
-        ];
-        $preludes = [
-            "En unos momentos le enviamos su comprobante de pago ⏳.",
-            "Ya estamos procesando su comprobante, se lo envío en breve 📨.",
-            "Deme unos minutos y le paso su recibo 🕐.",
-            "Su pago fue registrado, enseguida le adjunto el comprobante ✅.",
-            "Estamos generando su recibo, aguarde un instante por favor 🔄.",
-            "Confirmando su transacción, en breve recibe el comprobante 🧾.",
-            "Procesando su pago... un momento por favor ⚙️.",
-            "Todo listo con su pago, ya le paso el comprobante 👍.",
-            "Estoy preparando su comprobante, un momento por favor 📄.",
-            "Su pago ha sido validado, en breve le envío el recibo ✅.",
-            "Generando comprobante de pago... ⏳",
-            "Enseguida le comparto la constancia de su pago 📨.",
-            "Unos segundos y le envío su comprobante 👍.",
-            "Su transacción ha sido exitosa, en breve le envío el comprobante 🌟.",
-            "Estamos finalizando el registro de su pago, aguarde un momento 🕒.",
-            "Recibo en proceso, se lo comparto en unos instantes 📤.",
-            "Validando datos del pago, enseguida le paso el comprobante 🔍.",
-            "Pago recibido correctamente, ya le envío su constancia ✨.",
-            "Un momento mientras genero su recibo digital 💻.",
-            "Su pago está siendo procesado, en breve tendrá su comprobante 🚀.",
-            "Confirmado, en unos segundos le llega su recibo ✅.",
-            "Estamos preparando su documento de pago, gracias por esperar 🙏.",
-            "Transacción aprobada, ya le envío el detalle 📝.",
-            "Su pago se ha registrado con éxito, en breve le paso el comprobante 💫.",
-            "Estamos verificando su transacción, un momento por favor 🧐.",
-            "Todo correcto, enseguida le envío su recibo digital 📲.",
-            "Procesando... en unos instantes tendrá su comprobante ⏳.",
-            "Gracias por su pago, ya le estoy generando el recibo 📃.",
-            "Unos instantes y le comparto la imagen del comprobante 🖼️.",
-            "Pago validado, procedo a enviarle su constancia ✅.",
-            "Estamos listos, en breve recibe su comprobante de pago 📨.",
-            "Su operación fue exitosa, aguarde un momento para el recibo 👍.",
-            "Generando su constancia de pago, por favor espere 🕒."
-        ];
-        $msg1 = $greetings[array_rand($greetings)] . " " . $preludes[array_rand($preludes)];
-        
         // --- 2. MENSAJE DEL COMPROBANTE (Con la imagen) ---
         $receiptTexts = [
             "Aquí tiene su comprobante 👇",
@@ -898,39 +807,6 @@ class LoanController extends Controller
         ];
         $msg2 = $receiptTexts[array_rand($receiptTexts)];
 
-        // --- 3. MENSAJE DE AGRADECIMIENTO (Cierre) ---
-        $thanks = [
-            "¡Gracias por su preferencia! 🙏",
-            "Agradecemos su confianza en nosotros 🤝.",
-            "Gracias por ser parte de nuestra comunidad 🌟.",
-            "Su operación se realizó con éxito ✅.",
-            "Pago registrado correctamente 👍.",
-            "¡Muchas gracias por su pago! 😊",
-            "Valoramos mucho su puntualidad 👏.",
-            "¡Gracias por cumplir con su pago! 🙌",
-            "Agradecemos su puntualidad y compromiso 🤝.",
-            "¡Excelente! Gracias por su pago 😊.",
-            "Su pago nos ayuda a seguir creciendo juntos 🌟.",
-            "¡Muchas gracias! Valoramos su preferencia 🙏."
-        ];
-        $closings = [
-            "Atentamente, el equipo.", 
-            "Cualquier duda, estamos aquí 📞.", 
-            "Nos vemos pronto 👋.", 
-            "Que tenga buen resto de jornada 🌤️.", 
-            "Gracias por su tiempo ⏳.",
-            "¡Que tenga un excelente día! 🌈",
-            "Estamos a su disposición 🫡.",
-            "Quedamos atentos a cualquier consulta 📞.",
-            "¡Hasta la próxima! 👋",
-            "Que tenga un día productivo 🚀.",
-            "Saludos de parte de todo el equipo 🏢.",
-            "Cualquier cosa, no dude en escribirnos 📩."
-        ];
-        $emojis = ['✅', '👍', '😊', '👋', '✨', '🤝', '🌟', '🎉', '💯'];
-        
-        $msg3 = $thanks[array_rand($thanks)] . " " . $emojis[array_rand($emojis)] . "\n" . $closings[array_rand($closings)];
-
         // --- GESTIÓN DE TIEMPOS (Cache para cola secuencial) ---
         
         // Recuperar la última hora programada globalmente
@@ -966,22 +842,9 @@ class LoanController extends Controller
         // Calculamos el tiempo tentativo (cola secuencial + delay aleatorio)
         $sendAt1 = $lastScheduled->copy()->addMinutes(rand(2, 10));
 
-        // --- ENVÍO 1: Saludo ---
+        // --- ENVÍO 1: Comprobante ---
         Cache::put('last_whatsapp_schedule', $sendAt1, now()->addDay());
-        WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg1, $type)->delay($sendAt1);
-
-        // --- ENVÍO 2: Comprobante (2-5 min después del saludo) ---
-        $sendAt2 = $sendAt1->copy()->addMinutes(rand(1, 2));
-        Cache::put('last_whatsapp_schedule', $sendAt2, now()->addDay());
-        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt2);
-
-        // --- ENVÍO 3: Agradecimiento (1-3 min después del comprobante) ---
-        $sendAt3 = null;
-        if (rand(0, 1)) {
-            // $sendAt3 = $sendAt2->copy()->addMinutes(rand(1, 2));
-            // Cache::put('last_whatsapp_schedule', $sendAt3, now()->addDay());
-            // WhatsappJob::dispatch($servidor, $session, $code, $phone, null, $msg3, $type)->delay($sendAt3);
-        }
+        WhatsappJob::dispatch($servidor, $session, $code, $phone, $url, $msg2, $type)->delay($sendAt1);
 
         // --- LOG UNIFICADO Y ESTRUCTURADO ---
         $clientInfo = $name ? "{$name} ({$phone})" : $phone;
@@ -993,9 +856,7 @@ class LoanController extends Controller
             " Cliente: " . $clientInfo . "\n" .
             " Tipo:    " . $type . "\n" .
             str_repeat('-', 60) . "\n" .
-            " 1. Saludo:         " . $sendAt1->format('Y-m-d H:i:s') . "\n" .
-            " 2. Comprobante:    " . $sendAt2->format('Y-m-d H:i:s') . "\n" .
-            // " 3. Agradecimiento: " . ($sendAt3 ? $sendAt3->format('Y-m-d H:i:s') : 'OMITIDO') . "\n" .
+            " 1. Comprobante:    " . $sendAt1->format('Y-m-d H:i:s') . "\n" .
             $border;
         Log::channel('whatsappJob')->info($logMessage);
     }
