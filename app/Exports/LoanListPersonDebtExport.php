@@ -199,14 +199,6 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
                         ]);
                     }
                 }
-
-                $footerRow = $lastRowData + 2;
-                $sheet->mergeCells("A{$footerRow}:J{$footerRow}");
-                $sheet->setCellValue("A{$footerRow}", 'Desarrollado por Solución Digital - 67285914');
-                $sheet->getStyle("A{$footerRow}")->applyFromArray([
-                    'font' => ['bold' => true, 'size' => 10, 'color' => ['rgb' => '4472C4']],
-                    'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
-                ]);
             },
         ];
     }
