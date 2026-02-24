@@ -29,7 +29,7 @@
         </tr>
     </table>
     <br>
-    <table style="width: 100%; font-size: 10px" border="1" cellspacing="0" cellpadding="4">
+    <table id="dataTable" style="width: 100%; font-size: 10px" border="1" cellspacing="0" cellpadding="4">
         <thead>
             <tr style="background-color: #e8e8e8;">
                 <th style="width:5px">N&deg;</th>
@@ -45,26 +45,16 @@
             </tr>
         </thead>
         <tbody>
-            @php
-                $count = 1;
-                $totalCapital = 0;
-                $totalInteres = 0;
-                $total = 0;
-                $totalDeuda = 0;
-            @endphp
+            @php $count = 1; @endphp
             @forelse ($people as $person)
-                @php
-                    $personTotalCapital = 0;
-                    $personTotalInteres = 0;
-                    $personTotal = 0;
-                    $personTotalDeuda = 0;
-                @endphp
                 @foreach($person->loans as $loan)
                     <tr>
                         <td>{{ $count }}</td>
                         <td>{{ $loop->first ? $person->first_name . ' ' . $person->last_name1 . ' ' . $person->last_name2 : '' }}</td>
                         <td style="text-align: center">{{ $loan->code }}</td>
-                        <td style="text-align: center">{{ \Carbon\Carbon::parse($loan->dateDelivered)->format('d/m/Y') }}</td>
+                        <td style="text-align: center" data-order="{{ \Carbon\Carbon::parse($loan->dateDelivered)->format('Y-m-d') }}">
+                            {{ \Carbon\Carbon::parse($loan->dateDelivered)->format('d/m/Y') }}
+                        </td>
                         <td style="text-align: center">
                             @php
                                 $loanDays = $loan->loanDay->sortBy('date');
@@ -80,45 +70,46 @@
                             {{ $status }}
                         </td>
                         <td style="text-align: center">{{ $loan->current_loan_route->route->name ?? 'N/A' }}</td>
-                        <td style="text-align: right">{{ number_format($loan->amountLoan, 2, ',','.') }}</td>
-                        <td style="text-align: right">{{ number_format($loan->amountPorcentage, 2, ',','.') }}</td>
-                        <td style="text-align: right">{{ number_format($loan->amountTotal, 2, ',','.') }}</td>
-                        <td style="text-align: right">{{ number_format($loan->debt, 2, ',','.') }}</td>
+                        <td style="text-align: right" data-order="{{ $loan->amountLoan }}">{{ number_format($loan->amountLoan, 2, ',','.') }}</td>
+                        <td style="text-align: right" data-order="{{ $loan->amountPorcentage }}">{{ number_format($loan->amountPorcentage, 2, ',','.') }}</td>
+                        <td style="text-align: right" data-order="{{ $loan->amountTotal }}">{{ number_format($loan->amountTotal, 2, ',','.') }}</td>
+                        <td style="text-align: right" data-order="{{ $loan->debt }}">{{ number_format($loan->debt, 2, ',','.') }}</td>
                     </tr>
-                    @php
-                        $count++;
-                        $totalCapital += $loan->amountLoan;
-                        $totalInteres += $loan->amountPorcentage;
-                        $total += $loan->amountTotal;
-                        $totalDeuda += $loan->debt;
-                        
-                        $personTotalCapital += $loan->amountLoan;
-                        $personTotalInteres += $loan->amountPorcentage;
-                        $personTotal += $loan->amountTotal;
-                        $personTotalDeuda += $loan->debt;
-                    @endphp
+                    @php $count++; @endphp
                 @endforeach
-                <tr style="background-color: #f9f9f9;">
-                    <td colspan="6" style="text-align: right"><strong>Total Cliente</strong></td>
-                    <td style="text-align: right"><strong>{{ number_format($personTotalCapital, 2, ',','.') }}</strong></td>
-                    <td style="text-align: right"><strong>{{ number_format($personTotalInteres, 2, ',','.') }}</strong></td>
-                    <td style="text-align: right"><strong>{{ number_format($personTotal, 2, ',','.') }}</strong></td>
-                    <td style="text-align: right"><strong>{{ number_format($personTotalDeuda, 2, ',','.') }}</strong></td>
-                </tr>
             @empty
                 <tr style="text-align: center">
                     <td colspan="10">No se encontraron registros.</td>
                 </tr>
             @endforelse
-            <tr style="background-color: #e8e8e8;">
-                <td colspan="6" style="text-align: left"><strong>TOTAL GENERAL</strong></td>
-                <td style="text-align: right"><strong>{{ number_format($totalCapital, 2, ',','.') }}</strong></td>
-                <td style="text-align: right"><strong>{{ number_format($totalInteres, 2, ',','.') }}</strong></td>
-                <td style="text-align: right"><strong>{{ number_format($total, 2, ',','.') }}</strong></td>
-                <td style="text-align: right"><strong>{{ number_format($totalDeuda, 2, ',','.') }}</strong></td>
-            </tr>
         </tbody>
     </table>
+
+    <script>
+        $(document).ready(function() {
+            $('#dataTable').DataTable({
+                ordering: true,
+                paging: false,
+                order: [[0, 'asc']],
+                language: {
+                    search: "Buscar:",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    infoEmpty: "Mostrando 0 a 0 de 0 registros",
+                    infoFiltered: "(filtrado de _MAX_ registros totales)",
+                    lengthMenu: "Mostrar _MENU_ registros",
+                    zeroRecords: "No se encontraron registros",
+                    emptyTable: "No hay datos disponibles",
+                    thousands: ".",
+                    decimal: ",",
+                    orderHeader: {
+                        0: "Activar para ordenar",
+                        1: "Activar para ordenar ascendente",
+                        2: "Activar para ordenar descendente"
+                    }
+                }
+            });
+        });
+    </script>
 
 @endsection
 
@@ -126,6 +117,18 @@
     <style>
         table, th, td {
             border-collapse: collapse;
+        }
+        @media print {
+            .dataTables_length,
+            .dataTables_filter,
+            .dataTables_info,
+            .dataTables_paginate {
+                display: none !important;
+            }
+            .dataTables_wrapper {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
         }
     </style>
 @stop
