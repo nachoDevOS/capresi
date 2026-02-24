@@ -70,10 +70,17 @@
                                             $percent = ($loan->amountTotal > 0) ? (($loan->amountTotal - $loan->debt) / $loan->amountTotal) * 100 : 0;
                                             if ($loan->debt > 0 && $percent > 99) {
                                                 $percent = 99;
+                                            } else {
+                                                $percent = round($percent);
                                             }
+
+                                            $class = 'progress-bar-danger';
+                                            if($percent >= 100) $class = 'progress-bar-success';
+                                            elseif($percent >= 60) $class = 'progress-bar-info';
+                                            elseif($percent >= 30) $class = 'progress-bar-warning';
                                         @endphp
                                         <div class="progress" style="height: 8px; margin-bottom: 5px;">
-                                            <div class="progress-bar progress-bar-success" role="progressbar" style="width: {{ $percent }}%;" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                            <div class="progress-bar {{ $class }}" role="progressbar" style="width: {{ $percent }}%;" aria-valuenow="{{ $percent }}" aria-valuemin="0" aria-valuemax="100"></div>
                                         </div>
                                         <div class="text-center">
                                             <small class="text-muted">Progreso: {{ number_format($percent, 0) }}%</small>
