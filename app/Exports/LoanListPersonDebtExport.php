@@ -33,6 +33,10 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
         foreach ($this->people as $person) {
             $personName = trim($person->first_name . ' ' . $person->last_name1 . ' ' . $person->last_name2);
             
+            if ($person->loans->isEmpty()) {
+                continue;
+            }
+            
             foreach ($person->loans as $loan) {
                 $loanDays = $loan->loanDay->sortBy('date');
                 $lastDate = $loanDays->last()->date ?? null;
