@@ -179,26 +179,6 @@
                             @if ($item->debt != 0)
                                 <span class="label label-danger debt-badge">Bs. {{ number_format($item->debt, 2) }}</span>
                             @endif
-                            {{-- @if ($item->debt == 0)
-                                <span class="label label-success">PAGADO</span>
-                            @else
-                                <span class="label label-danger debt-badge">Bs. {{ number_format($item->debt, 2) }}</span>
-                            @endif --}}
-
-                            {{-- Estado del préstamo --}}
-                            {{-- <div>
-                                @if ($item->status == 'pendiente')
-                                    <span class="label label-danger">PENDIENTE</span>
-                                @elseif ($item->status == 'verificado')
-                                    <span class="label label-warning">VERIFICADO</span>
-                                @elseif ($item->status == 'aprobado')
-                                    <span class="label label-primary">APROBADO</span>
-                                @elseif ($item->status == 'entregado')
-                                    <span class="label label-success">ACTIVO</span>
-                                @elseif ($item->status == 'rechazado')
-                                    <span class="label label-danger">RECHAZADO</span>
-                                @endif
-                            </div> --}}
                         </div>
                     </td>
 

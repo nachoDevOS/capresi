@@ -334,7 +334,7 @@ class ReportLoanController extends Controller
             $peopleQuery->where('id', $people_id);
         }
 
-        $people = $peopleQuery->orderBy('first_name')->get();
+        $people = $peopleQuery->orderBy('first_name')->orderBy('last_name1')->orderBy('last_name2')->get();
 
         if ($type_debt && $type_debt != 'todos') {
             $people = $people->map(function ($person) use ($type_debt, $today) {
