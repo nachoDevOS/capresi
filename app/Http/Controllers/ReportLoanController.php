@@ -346,22 +346,14 @@ class ReportLoanController extends Controller
             })->values();
         }
 
-        if($request->print){
-            return view('reports.loans.listPersonDebt.print', compact('people'));
-        }else{
-            return view('reports.loans.listPersonDebt.list', compact('people'));
-        }
-
         if($request->print == 'print'){
             return view('reports.loans.listPersonDebt.print', compact('people'));
         }else if($request->print == 'excel'){
             return Excel::download(
-                new LoanListPersonDebtExport($datas, $startDate, $endDate), 
-                'servicios_mascotas_' . $startDate . '_' . $endDate . '.xlsx'
+                new LoanListPersonDebtExport($people), 
+                'lista_personas_deudoras.xlsx'
             );
-
-        }else
-        {
+        }else{
             return view('reports.loans.listPersonDebt.list', compact('people'));
         }
     }

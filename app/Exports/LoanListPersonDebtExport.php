@@ -14,70 +14,104 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
 class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapping, WithStyles, WithTitle, ShouldAutoSize, WithEvents
 {
-    protected $datas;
-    protected $startDate;
-    protected $endDate;
+    protected $people;
 
-    public function __construct($datas, $startDate, $endDate)
+    public function __construct($people)
     {
-        $this->datas = $datas;
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
+        $this->people = $people;
     }
 
     public function collection()
     {
-        return $this->datas;
+        $data = [];
+        $count = 1;
+        
+        foreach ($this->people as $person) {
+            $personName = trim($person->first_name . ' ' . $person->last_name1 . ' ' . $person->last_name2);
+            $personTotalCapital = 0;
+            $personTotalInteres = 0;
+            $personTotal = 0;
+            $personTotalDeuda = 0;
+            
+            foreach ($person->loans as $loan) {
+                $loanDays = $loan->loanDay->sortBy('date');
+                $lastDate = $loanDays->last()->date ?? null;
+                $today = date('Y-m-d');
+                
+                if ($lastDate && $today > $lastDate) {
+                    $status = 'MORA';
+                } else {
+                    $status = 'VIGENTE';
+                }
+
+                $data[] = [
+                    'nro' => $count,
+                    'cliente' => $personName,
+                    'codigo_prestamo' => $loan->code,
+                    'fecha_entrega' => \Carbon\Carbon::parse($loan->dateDelivered)->format('d/m/Y'),
+                    'estado' => $status,
+                    'ruta' => $loan->current_loan_route->route->name ?? 'N/A',
+                    'capital' => $loan->amountLoan,
+                    'interes' => $loan->amountPorcentage,
+                    'total' => $loan->amountTotal,
+                    'deuda' => $loan->debt,
+                    'person_total' => null,
+                ];
+                
+                $personTotalCapital += $loan->amountLoan;
+                $personTotalInteres += $loan->amountPorcentage;
+                $personTotal += $loan->amountTotal;
+                $personTotalDeuda += $loan->debt;
+                $count++;
+            }
+            
+            $data[] = [
+                'nro' => '',
+                'cliente' => '',
+                'codigo_prestamo' => '',
+                'fecha_entrega' => '',
+                'estado' => '',
+                'ruta' => 'Total ' . $personName,
+                'capital' => $personTotalCapital,
+                'interes' => $personTotalInteres,
+                'total' => $personTotal,
+                'deuda' => $personTotalDeuda,
+                'person_total' => true,
+            ];
+        }
+        
+        return collect($data);
     }
 
     public function headings(): array
     {
         return [
             'N°',
-            'Fecha',
-            'Propietario',
-            'Dirección',
-            'Servicio',
-            'Detalle',
-            'Realizado Por',
+            'CLIENTE',
+            'CÓDIGO PRÉSTAMO',
+            'FECHA ENTREGA',
+            'ESTADO',
+            'RUTA',
+            'CAPITAL',
+            'INTERÉS',
+            'TOTAL',
+            'DEUDA',
         ];
     }
 
     public function map($row): array
     {
-        static $count = 0;
-        $count++;
-
-        // Formatear nombre completo del propietario
-        $propietario = 'S/N';
-        if ($row->person) {
-            $propietario = trim(
-                ($row->person->first_name ?? '') . ' ' .
-                ($row->person->middle_name ?? '') . ' ' .
-                ($row->person->paternal_surname ?? '') . ' ' .
-                ($row->person->maternal_surname ?? '')
-            );
-        }
-
-        // Formatear nombre completo del trabajador
-        $trabajador = 'S/N';
-        if ($row->worker) {
-            $trabajador = trim(
-                ($row->worker->first_name ?? '') . ' ' .
-                ($row->worker->middle_name ?? '') . ' ' .
-                ($row->worker->paternal_surname ?? '') . ' ' .
-                ($row->worker->maternal_surname ?? '')
-            );
-        }
-
         return [
-            $count,
-            \Carbon\Carbon::parse($row->date)->format('d/m/Y'),
-            $propietario,
-            $row->address ?? '',
-            $row->type ?? '',
-            trim($row->detail ?? $row->observation ?? ''),
-            $trabajador,
+            $row['nro'],
+            $row['cliente'],
+            $row['codigo_prestamo'],
+            $row['fecha_entrega'],
+            $row['estado'],
+            $row['ruta'],
+            $row['capital'] ? number_format($row['capital'], 2, ',', '.') : '',
+            $row['interes'] ? number_format($row['interes'], 2, ',', '.') : '',
+            $row['total'] ? number_format($row['total'], 2, ',', '.') : '',
+            $row['deuda'] ? number_format($row['deuda'], 2, ',', '.') : '',
         ];
     }
 
@@ -86,14 +120,13 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
         return [
             AfterSheet::class => function(AfterSheet $event) {
                 $sheet = $event->sheet->getDelegate();
-                $lastRow = $sheet->getHighestRow();
+                $highestRow = $sheet->getHighestRow();
+                $highestColumn = $sheet->getHighestColumn();
 
-                // Insertar 4 filas al inicio para el encabezado
                 $sheet->insertNewRowBefore(1, 4);
 
-                // Título del reporte
-                $sheet->mergeCells('A1:G1');
-                $sheet->setCellValue('A1', 'REPORTE DE SERVICIOS REALIZADOS A DOMICILIO');
+                $sheet->mergeCells('A1:J1');
+                $sheet->setCellValue('A1', 'REPORTE DE LISTA DE PERSONAS DEUDORAS');
                 $sheet->getStyle('A1')->applyFromArray([
                     'font' => [
                         'bold' => true,
@@ -106,57 +139,26 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
                     ],
                 ]);
 
-                // Fecha del reporte
-                $months = ['', 'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-                
-                if ($this->startDate == $this->endDate) {
-                    $dateText = \Carbon\Carbon::parse($this->startDate)->format('d') . ' de ' . 
-                                $months[intval(\Carbon\Carbon::parse($this->startDate)->format('m'))] . ' de ' . 
-                                \Carbon\Carbon::parse($this->startDate)->format('Y');
-                } else {
-                    $dateText = \Carbon\Carbon::parse($this->startDate)->format('d') . ' de ' . 
-                                $months[intval(\Carbon\Carbon::parse($this->startDate)->format('m'))] . ' de ' . 
-                                \Carbon\Carbon::parse($this->startDate)->format('Y') . ' al ' . 
-                                \Carbon\Carbon::parse($this->endDate)->format('d') . ' de ' . 
-                                $months[intval(\Carbon\Carbon::parse($this->endDate)->format('m'))] . ' de ' . 
-                                \Carbon\Carbon::parse($this->endDate)->format('Y');
-                }
-
-                $sheet->mergeCells('A2:G2');
-                $sheet->setCellValue('A2', $dateText);
+                $sheet->mergeCells('A2:J2');
+                $sheet->setCellValue('A2', 'Generado: ' . date('d/m/Y H:i:s'));
                 $sheet->getStyle('A2')->applyFromArray([
-                    'font' => [
-                        'size' => 11,
-                        'italic' => true,
-                    ],
-                    'alignment' => [
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    ],
+                    'font' => ['size' => 11, 'italic' => true],
+                    'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
                 ]);
 
-                // Información de generación
-                $sheet->mergeCells('A3:G3');
-                $sheet->setCellValue('A3', 'Generado por: ' . \Auth::user()->name . ' | ' . date('d/M/Y h:i a'));
+                $sheet->mergeCells('A3:J3');
+                $sheet->setCellValue('A3', 'Usuario: ' . auth()->user()->name);
                 $sheet->getStyle('A3')->applyFromArray([
                     'font' => ['size' => 9],
-                    'alignment' => [
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    ],
+                    'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
                 ]);
 
-                // Ajustar altura de las primeras filas
                 $sheet->getRowDimension(1)->setRowHeight(25);
                 $sheet->getRowDimension(2)->setRowHeight(18);
                 $sheet->getRowDimension(3)->setRowHeight(15);
-                $sheet->getRowDimension(4)->setRowHeight(5);
 
-                // Estilo para encabezados (ahora en la fila 5)
-                $sheet->getStyle('A5:G5')->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                        'size' => 11,
-                        'color' => ['rgb' => 'FFFFFF']
-                    ],
+                $sheet->getStyle('A5:J5')->applyFromArray([
+                    'font' => ['bold' => true, 'size' => 11, 'color' => ['rgb' => 'FFFFFF']],
                     'fill' => [
                         'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                         'startColor' => ['rgb' => '4472C4']
@@ -167,9 +169,8 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
                     ],
                 ]);
 
-                // Bordes para toda la tabla
-                $lastRowData = $lastRow + 4;
-                $sheet->getStyle("A5:G{$lastRowData}")->applyFromArray([
+                $lastRowData = $highestRow;
+                $sheet->getStyle("A5:J{$lastRowData}")->applyFromArray([
                     'borders' => [
                         'allBorders' => [
                             'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
@@ -178,18 +179,21 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
                     ],
                 ]);
 
-                // Centrar columnas específicas
                 $sheet->getStyle("A6:A{$lastRowData}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle("B6:B{$lastRowData}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-                $sheet->getStyle("E6:E{$lastRowData}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle("C6:F{$lastRowData}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+                $sheet->getStyle("G6:J{$lastRowData}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
 
-                // Alineación vertical para todas las celdas de datos
-                $sheet->getStyle("A6:G{$lastRowData}")->getAlignment()->setVertical(\PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER);
-
-                // Zebra striping (filas alternadas)
                 for ($i = 6; $i <= $lastRowData; $i++) {
-                    if ($i % 2 == 0) {
-                        $sheet->getStyle("A{$i}:G{$i}")->applyFromArray([
+                    if ($sheet->getCell("F{$i}")->getValue() && strpos($sheet->getCell("F{$i}")->getValue(), 'Total') !== false) {
+                        $sheet->getStyle("A{$i}:J{$i}")->applyFromArray([
+                            'font' => ['bold' => true],
+                            'fill' => [
+                                'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                'startColor' => ['rgb' => 'F2F2F2']
+                            ],
+                        ]);
+                    } elseif ($i % 2 == 0) {
+                        $sheet->getStyle("A{$i}:J{$i}")->applyFromArray([
                             'fill' => [
                                 'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                                 'startColor' => ['rgb' => 'F2F2F2']
@@ -198,22 +202,12 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
                     }
                 }
 
-                // Ajustar wrap text para la columna de Detalle
-                $sheet->getStyle("F6:F{$lastRowData}")->getAlignment()->setWrapText(true);
-
-                // Footer - Solución Digital
                 $footerRow = $lastRowData + 2;
-                $sheet->mergeCells("A{$footerRow}:G{$footerRow}");
+                $sheet->mergeCells("A{$footerRow}:J{$footerRow}");
                 $sheet->setCellValue("A{$footerRow}", 'Desarrollado por Solución Digital - 67285914');
                 $sheet->getStyle("A{$footerRow}")->applyFromArray([
-                    'font' => [
-                        'bold' => true,
-                        'size' => 10,
-                        'color' => ['rgb' => '4472C4']
-                    ],
-                    'alignment' => [
-                        'horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER,
-                    ],
+                    'font' => ['bold' => true, 'size' => 10, 'color' => ['rgb' => '4472C4']],
+                    'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
                 ]);
             },
         ];
@@ -226,9 +220,6 @@ class LoanListPersonDebtExport implements FromCollection, WithHeadings, WithMapp
 
     public function title(): string
     {
-        if ($this->startDate == $this->endDate) {
-            return 'Servicios ' . \Carbon\Carbon::parse($this->startDate)->format('d-m-Y');
-        }
-        return 'Servicios del ' . \Carbon\Carbon::parse($this->startDate)->format('d-m-Y') . ' al ' . \Carbon\Carbon::parse($this->endDate)->format('d-m-Y');
+        return 'Lista Personas Deudoras';
     }
 }
